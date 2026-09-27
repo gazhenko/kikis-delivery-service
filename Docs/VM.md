@@ -33,7 +33,9 @@ ssh -fN -o ExitOnForwardFailure=yes \
 open vnc://127.0.0.1:5905
 ```
 
-Do not start a second tunnel if port 5905 is already forwarded. VNC is bound to VM localhost and relies on SSH authentication. No public desktop endpoint was created. Sign into Unity Hub inside the VM and activate a suitable license. The terms and account sign-in are left for the account holder.
+Do not start a second tunnel if port 5905 is already forwarded. VNC is bound to VM localhost, reached through authenticated SSH, and uses a dedicated VNC password for compatibility with macOS Screen Sharing. The server's password file is `~/.vnc/kiki-passwd`; the client secret is in the protected local file `~/.local/share/kiki-tools/kiki-vnc-password`, outside the project and version control. No public desktop endpoint was created. Sign into Unity Hub inside the VM and activate a suitable license. The terms and account sign-in are left for the account holder.
+
+The Mac initially stopped at its VNC password prompt when the server used no password. Dedicated authentication resolved this; a full framebuffer connection was confirmed on 2026-09-27. The Screen Sharing window is titled `ubuntu:99`.
 
 ## Reproducible setup
 

@@ -6,6 +6,7 @@
 - Blender 4.5.3 LTS, macOS ARM64: FBX and editable `.blend` exports produced; source-art views inspected at 1280 × 800 over multiple passes. Corrected character pivots, surface repetition, ground normals, missing garden/airship colliders, side windows and street overlap. Final source previews also show the revised character proportions, rounded tail and fuller broom.
 - Proxmox VM 130: guest agent and key-based SSH work. Unity 6000.3.20f1 and Mac/Windows Mono modules installed. Download checksums verified.
 - Ubuntu desktop at 1440 × 900: Unity Hub visibly opened; private VNC listens only on loopback; SSH tunnel and macOS Screen Sharing launched. Firefox is installed for the user's sign-in flow.
+- Subsequent macOS connection check: Screen Sharing initially stopped at a password prompt. Configured a dedicated private VNC password, signed in through the native UI, and confirmed a full framebuffer session and the `ubuntu:99` window. This replaces the earlier launch-only connection check.
 - Mesa `glxinfo -B`: llvmpipe, OpenGL 4.5, `Accelerated: no`.
 - First Unity editor launch reached its license check and exited because there is no active license. This confirms the executable starts, not that the project compiles.
 - Installed Unity source inspection identified and corrected the uGUI assembly reference and a URP property with an internal setter.

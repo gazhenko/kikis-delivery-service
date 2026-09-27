@@ -21,7 +21,12 @@ if ! pgrep -u "$(id -u)" -x xfce4-session > /dev/null; then
   nohup dbus-run-session -- xfce4-session > "$desktop_logs/session.log" 2>&1 < /dev/null &
 fi
 if ! pgrep -u "$(id -u)" -x x11vnc > /dev/null; then
-  nohup x11vnc -display :99 -auth "$XAUTHORITY" -localhost -nopw -forever -shared -rfbport 5900 -noxdamage > "$desktop_logs/vnc.log" 2>&1 < /dev/null &
+  vnc_auth="$HOME/.vnc/kiki-passwd"
+  if [[ ! -s "$vnc_auth" ]]; then
+    printf '%s\n' 'Create ~/.vnc/kiki-passwd with x11vnc -storepasswd before starting the desktop.' >&2
+    exit 1
+  fi
+  nohup x11vnc -display :99 -auth "$XAUTHORITY" -localhost -rfbauth "$vnc_auth" -forever -shared -rfbport 5900 -noxdamage > "$desktop_logs/vnc.log" 2>&1 < /dev/null &
 fi
 if ! pgrep -u "$(id -u)" -f '^/usr/lib/unityhub/unityhub-bin$' > /dev/null; then
   nohup unityhub > "$desktop_logs/unityhub.log" 2>&1 < /dev/null &
