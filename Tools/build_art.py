@@ -115,7 +115,21 @@ def empty(name,pos=(0,0,0),parent=None):
     return obj
 
 def height(x,z):
-    t=max(0,min(1,(z-56)/47));return 7*t*t*(3-2*t)
+    def smooth(v):
+        t=max(0,min(1,v));return t*t*(3-2*t)
+    town=7*smooth((z-56)/47)
+    north=smooth((z-150)/150)
+    sides=smooth((abs(x)-165)/200)*smooth((z+60)/150)
+    ridge=.75+.16*math.sin(x*.018)+.09*math.sin(z*.017)
+    return town+(42*north+24*sides)*ridge
+
+def face_up(obj):
+    # Open height fields have no enclosed volume; Blender's normal recalculation
+    # can choose the underside after their outline changes. Keep terrain walkable.
+    if sum(p.normal.z for p in obj.data.polygons)<0:
+        bm=bmesh.new();bm.from_mesh(obj.data)
+        bmesh.ops.reverse_faces(bm,faces=list(bm.faces));bm.to_mesh(obj.data);bm.free();obj.data.update()
+    return obj
 
 def roof(name,cx,y,cz,w,d,rise,tile,parent=None):
     vertices=[(cx-w/2,y,cz-d/2),(cx+w/2,y,cz-d/2),(cx+w/2,y,cz+d/2),(cx-w/2,y,cz+d/2),(cx,y+rise,cz-d/2),(cx,y+rise,cz+d/2)]
@@ -207,7 +221,7 @@ def path(name,points,width,tile='Paint_8'):
             vertices.extend([(x+nx,height(x+nx,z+nz)+lift,z+nz),(x-nx,height(x-nx,z-nz)+lift,z-nz)])
             if s<steps:
                 k=len(vertices)-2;faces.append((k,k+1,k+3,k+2))
-    return mesh(name,vertices,[tuple(reversed(f)) for f in faces],tile)
+    return face_up(mesh(name,vertices,[tuple(reversed(f)) for f in faces],tile))
 
 def tree(name,x,z,size=1,kind='broad'):
     y=height(x,z);crown=7*size
@@ -241,24 +255,49 @@ def bench(x,z):
     for a in [.9,1.2]:box('Bench back',(x,y+a,z+.33),(2.5,.16,.1),'Paint_6')
     for a in [-.9,.9]:box('Bench iron leg',(x+a,y+.35,z),(.08,.7,.65),'Ink')
 
+def fence(name,a,b):
+    length=math.hypot(b[0]-a[0],b[1]-a[1]);steps=max(1,math.ceil(length/4))
+    for i in range(steps+1):
+        t=i/steps;x=a[0]+(b[0]-a[0])*t;z=a[1]+(b[1]-a[1])*t
+        box(name+' post',(x,height(x,z)+.62,z),(.16,1.24,.16),'Paint_6')
+    for y in [.55,1.02]:cylinder(name+' rail',(a[0],height(*a)+y,a[1]),(b[0],height(*b)+y,b[1]),.07,'Paint_6',vertices=6)
+
+def cow(name,x,z):
+    y=height(x,z)
+    ellipsoid(name+' cream body',(x,y+1.05,z),(.55,.48,.92),'Paint_12',segments=16,rings=10)
+    ellipsoid(name+' brown patch',(x+.51,y+1.13,z-.15),(.06,.26,.36),'Hair',segments=12,rings=8)
+    ellipsoid(name+' head',(x,y+1.17,z+.89),(.30,.35,.37),'Paint_12',segments=14,rings=10)
+    ellipsoid(name+' muzzle',(x,y+1.02,z+1.18),(.28,.17,.17),'Flower',segments=12,rings=8)
+    for side in [-1,1]:
+        ellipsoid(name+' ear',(x+side*.33,y+1.39,z+.91),(.20,.09,.10),'Hair',segments=10,rings=6)
+        ellipsoid(name+' eye',(x+side*.25,y+1.31,z+1.06),(.035,.045,.04),'Ink',segments=8,rings=6)
+        for dz in [-.57,.51]:
+            cylinder(name+' leg',(x+side*.36,y+.17,z+dz),(x+side*.38,y+.90,z+dz),.075,'Paint_12',vertices=8)
+            box(name+' hoof',(x+side*.36,y+.10,z+dz),(.18,.19,.22),'Hair')
+    cylinder(name+' tail',(x,y+1.12,z-.85),(x+.12,y+.40,z-1.13),.035,'Paint_12',vertices=8)
+    ellipsoid(name+' tail tuft',(x+.12,y+.37,z-1.13),(.08,.13,.075),'Hair',segments=8,rings=6)
+
 def world():
     global CHUNK
     CHUNK='Landscape'
-    vertices=[];faces=[];nx=67;nz=51
-    for iz in range(nz):
-        z=-76+iz*5.2
-        for ix in range(nx):
-            x=-170+ix*5.4;vertices.append((x,height(x,z),z))
+    # Dense geometry in the playable district, coarse continuous terrain beyond it.
+    # The outer edge sits past the fog range, including every woodland tree root.
+    xs=[-700,-560,-430,-330,-265,-215]+[-170+i*5.4 for i in range(67)]+[225,275,345,445,565,700]
+    zs=[-76+i*5.2 for i in range(51)]+[204,230,270,325,400,500,620,760]
+    vertices=[];faces=[];nx=len(xs);nz=len(zs)
+    for iz,z in enumerate(zs):
+        for ix,x in enumerate(xs):
+            vertices.append((x,height(x,z),z))
             if ix<nx-1 and iz<nz-1:
                 a=iz*nx+ix;faces.append((a,a+1,a+1+nx,a+nx))
-    ground=mesh('Ground',vertices,[tuple(reversed(f)) for f in faces],'Paint_9')
+    ground=face_up(mesh('Ground',vertices,[tuple(reversed(f)) for f in faces],'Paint_9'))
     collision=ground.copy();collision.data=ground.data.copy();collision.name='COL_Ground';bpy.context.collection.objects.link(collision);collision.hide_render=True
-    box('Quay seawall',(0,-2,-76),(340,4,2.3),'Paint_7')
-    box('Sea',(0,-2.1,-235),(1000,.1,320),'Sea')
+    box('Quay seawall',(0,-2,-76),(1400,4,2.3),'Paint_7')
+    box('Sea',(0,-2.1,-676),(2000,.1,1200),'Sea')
     for i in range(60):
         x=random.uniform(-240,240);z=random.uniform(-360,-90)
         box('Sea painted glint',(x,-2.02,z),(random.uniform(2,10),.015,.1),'Foam')
-    roads=[([-155,0],[151,0],8),([-130,-62],[148,-62],8),([-42,-58],[-42,-4],7),([-42,4],[-42,116],7),([64,-58],[64,-4],7),([64,4],[64,127],7),([-42,78],[140,78],6),([-125,129],[142,129],5)]
+    roads=[([-155,0],[151,0],8),([-130,-62],[148,-62],8),([-42,-58],[-42,-4],7),([-42,4],[-42,129],7),([64,-58],[64,-4],7),([64,4],[64,129],7),([-42,78],[140,78],6),([-125,129],[142,129],5)]
     for index,(a,b,w) in enumerate(roads):
         path('Pavement_'+str(index),[a,b],w+3.2,'Paint_7')
         path('Street_'+str(index),[a,b],w)
@@ -301,6 +340,16 @@ def world():
         roof('Canvas market cover',x,3,z,5,3,1,'White')
         box('Market table',(x,1,z),(4.6,.18,2),'Paint_6')
         for i in range(9):ellipsoid('Market apples',(x+(i%3-1)*.7,1.3,z+(i//3-1)*.45),(.22,.22,.22),'Flower',segments=8,rings=6)
+    # A public garden connects the market's northern edge to the garden lane.
+    CHUNK='Market_Garden'
+    path('Park circuit',[(-14,54),(52,54),(52,72),(-14,72),(-14,54)],1.8,'Paint_7')
+    path('Park entrance',[(20,47),(20,78)],1.8,'Paint_7')
+    for x,z in [(-11,57),(4,70),(38,57),(50,70)]:tree('Park linden',x,z,.72)
+    for x,z in [(-1,59),(7,68),(33,58),(42,68)]:bed('Park borders',x,z,5,3,'Lavender')
+    for x,z in [(-8,68),(31,69),(42,55)]:bench(x,z)
+    cylinder('Park fountain rim',(20,height(20,63)+.12,63),(20,height(20,63)+.58,63),2.1,'Paint_7',vertices=24)
+    cylinder('Park fountain water',(20,height(20,63)+.59,63),(20,height(20,63)+.62,63),1.78,'Sea',vertices=24)
+    cylinder('Park fountain pillar',(20,height(20,63)+.6,63),(20,height(20,63)+1.6,63),.24,'Paint_7',vertices=12)
     # Garden enclosure, usable paths, planted edges and open landing court.
     CHUNK='Madame_Garden'
     for x in [68,112]:
@@ -360,11 +409,26 @@ def world():
     # Perimeter orchards and woodland frame the town rather than filling its streets.
     CHUNK='Orchard'
     for ix in range(5):
-        for iz in range(3):tree('Apple tree',-138+ix*13,112+iz*15,.8)
+        for z in [109,144,157]:tree('Apple tree',-138+ix*13,z,.8)
+    path('Orchard walk',[(-140,99),(-140,129),(-125,129)],2,'Paint_7')
+    for x in [-152,-76]:
+        fence('Orchard fence',(x,101),(x,123));fence('Orchard fence',(x,136),(x,161))
+    fence('Orchard north fence',(-152,161),(-76,161))
+    CHUNK='Bakery_Pasture'
+    for a,b in [((-156,73),(-125,73)),((-125,73),(-125,99)),((-156,73),(-156,99)),((-156,99),(-144,99)),((-137,99),(-125,99))]:fence('Pasture fence',a,b)
+    cow('Grazing cow',-145,83);cow('Small pasture cow',-134,91)
+    box('Pasture water trough',(-128,height(-128,96)+.35,96),(2.6,.7,1.1),'Paint_7')
+    box('Trough water',(-128,height(-128,96)+.72,96),(2.3,.04,.8),'Sea')
     CHUNK='Wooded_Hills'
     for i in range(65):
         x=-177+(i%22)*17+random.uniform(-3,3);z=163+(i//22)*15+random.uniform(-3,3)
         tree('Hillside tree',x,z,1.1+random.random()*.65,'cypress' if i%7==0 else 'broad')
+    CHUNK='Background_Groves'
+    for cx,cz in [(-170,242),(-45,284),(96,242),(232,277)]:
+        for row in range(3):
+            for col in range(4):
+                x=cx+(col-1.5)*12+random.uniform(-3,3);z=cz+(row-1)*12+random.uniform(-3,3)
+                tree('Distant grove',x,z,1.45+random.random()*.5)
     for side in [-1,1]:
         for i in range(10):tree('Town edge tree',side*165, -47+i*18,1.1)
     for d in CatalogDestinations:
@@ -425,6 +489,10 @@ def kiki():
     global CHUNK
     bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
     CHUNK='Kiki';root=empty('KikiRig');body=empty('Body',(0,1.28,0),root)
+    # Independent import anchors: Unity may fold the single rig root differently
+    # from the neighborhood's multiple roots. Never reuse the world's correction.
+    for name,position in [('Origin',(0,0,0)),('Right',(1,0,0)),('Up',(0,1,0)),('Forward',(0,0,1))]:
+        empty('RiderAnchor_'+name,position,root)
     # Parts are authored around named pivots for controllable flight poses.
     def part(name,pos,size,material,parent=body):
         obj=ellipsoid(name,pos,size,material,segments=32,rings=20)

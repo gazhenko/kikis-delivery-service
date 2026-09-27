@@ -10,9 +10,21 @@ Timed jobs, ingredient shopping, recipes, broom upgrades, crows, cozy/challengin
 
 ## Current status
 
-Core simulation: 25 checks passed with .NET 8. Source art: Blender renders reviewed and revised. Unity compilation, real flight traversal, native builds and performance: pending Unity license activation. Do not interpret source previews as a tested game build.
+The Unity VM is licensed, the project compiles, and a universal Mac development build runs on Apple M1 Pro / Metal. The native player passed 18 automated checks at 1440 × 900 and 1920 × 1080. These cover a delivery, five destination landings, cooking, purchases, controller input, continuous menu time, sleep and save serialization. The independent core simulation has also passed 25 checks with .NET 8.
+
+The character, buildings and animation are still prototype art. This is a playable foundation for the desktop rebuild; it has not yet reached the requested hand-painted film quality. Audio and a physical-controller playtest remain outstanding.
 
 See [verification](Docs/VERIFICATION.md), [visual direction](Docs/DIRECTION.md), [asset provenance](Docs/ART.md) and [development VM](Docs/VM.md).
+
+## Play the Mac build
+
+Open `Builds/mac/Kiki’s Delivery Service.app` and choose Cozy or Challenging. Unity Editor and a Unity sign-in are not required to play the exported app. A distributable copy is packaged as `Builds/mac/Kiki-Delivery-Mac.zip`; this local development build is not notarized for public distribution.
+
+```sh
+open 'Builds/mac/Kiki’s Delivery Service.app'
+```
+
+At home, pick a delivery and choose Fly. Follow the highlighted minimap destination, then use E for an assisted landing and again to deliver. Tab opens the bakery when home and settings while away. Settings includes Save & quit.
 
 ## Open and build
 
@@ -26,7 +38,7 @@ See [verification](Docs/VERIFICATION.md), [visual direction](Docs/DIRECTION.md),
 Batch build example, after activation:
 
 ```sh
-~/Unity/6000.3.20f1/Editor/Unity -batchmode -nographics \
+~/Unity/6000.3.20f1/Editor/Unity -batchmode -nographics -buildTarget StandaloneOSX \
   -projectPath "$PWD" -executeMethod Koriko.Editor.DesktopBuild.Mac \
   -quit -logFile Logs/mac-build.log
 ```
@@ -54,6 +66,6 @@ blender --background --threads 4 --python Tools/build_art.py
 
 The core project does not need Unity. Blender generation rebuilds the two editable sources and FBX exports, then produces four preview PNGs in `Docs/previews/`. Run from this project directory. Do not regenerate source art over an artist's manual `.blend` edits without preserving those edits first.
 
-A development player accepts `--koriko-flight-check`. It creates synthetic keyboard events to fly a delivery circuit with the real controller and camera, captures five native screenshots, and writes `flight-check/result.txt` under Unity's persistent data directory. It exits nonzero on a failed traversal and never loads or writes the player's save. This check is prepared but has not run yet. It complements a human/controller playtest.
+A development player accepts `--koriko-flight-check`. It creates synthetic keyboard and gamepad events to fly a delivery circuit with the real movement code and camera, checks bakery interactions, captures native screenshots, and writes `flight-check/result.txt` under Unity's persistent data directory. It exits nonzero on a failed check and never loads or writes the player's save. This runner has passed on the Mac; it complements a human/controller playtest. The final run's results and selected captures are in `Docs/verification/1920x1080/`.
 
 This first district has six delivery courts including home, rather than the previous region's 22 locations. Desktop is the current target; the original browser version remains the mobile/iPad route.

@@ -10,12 +10,14 @@ namespace Koriko.Editor
             if(!assetPath.StartsWith("Assets/Koriko/Art/"))return;
             var importer=(TextureImporter)assetImporter;
             bool surface=assetPath.EndsWith("PaintedSurfaces.png");
+            bool sky=assetPath.EndsWith("PaintedSky.png");
             importer.textureType=TextureImporterType.Default;
             importer.sRGBTexture=true;importer.maxTextureSize=2048;
-            importer.mipmapEnabled=surface;importer.filterMode=FilterMode.Bilinear;
+            importer.mipmapEnabled=surface||sky;importer.filterMode=FilterMode.Bilinear;
             importer.wrapMode=TextureWrapMode.Clamp;importer.anisoLevel=surface?4:1;
+            if(sky)importer.wrapModeU=TextureWrapMode.Repeat;
             importer.textureCompression=TextureImporterCompression.Uncompressed;
-            importer.alphaIsTransparency=!surface;
+            importer.alphaIsTransparency=!surface&&!sky;
         }
         void OnPreprocessModel()
         {

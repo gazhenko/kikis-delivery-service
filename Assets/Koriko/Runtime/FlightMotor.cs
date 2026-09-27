@@ -52,7 +52,13 @@ namespace Koriko
                     var diff=destination-transform.position;
                     desired=Vector3.ClampMagnitude(new Vector3(diff.x,0,diff.z)*2,6);
                     desired.y=Mathf.Clamp(diff.y*1.8f,-6,4);
-                    if(new Vector2(diff.x,diff.z).magnitude<1.5f&&Mathf.Abs(diff.y)<.3f){approach=null;desired=Vector3.down*1.5f;}
+                    if(new Vector2(diff.x,diff.z).magnitude<1.5f&&Mathf.Abs(diff.y)<.7f)
+                    {
+                        desired.y=-1.8f;
+                        // Keep descending until the controller actually reaches the floor.
+                        // Ending on proximity alone leaves the broom hovering above it.
+                        if(Grounded)approach=null;
+                    }
                 }
             }
             bool floor=Physics.SphereCast(transform.position+Vector3.up*.7f,.25f,Vector3.down,out var hit,.95f,1<<8,QueryTriggerInteraction.Ignore);

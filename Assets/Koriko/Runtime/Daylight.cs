@@ -13,11 +13,12 @@ namespace Koriko
         {
             float phase=playing?(float)(rules.State.elapsed%Rules.CycleSeconds/Rules.CycleSeconds):.18f;
             float altitude=Mathf.Sin(phase*Mathf.PI*2);
-            float daylight=Mathf.SmoothStep(0,1,Mathf.Clamp01((altitude+.13f)*1.8f));
+            float daylight=Mathf.SmoothStep(0,1,Mathf.Clamp01((altitude+.23f)*2.15f));
             Color sky=Color.Lerp(nightSky,daySky,daylight);
             float sunset=(1-Mathf.Abs(altitude)*5)*daylight;
             sky=Color.Lerp(sky,new Color(.83f,.64f,.52f),Mathf.Clamp01(sunset)*.6f);
             Shader.SetGlobalFloat("_KorikoDaylight",daylight);
+            Shader.SetGlobalColor("_KorikoHorizonColor",sky.linear);
             RenderSettings.fog=true;RenderSettings.fogMode=FogMode.Linear;RenderSettings.fogStartDistance=115;RenderSettings.fogEndDistance=390;
             RenderSettings.fogColor=sky;RenderSettings.ambientLight=Color.Lerp(new Color(.22f,.28f,.43f),new Color(.7f,.75f,.71f),daylight);
             if(Camera)Camera.backgroundColor=sky;

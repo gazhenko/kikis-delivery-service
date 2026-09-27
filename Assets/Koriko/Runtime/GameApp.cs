@@ -30,7 +30,7 @@ namespace Koriko
                     HasSave=Rules.Restore(JsonUtility.FromJson<State>(File.ReadAllText(SavePath)));
             }
             catch(Exception e){Debug.LogWarning("Save could not be read: "+e.Message);}
-            Application.targetFrameRate=60;
+            QualitySettings.vSyncCount=0;Application.targetFrameRate=60;
             Motor.Warp(HasSave?Rules.State.position:Catalog.Home.Landing);
             if(Hud)Hud.Initialize(this);
         }

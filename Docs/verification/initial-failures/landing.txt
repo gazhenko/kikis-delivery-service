@@ -1,0 +1,6 @@
+PASS Collect bakery parcel
+FAIL Landing blocked at clock
+Renderer: Apple M1 Pro / Metal
+Resolution: 1440 x 900
+Mean frame time across this automated route: 7.02 ms
+Synthetic keyboard input; this does not establish physical controller or human playtest quality.

@@ -85,7 +85,9 @@ namespace Koriko.Editor
                 else GameObjectUtility.SetStaticEditorFlags(mesh.gameObject,StaticEditorFlags.BatchingStatic|StaticEditorFlags.OccluderStatic|StaticEditorFlags.OccludeeStatic);
             }
             if(colliders<40)throw new InvalidOperationException("Authored collision meshes are missing.");
-            var camera=new GameObject("Main camera").AddComponent<Camera>();camera.tag="MainCamera";camera.nearClipPlane=.1f;camera.farClipPlane=800;camera.clearFlags=CameraClearFlags.SolidColor;camera.fieldOfView=52;
+            var sky=Material("PaintedSky",Shader.Find("Koriko/PaintedSky"));
+            sky.SetTexture("_MainTex",AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"PaintedSky.png"));RenderSettings.skybox=sky;
+            var camera=new GameObject("Main camera").AddComponent<Camera>();camera.tag="MainCamera";camera.nearClipPlane=.1f;camera.farClipPlane=800;camera.clearFlags=CameraClearFlags.Skybox;camera.fieldOfView=52;
             camera.gameObject.AddComponent<AudioListener>();camera.gameObject.AddComponent<UniversalAdditionalCameraData>();
             var brain=camera.gameObject.AddComponent<CinemachineBrain>();brain.UpdateMethod=CinemachineBrain.UpdateMethods.LateUpdate;
             var orbit=new GameObject("Camera orbit target").transform;orbit.position=new Vector3(-113,1.6f,9);orbit.rotation=Quaternion.Euler(12,85,0);
@@ -97,8 +99,9 @@ namespace Koriko.Editor
             var motor=player.AddComponent<FlightMotor>();motor.CameraOrbit=orbit;
             var visual=new GameObject("Flight pose").transform;visual.SetParent(player.transform,false);visual.localRotation=Quaternion.Euler(0,85,0);motor.Visual=visual;
             var riderAsset=AssetDatabase.LoadAssetAtPath<GameObject>(Art+"KikiAndJiji.fbx");if(!riderAsset)throw new InvalidOperationException("Missing Kiki/Jiji model.");
-            var rider=(GameObject)PrefabUtility.InstantiatePrefab(riderAsset);rider.transform.SetParent(visual,false);
-            rider.transform.localRotation=world.transform.rotation;rider.transform.localScale=world.transform.localScale;
+            var rider=(GameObject)PrefabUtility.InstantiatePrefab(riderAsset);
+            AlignAnchors(rider.transform,new[]{"RiderAnchor_Origin","RiderAnchor_Right","RiderAnchor_Up","RiderAnchor_Forward"},new[]{Vector3.zero,Vector3.right,Vector3.up,Vector3.forward});
+            rider.transform.SetParent(visual,false);
             ApplyMaterials(rider,materials);AddCharacterInk(rider);
             foreach(var t in rider.GetComponentsInChildren<Transform>())t.gameObject.layer=9;
             rider.AddComponent<RiderPerformance>().Motor=motor;
@@ -109,6 +112,7 @@ namespace Koriko.Editor
             var canvas=canvasObject.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;
             var scaler=canvasObject.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,800);scaler.matchWidthOrHeight=.5f;
             var hud=canvasObject.AddComponent<GameHud>();hud.Font=AssetDatabase.LoadAssetAtPath<Font>(Art+"Fonts/AlegreyaSans-Regular.ttf");hud.Bold=AssetDatabase.LoadAssetAtPath<Font>(Art+"Fonts/AlegreyaSans-Bold.ttf");hud.Icons=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"ItemIcons.png");app.Hud=hud;
+            hud.Paper=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"PaintedSurfaces.png");
             var events=new GameObject("Keyboard and controller UI",typeof(EventSystem));events.AddComponent<InputSystemUIInputModule>().AssignDefaultActions();
             var flock=new GameObject("Town crows").AddComponent<CrowFlock>();flock.App=app;flock.Material=materials["Ink"];
             Physics.SyncTransforms();
@@ -176,12 +180,17 @@ namespace Koriko.Editor
         }
         static void NormalizeWorld(Transform root)
         {
-            string[] ids={"bakery","clock","harbor","airship"};var source=new Vector3[4];var target=new Vector3[4];
+            string[] ids={"bakery","clock","harbor","airship"};var target=new Vector3[4];
+            for(int i=0;i<4;i++){var p=Catalog.FindDestination(ids[i]).Landing;target[i]=new Vector3((float)p.x,(float)p.y,(float)p.z);}
+            AlignAnchors(root,ids.Select(id=>"Anchor_"+id).ToArray(),target);
+        }
+        static void AlignAnchors(Transform root,string[] names,Vector3[] target)
+        {
+            var source=new Vector3[4];
             var nodes=root.GetComponentsInChildren<Transform>();
             for(int i=0;i<4;i++)
             {
-                var node=nodes.FirstOrDefault(t=>t.name=="Anchor_"+ids[i]);if(!node)throw new InvalidOperationException("Missing world anchor "+ids[i]);source[i]=node.position;
-                var p=Catalog.FindDestination(ids[i]).Landing;target[i]=new Vector3((float)p.x,(float)p.y,(float)p.z);
+                var node=nodes.FirstOrDefault(t=>t.name==names[i]);if(!node)throw new InvalidOperationException("Missing import anchor "+names[i]);source[i]=node.position;
             }
             Matrix4x4 Basis(Vector3[] p)
             {
@@ -190,10 +199,9 @@ namespace Koriko.Editor
             var corrected=Basis(target)*Basis(source).inverse*root.localToWorldMatrix;
             Vector3 x=corrected.GetColumn(0),y=corrected.GetColumn(1),z=corrected.GetColumn(2);
             root.position=corrected.GetColumn(3);root.rotation=Quaternion.LookRotation(z.normalized,y.normalized);root.localScale=new Vector3(x.magnitude*(corrected.determinant<0?-1:1),y.magnitude,z.magnitude);
-            foreach(var id in ids)
+            for(int i=0;i<4;i++)
             {
-                var p=Catalog.FindDestination(id).Landing;var expected=new Vector3((float)p.x,(float)p.y,(float)p.z);
-                if(Vector3.Distance(nodes.First(t=>t.name=="Anchor_"+id).position,expected)>.025f)throw new InvalidOperationException("FBX anchor alignment failed at "+id);
+                if(Vector3.Distance(nodes.First(t=>t.name==names[i]).position,target[i])>.025f)throw new InvalidOperationException("FBX anchor alignment failed at "+names[i]);
             }
         }
     }

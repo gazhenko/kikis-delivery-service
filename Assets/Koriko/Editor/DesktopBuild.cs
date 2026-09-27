@@ -30,7 +30,8 @@ namespace Koriko.Editor
         }
         static void Build(BuildTarget target,string path)
         {
-            SceneBuilder.Ensure();Directory.CreateDirectory(Path.GetDirectoryName(path));
+            // This prototype scene is generated from authored source; include the latest art/camera setup.
+            SceneBuilder.Build();Directory.CreateDirectory(Path.GetDirectoryName(path));
             var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{SceneBuilder.ScenePath},locationPathName=path,target=target,options=BuildOptions.Development});
             if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Desktop build failed: "+report.summary.result);
             Debug.Log("KORIKO_BUILD_READY "+Path.GetFullPath(path));

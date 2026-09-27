@@ -11,12 +11,15 @@ namespace Koriko
         public Font Font;
         public Font Bold;
         public Texture2D Icons;
+        public Texture2D Paper;
         public GameApp App { get; private set; }
         public bool PanelOpen => panel != null;
         readonly Color ink=new Color(.19f,.24f,.24f),paper=new Color(.97f,.93f,.83f,.96f),accent=new Color(.68f,.31f,.23f);
         Sprite[] icons;
+        Sprite paperSprite;
         RectTransform root,panel,rows;
-        Text clock,money,energyText,foodText,jobText,prompt,notice;
+        Text clock,money,energyText,foodText,jobText,prompt,notice,controls,bakeryStatus;
+        RectTransform promptCard,noticeCard;
         Image energy,food,fade;
         GameObject flightHud;
         ScrollRect activeScroll;
@@ -31,6 +34,7 @@ namespace Koriko
             App=app;root=(RectTransform)transform;
             if(!Font)Font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");if(!Bold)Bold=Font;
             icons=new Sprite[16];
+            if(Paper)paperSprite=Sprite.Create(Paper,new Rect(2,2,Paper.width/4f-4,Paper.height/4f-4),new Vector2(.5f,.5f));
             if(Icons)for(int i=0;i<16;i++)icons[i]=Sprite.Create(Icons,new Rect((i%4)*Icons.width/4f,(3-i/4)*Icons.height/4f,Icons.width/4f,Icons.height/4f),new Vector2(.5f,.5f));
             var hud=Rect("Flight HUD",root,Vector2.zero,Vector2.one,Vector2.zero,Vector2.zero);hud.offsetMin=Vector2.zero;hud.offsetMax=Vector2.zero;flightHud=hud.gameObject;
             var time=Panel("Clock",hud,new Vector2(0,1),new Vector2(18,-18),new Vector2(242,62));
@@ -48,9 +52,14 @@ namespace Koriko
             Label(map,"KORIKO   ·   N ↑",new Vector2(13,-9),new Vector2(202,23),16,true);
             var mapRect=Rect("Town plan",map,new Vector2(0,1),new Vector2(0,1),new Vector2(13,-36),new Vector2(200,194));
             mapRect.gameObject.AddComponent<TownMap>().App=App;
-            prompt=Label(hud,"",new Vector2(0,130),new Vector2(620,44),21,true,new Vector2(.5f,0));prompt.alignment=TextAnchor.MiddleCenter;
-            notice=Label(hud,"",new Vector2(0,76),new Vector2(670,50),20,false,new Vector2(.5f,0));notice.alignment=TextAnchor.MiddleCenter;
-            var controls=Label(hud,"WASD fly   ·   Space / Ctrl rise & descend   ·   Shift boost   ·   E land / deliver   ·   Tab bakery",new Vector2(0,18),new Vector2(750,35),15,false,new Vector2(.5f,0));controls.alignment=TextAnchor.MiddleCenter;
+            promptCard=Panel("Landing prompt",hud,new Vector2(.5f,0),new Vector2(0,142),new Vector2(500,42));
+            prompt=Label(promptCard,"",new Vector2(12,-4),new Vector2(476,34),21,true);prompt.alignment=TextAnchor.MiddleCenter;
+            noticeCard=Panel("Delivery notice",hud,new Vector2(.5f,0),new Vector2(0,78),new Vector2(500,54));
+            notice=Label(noticeCard,"",new Vector2(12,-5),new Vector2(476,44),19);notice.alignment=TextAnchor.MiddleCenter;
+            var controlCard=Panel("Flight controls",hud,Vector2.zero,new Vector2(328,18),new Vector2(934,46));
+            controlCard.anchorMax=new Vector2(1,0);controlCard.offsetMin=new Vector2(328,18);controlCard.offsetMax=new Vector2(-18,64);
+            controls=Label(controlCard,"",new Vector2(12,-5),new Vector2(910,36),15);controls.alignment=TextAnchor.MiddleCenter;
+            controls.rectTransform.anchorMax=new Vector2(1,1);controls.rectTransform.offsetMin=new Vector2(12,-41);controls.rectTransform.offsetMax=new Vector2(-12,-5);
             flightHud.SetActive(false);
             ShowTitle();
             var shade=Rect("Sleep transition",root,Vector2.zero,Vector2.one,Vector2.zero,Vector2.zero);shade.offsetMin=Vector2.zero;shade.offsetMax=Vector2.zero;
@@ -63,7 +72,7 @@ namespace Koriko
         }
         RectTransform Panel(string name,Transform parent,Vector2 anchor,Vector2 pos,Vector2 size)
         {
-            var r=Rect(name,parent,anchor,anchor,pos,size);var image=r.gameObject.AddComponent<Image>();image.color=paper;
+            var r=Rect(name,parent,anchor,anchor,pos,size);var image=r.gameObject.AddComponent<Image>();image.sprite=paperSprite;image.color=paperSprite?new Color(1,1,1,.97f):paper;
             var outline=r.gameObject.AddComponent<Outline>();outline.effectColor=new Color(.31f,.32f,.27f,.3f);outline.effectDistance=new Vector2(1,-1);return r;
         }
         Text Label(Transform parent,string value,Vector2 pos,Vector2 size,int fontSize=20,bool bold=false,Vector2? anchor=null)
@@ -90,7 +99,7 @@ namespace Koriko
             b.onClick.AddListener(()=>action());return b;
         }
         void Focus(Button button){if(button&&EventSystem.current)EventSystem.current.SetSelectedGameObject(button.gameObject);}
-        public void ClosePanel(){if(panel)Destroy(panel.gameObject);panel=null;rows=null;activeScroll=null;lastSelection=null;if(EventSystem.current)EventSystem.current.SetSelectedGameObject(null);}
+        public void ClosePanel(){if(panel)Destroy(panel.gameObject);panel=null;rows=null;bakeryStatus=null;activeScroll=null;lastSelection=null;if(EventSystem.current)EventSystem.current.SetSelectedGameObject(null);}
 
         void ShowTitle()
         {
@@ -108,12 +117,17 @@ namespace Koriko
         public void RefreshPanel(){if(panel&&rows)BuildBakery();}
         void BuildBakery()
         {
-            ClosePanel();panel=Panel("Bakery board",root,new Vector2(0,1),new Vector2(18,-151),new Vector2(604,560));
+            ClosePanel();panel=Panel("Bakery board",root,new Vector2(0,1),new Vector2(18,-151),new Vector2(604,530));
+            // Reserve the vitality meter below the board at every window aspect ratio.
+            panel.anchorMin=Vector2.zero;panel.anchorMax=new Vector2(0,1);
+            panel.offsetMin=new Vector2(18,129);panel.offsetMax=new Vector2(622,-151);
             Label(panel,"Osono’s bakery",new Vector2(20,-13),new Vector2(365,37),27,true);
             Button(panel,"Fly",new Vector2(494,-14),new Vector2(88,34),ClosePanel);
             string[] tabs={"Deliveries","Pantry","Kitchen","Broom"};
             for(int i=0;i<4;i++){int index=i;var button=Button(panel,tabs[i],new Vector2(18+i*145,-62),new Vector2(136,38),()=>{tab=index;BuildBakery();});if(i==tab)button.image.color=new Color(.84f,.72f,.52f);}
-            var viewport=Rect("Scroll",panel,new Vector2(0,1),new Vector2(0,1),new Vector2(15,-112),new Vector2(574,379));
+            var viewport=Rect("Scroll",panel,new Vector2(0,1),new Vector2(0,1),new Vector2(15,-112),new Vector2(574,349));
+            viewport.anchorMin=Vector2.zero;viewport.anchorMax=Vector2.one;
+            viewport.offsetMin=new Vector2(15,69);viewport.offsetMax=new Vector2(-15,-112);
             viewport.gameObject.AddComponent<Image>().color=new Color(1,1,1,.015f);viewport.gameObject.AddComponent<RectMask2D>();
             var scroll=viewport.gameObject.AddComponent<ScrollRect>();activeScroll=scroll;scroll.horizontal=false;scroll.movementType=ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=28;
             rows=Rect("Rows",viewport,new Vector2(0,1),new Vector2(1,1),Vector2.zero,Vector2.zero);rows.pivot=new Vector2(.5f,1);scroll.content=rows;scroll.viewport=viewport;
@@ -157,9 +171,12 @@ namespace Koriko
                     if(first==null&&b.interactable)first=b;
                 }
             }
-            Icon(panel,3,new Vector2(18,-511),32);
-            var rest=Button(panel,"Sleep · 8 hours",new Vector2(62,-509),new Vector2(179,35),App.Sleep,!rules.Cooking);
-            Label(panel,rules.Cooking?$"Cooking… {rules.State.cookingRemaining:0}s":"The clock keeps moving while you plan.",new Vector2(255,-514),new Vector2(330,31),16);
+            var restIcon=Icon(panel,3,new Vector2(18,-481),32).rectTransform;
+            restIcon.anchorMin=restIcon.anchorMax=Vector2.zero;restIcon.anchoredPosition=new Vector2(18,49);
+            var rest=Button(panel,"Sleep · 8 hours",new Vector2(62,-479),new Vector2(179,35),App.Sleep,!rules.Cooking);
+            var restRect=(RectTransform)rest.transform;restRect.anchorMin=restRect.anchorMax=Vector2.zero;restRect.anchoredPosition=new Vector2(62,51);
+            bakeryStatus=Label(panel,"",new Vector2(255,-484),new Vector2(330,31),16);
+            bakeryStatus.rectTransform.anchorMin=bakeryStatus.rectTransform.anchorMax=Vector2.zero;bakeryStatus.rectTransform.anchoredPosition=new Vector2(255,46);
             Focus(first??rest);
         }
         string Ingredients(Recipe r)
@@ -168,7 +185,7 @@ namespace Koriko
         }
         Button Row(int icon,string title,string detail,string action,Action onClick,bool enabled)
         {
-            var r=Rect("Request",rows,new Vector2(0,1),new Vector2(1,1),Vector2.zero,new Vector2(0,90));r.gameObject.AddComponent<LayoutElement>().preferredHeight=90;
+            var r=Rect(title,rows,new Vector2(0,1),new Vector2(1,1),Vector2.zero,new Vector2(0,90));r.gameObject.AddComponent<LayoutElement>().preferredHeight=90;
             r.gameObject.AddComponent<Image>().color=new Color(1,.98f,.90f,.65f);
             Icon(r,icon,new Vector2(9,-13),56);Label(r,title,new Vector2(76,-9),new Vector2(366,25),21,true);Label(r,detail,new Vector2(76,-36),new Vector2(353,46),15);
             return Button(r,action,new Vector2(447,-28),new Vector2(114,37),onClick,enabled);
@@ -176,12 +193,13 @@ namespace Koriko
         public void ToggleOptions()
         {
             if(PanelOpen){ClosePanel();return;}
-            panel=Panel("Flight settings",root,new Vector2(.5f,.5f),Vector2.zero,new Vector2(550,405));
+            panel=Panel("Flight settings",root,new Vector2(.5f,.5f),Vector2.zero,new Vector2(550,466));
             Label(panel,"Flight settings",new Vector2(25,-22),new Vector2(500,40),30,true);
             Label(panel,"WASD / left stick: fly\nSpace / A: rise       Ctrl / B: descend\nShift / right trigger: boost\nE / X: land, deliver, visit the bakery\nRight mouse drag / right stick: look around\nTab / Y: bakery or settings",new Vector2(25,-78),new Vector2(500,166),21);
             Button(panel,"Cozy",new Vector2(25,-265),new Vector2(238,44),()=>{App.Rules.SetDifficulty(Difficulty.Cozy);ClosePanel();});
             Button(panel,"Challenging",new Vector2(279,-265),new Vector2(246,44),()=>{App.Rules.SetDifficulty(Difficulty.Challenging);ClosePanel();});
             Focus(Button(panel,"Back to flying",new Vector2(25,-333),new Vector2(500,44),ClosePanel));
+            Button(panel,"Save & quit",new Vector2(25,-395),new Vector2(500,44),()=>{App.Save();Application.Quit();});
         }
         void Update()
         {
@@ -197,8 +215,11 @@ namespace Koriko
             var p=r.Active;
             jobText.text=p==null?"Your broom is light.\nPick up a delivery at the bakery.":Catalog.FindDestination(p.destination).Name+$"\n{Mathf.CeilToInt((float)(p.deadline-r.State.elapsed))}s · {r.State.position.HorizontalDistance(Catalog.FindDestination(p.destination).Landing):0} m";
             prompt.text=PanelOpen?"":r.CanDeliver?(App.Input.Controller?"X  ·  Deliver parcel":"E  ·  Deliver parcel"):r.AtHome?(App.Input.Controller?"X  ·  Visit Osono":"E  ·  Visit Osono"):App.Motor.Approaching?"Settling into the courtyard…":"";
+            promptCard.gameObject.SetActive(prompt.text.Length>0);
+            controls.text=App.Input.Controller?"Left stick fly  ·  A / B rise & descend  ·  RT boost  ·  X land / deliver  ·  Y menu":"WASD fly  ·  Space / Ctrl rise & descend  ·  Shift boost  ·  E land / deliver  ·  Right mouse look  ·  Tab menu";
             if(noticeId!=r.NoticeRevision){noticeId=r.NoticeRevision;noticeUntil=Time.unscaledTime+6;notice.text=r.Notice;}
-            notice.enabled=Time.unscaledTime<noticeUntil;
+            noticeCard.gameObject.SetActive(!PanelOpen&&Time.unscaledTime<noticeUntil&&!string.IsNullOrEmpty(notice.text));
+            if(bakeryStatus)bakeryStatus.text=r.Cooking?$"Cooking… {Mathf.CeilToInt((float)r.State.cookingRemaining)}s":"The clock keeps moving while you plan.";
             if(day!=r.Day||night!=r.IsNight||recipe!=r.State.recipeId){day=r.Day;night=r.IsNight;recipe=r.State.recipeId;RefreshPanel();}
         }
         void LateUpdate()

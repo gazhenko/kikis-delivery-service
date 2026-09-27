@@ -16,3 +16,5 @@ Tools/cache/
 art-source/*.blend1
 Tools/__pycache__/
 *.pyc
+Assets/Resources/PerformanceTestRun*.json*
+Assets/Resources.meta

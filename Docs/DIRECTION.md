@@ -34,6 +34,6 @@ Film frames are references, not shipped textures. Asset provenance and generatio
 
 ## Acceptance checks
 
-Run actual Unity scene and native player: start a cozy game; take a job; follow rooflines to the destination; brake, descend and deliver; return; shop, cook and sleep; verify eight-hour skip; save/reload; try controller and challenging mode. Inspect all three destination approaches from cruise and landing heights. Inspect daylight, sunset and night. Record frame time and draw calls on named hardware. Targets are 60 fps at 1080p desktop; these are targets until measured.
+Run actual Unity scene and native player: start a cozy game; take a job; follow rooflines to the destination; brake, descend and deliver; return; shop, cook and sleep; verify eight-hour skip; save/reload; try controller and challenging mode. Inspect ground, garden and airship approaches from cruise and landing heights. Inspect daylight, sunset and night. Record frame time and draw calls on named hardware. The target is a stable 60 fps at 1080p desktop; the current automated run does not establish that target.
 
 Automated logic, source or asset checks do not establish real-time Unity appearance or performance. Keep verification status explicit in `VERIFICATION.md`.

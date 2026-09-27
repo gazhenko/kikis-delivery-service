@@ -46,6 +46,6 @@ Official references:
 - https://services.api.unity.com/unity/editor/release/v1/releases?version=6000.3.20f1&architecture=X86_64&platform=LINUX
 - https://support.mozilla.org/en-US/kb/install-firefox-linux
 
-The first editor invocation reached the licensing service and exited with `No valid Unity Editor license found. Please activate your license.` No project import or build succeeded before activation.
+The account holder accepted Hub terms and signed in on 2026-09-27. The editor subsequently resolved the Unity Personal entitlement, imported the project and exported a universal Mac application. The first import needed a restart after enabling the new Input System; that setting is now retained in version-controlled ProjectSettings.
 
-Use this machine for imports, compilation, tests and build storage. Software-rendered views can help inspect the scene, but are not performance evidence for a GPU-equipped desktop. The intended performance test is an exported Mac app on the user's Mac; that export path is not yet verified.
+Use this machine for imports, compilation, tests and build storage. Software-rendered views are not performance evidence for a GPU-equipped desktop. The exported Intel/ARM64 Mac app passed local code-signature verification and launched using Metal on the Mac's Apple M1 Pro. See `VERIFICATION.md` for traversal results and remaining checks.
