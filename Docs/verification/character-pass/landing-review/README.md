@@ -1,0 +1,1 @@
+These captures passed the original 18 gameplay assertions, but visual review rejected the shoe penetration after landing. The final runtime aligns the soles to the actual floor and the route now includes five shoe-contact checks. Final evidence is in ../flight/.

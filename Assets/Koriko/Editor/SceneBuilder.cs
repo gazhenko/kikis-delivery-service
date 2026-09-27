@@ -84,6 +84,11 @@ namespace Koriko.Editor
                 }
                 else
                 {
+                    // The painted paving and cargo deck sit above the broad
+                    // terrain/blockout colliders. Use their real visible mesh
+                    // as the walking surface so feet cannot disappear into it.
+                    if(new[]{"Streets__Paint_8","Streets__Paint_7","Landscape__Paint_7","Airship__Paint_6"}.Contains(mesh.name))
+                    {mesh.gameObject.AddComponent<MeshCollider>().sharedMesh=mesh.sharedMesh;colliders++;}
                     GameObjectUtility.SetStaticEditorFlags(mesh.gameObject,StaticEditorFlags.BatchingStatic|StaticEditorFlags.OccluderStatic|StaticEditorFlags.OccludeeStatic);
                     // Broad painted floors receive building/tree shadows. Casting them back
                     // onto their own near-coplanar triangles exposes a distracting seam grid.
@@ -109,6 +114,11 @@ namespace Koriko.Editor
             var rider=(GameObject)PrefabUtility.InstantiatePrefab(riderAsset);
             AlignAnchors(rider.transform,new[]{"RiderAnchor_Origin","RiderAnchor_Right","RiderAnchor_Up","RiderAnchor_Forward"},new[]{Vector3.zero,Vector3.right,Vector3.up,Vector3.forward});
             rider.transform.SetParent(visual,false);
+            var riderNodes=rider.GetComponentsInChildren<Transform>();
+            foreach(string part in new[]{"LeftForearm","RightForearm","LeftHand","RightHand","LeftGrip","RightGrip","LeftKnee","RightKnee","LeftEyePivot","RightEyePivot","Left sole","Right sole"})
+                if(!riderNodes.Any(t=>t.name==part))throw new InvalidOperationException("Character articulation is missing: "+part);
+            if(!rider.GetComponentsInChildren<SkinnedMeshRenderer>().Any(r=>Enumerable.Range(0,r.sharedMesh.blendShapeCount).Any(i=>r.sharedMesh.GetBlendShapeName(i).EndsWith("Flight cloth"))))
+                throw new InvalidOperationException("Character flight cloth shape did not survive FBX import.");
             var characterMaterials=MakeCharacterMaterials();
             ApplyMaterials(rider,characterMaterials);AddCharacterInk(rider);
             foreach(var t in rider.GetComponentsInChildren<Transform>())t.gameObject.layer=9;
@@ -128,7 +138,7 @@ namespace Koriko.Editor
             {
                 var start=new Vector3((float)d.Landing.x,(float)d.Landing.y+2,(float)d.Landing.z);
                 if(!Physics.Raycast(start,Vector3.down,out var hit,4,1<<8))throw new InvalidOperationException("No landing floor at "+d.Id);
-                if(Mathf.Abs(hit.point.y-(float)d.Landing.y)>1)throw new InvalidOperationException("Landing floor height mismatch at "+d.Id+": "+hit.point.y);
+                if(Mathf.Abs(hit.point.y-(float)d.Landing.y)>.075f)throw new InvalidOperationException("Landing floor height mismatch at "+d.Id+": "+hit.point.y+"; expected visible court near "+d.Landing.y);
             }
             EditorSceneManager.SaveScene(scene,ScenePath);EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(ScenePath,true)};
             AssetDatabase.SaveAssets();
@@ -189,19 +199,29 @@ namespace Koriko.Editor
         {
             var shader=Shader.Find("Koriko/CharacterCel");if(!shader)throw new InvalidOperationException("Character cel shader did not import.");
             var result=new Dictionary<string,Material>();
-            foreach(var entry in colors.Concat(Enumerable.Range(0,16).Select(i=>new KeyValuePair<string,Color>("Paint_"+i,palette[i]))))
+            var characterPaint=new Dictionary<string,Color>(colors){
+                ["Skin"]=new Color(.98f,.81f,.67f),["Hair"]=new Color(.145f,.105f,.12f),
+                ["Dress"]=new Color(.19f,.195f,.30f),["Bow"]=new Color(.80f,.065f,.145f),
+                ["BowShade"]=new Color(.53f,.045f,.11f),["Ink"]=new Color(.075f,.09f,.12f),
+                ["Eye"]=new Color(.075f,.065f,.08f),["White"]=new Color(.98f,.97f,.90f),
+                ["Shoe"]=new Color(.65f,.24f,.17f),["Blush"]=new Color(.965f,.715f,.64f),
+                ["HairShade"]=new Color(.085f,.067f,.088f),["DressShade"]=new Color(.13f,.14f,.23f),
+                ["Lip"]=new Color(.49f,.235f,.245f),["Sole"]=new Color(.19f,.18f,.21f),
+                ["Satchel"]=new Color(.84f,.36f,.29f)
+            };
+            foreach(var entry in characterPaint.Concat(Enumerable.Range(0,16).Select(i=>new KeyValuePair<string,Color>("Paint_"+i,palette[i]))))
             {
                 Color lit=entry.Value;
-                if(entry.Key=="Dress")lit=new Color(.22f,.26f,.40f);
-                if(entry.Key=="Hair")lit=new Color(.27f,.21f,.23f);
-                if(entry.Key=="Bow")lit=new Color(.84f,.22f,.24f);
-                if(entry.Key=="Ink")lit=new Color(.16f,.18f,.24f);
                 Color shadow=Color.Lerp(lit,new Color(.23f,.23f,.38f),.35f)*.76f;
-                if(entry.Key=="Skin")shadow=new Color(.76f,.47f,.39f);
+                if(entry.Key=="Skin")shadow=new Color(.81f,.62f,.53f);
+                if(entry.Key=="Hair")shadow=new Color(.068f,.060f,.083f);
+                if(entry.Key=="Dress")shadow=new Color(.115f,.13f,.21f);
+                if(entry.Key=="Bow")shadow=new Color(.56f,.047f,.11f);
+                if(entry.Key=="Eye"||entry.Key=="Blush"||entry.Key=="Lip")shadow=lit;
                 var m=Material("Cel_"+entry.Key,shader);m.SetColor("_Color",lit);m.SetColor("_ShadowTint",shadow);
                 m.SetColor("_LightTint",Color.Lerp(lit,new Color(.88f,.84f,.77f),.20f));
-                m.SetFloat("_Softness",.005f);m.SetFloat("_Face",entry.Key=="Skin"?.6f:0);
-                m.SetFloat("_Rim",entry.Key=="Hair"?.4f:entry.Key=="Dress"?.15f:0);
+                m.SetFloat("_Softness",.005f);m.SetFloat("_Face",entry.Key=="Skin"?.85f:0);
+                m.SetFloat("_Rim",0);
                 result.Add(entry.Key,m);
             }
             return result;
@@ -228,12 +248,20 @@ namespace Koriko.Editor
         static void AddCharacterInk(GameObject root)
         {
             var material=Material("CharacterOutline",Shader.Find("Koriko/Ink"));
-            material.SetFloat("_Thickness",1.25f);material.SetColor("_Color",new Color(.11f,.11f,.17f));
+            material.SetFloat("_Thickness",1.15f);material.SetColor("_Color",new Color(.105f,.08f,.13f));
+            bool Draw(string name)=>new[]{"Dress","Face","Bob hair","Jiji body","Jiji head","Left calf","Right calf","Left sleeve","Right sleeve","Left forearm","Right forearm","Left shoe","Right shoe","Satchel body"}.Contains(name)||name.StartsWith("Bow loop",StringComparison.Ordinal);
             foreach(var filter in root.GetComponentsInChildren<MeshFilter>().ToArray())
             {
-                if(!new[]{"Dress","Face","Bob hair","Bow loop","Jiji body","Jiji head","Left calf","Right calf"}.Any(n=>filter.name.StartsWith(n,StringComparison.Ordinal)))continue;
+                if(!Draw(filter.name))continue;
                 var outline=new GameObject("Ink edge");outline.transform.SetParent(filter.transform,false);outline.AddComponent<MeshFilter>().sharedMesh=filter.sharedMesh;
                 var r=outline.AddComponent<MeshRenderer>();r.sharedMaterial=material;r.shadowCastingMode=ShadowCastingMode.Off;
+            }
+            foreach(var source in root.GetComponentsInChildren<SkinnedMeshRenderer>().ToArray())
+            {
+                if(!Draw(source.name))continue;
+                var outline=new GameObject("Ink edge");outline.transform.SetParent(source.transform,false);
+                var r=outline.AddComponent<SkinnedMeshRenderer>();r.sharedMesh=source.sharedMesh;r.bones=source.bones;r.rootBone=source.rootBone;r.localBounds=source.localBounds;
+                r.sharedMaterial=material;r.shadowCastingMode=ShadowCastingMode.Off;
             }
         }
         static void NormalizeWorld(Transform root)

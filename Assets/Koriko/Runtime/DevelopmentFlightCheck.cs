@@ -19,7 +19,8 @@ namespace Koriko
     public sealed class DevelopmentFlightCheck : MonoBehaviour
     {
         public static bool ArtOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-art-check")>=0;
-        public static bool Requested => Debug.isDebugBuild&&(ArtOnly||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
+        public static bool CharacterOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-character-check")>=0;
+        public static bool Requested => Debug.isDebugBuild&&(ArtOnly||CharacterOnly||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
         GameApp app;
         Keyboard keyboard;
         Gamepad gamepad;
@@ -38,7 +39,7 @@ namespace Koriko
         }
         IEnumerator Start()
         {
-            output=Path.Combine(Application.persistentDataPath,ArtOnly?"art-check":"flight-check");Directory.CreateDirectory(output);
+            output=Path.Combine(Application.persistentDataPath,CharacterOnly?"character-check":ArtOnly?"art-check":"flight-check");Directory.CreateDirectory(output);
             drawCalls=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Draw Calls Count",1);
             triangles=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Triangles Count",1);
             app=FindFirstObjectByType<GameApp>();
@@ -49,6 +50,7 @@ namespace Koriko
             InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
             yield return null;
             app.Begin(Difficulty.Cozy);app.Hud.ClosePanel();
+            if(CharacterOnly){yield return CharacterViews();if(!failed)Finish();yield break;}
             if(ArtOnly){yield return ArtViews();if(!failed)Finish();yield break;}
             Check(app.Rules.Accept(app.Rules.State.jobs[0].id),"Collect bakery parcel");
             yield return Capture("01-bakery");
@@ -71,7 +73,9 @@ namespace Koriko
             if(failed)yield break;
             double before=app.Rules.State.elapsed;
             app.Sleep();
-            Check(app.Rules.State.elapsed-before>=Rules.SleepSeconds&&app.Rules.State.elapsed-before<Rules.SleepSeconds+.1,"Sleep advances eight hours");
+            // Decimal simulation timestamps can subtract to 99.99999999999999.
+            // Use a symmetric sub-microsecond tolerance instead of a strict lower bound.
+            Check(Math.Abs(app.Rules.State.elapsed-before-Rules.SleepSeconds)<1e-7,"Sleep advances eight hours");if(failed)yield break;
             Check(app.Rules.State.energy==100,"Sleep restores energy");
             yield return new WaitForSeconds(1.6f);
             app.Hud.ShowBakery();yield return Capture("06-return-and-rest");
@@ -88,6 +92,53 @@ namespace Koriko
                     if(material==null||material.shader==null||!material.shader.isSupported){Fail("Unsupported or missing scene material");yield break;}
             Check(true,"All scene material shaders supported on this renderer");
             Finish();
+        }
+        IEnumerator CharacterViews()
+        {
+            var camera=Camera.main;camera.GetComponent<CinemachineBrain>().enabled=false;
+            app.Hud.GetComponent<Canvas>().enabled=false;app.enabled=false;
+            camera.cullingMask=1<<9;camera.clearFlags=CameraClearFlags.SolidColor;
+            app.Rules.State.elapsed=75;
+            yield return CharacterShot("01-front",new Vector3(0,1.65f,5.4f),new Vector3(0,1.30f,0),33,camera);
+            yield return CharacterShot("02-three-quarter",new Vector3(3.6f,2.1f,5),new Vector3(0,1.30f,0),33,camera);
+            yield return CharacterShot("03-profile",new Vector3(5.4f,1.65f,0),new Vector3(0,1.30f,0),33,camera);
+            yield return CharacterShot("04-rear",new Vector3(-3.2f,1.9f,-5),new Vector3(0,1.30f,-.1f),33,camera);
+            yield return CharacterShot("05-portrait",new Vector3(1.35f,2.14f,3),new Vector3(0,2.08f,.03f),24,camera);
+            var rider=app.Motor.Visual.GetComponentInChildren<RiderPerformance>();
+            Check(rider&&rider.GripError<.02f,"Rest pose keeps both hands on the broom (within 2 cm)");if(failed)yield break;
+            Check(rider.HasFlightCloth,"Imported flight cloth shape is available");if(failed)yield break;
+            app.enabled=true;Keys(Key.Space);
+            float ceiling=app.Motor.transform.position.y+25;
+            float timeout=Time.realtimeSinceStartup+8;
+            while(app.Motor.transform.position.y<ceiling)
+            {
+                if(Time.realtimeSinceStartup>timeout){Fail("Character study takeoff blocked");yield break;}
+                yield return null;
+            }
+            Keys(Key.W,Key.LeftShift);yield return new WaitForSeconds(2);
+            app.enabled=false;Keys();
+            Check(!app.Motor.Grounded&&new Vector2(app.Motor.Velocity.x,app.Motor.Velocity.z).magnitude>20,"Character cruising pose uses the real flight motor above 20 m/s");if(failed)yield break;
+            yield return CharacterShot("06-flight-three-quarter",new Vector3(3.6f,2.1f,5),new Vector3(0,1.38f,-.1f),33,camera);
+            yield return CharacterShot("07-flight-profile",new Vector3(5.4f,1.65f,0),new Vector3(0,1.38f,-.1f),33,camera);
+            yield return CharacterShot("08-flight-rear",new Vector3(-3.2f,2.4f,-5),new Vector3(0,1.38f,-.1f),33,camera);
+            Check(rider.GripError<.02f,"Leaning flight pose keeps both hands on the broom (within 2 cm)");if(failed)yield break;
+            bool clothFollowsPose=true;int clothSurfaces=0;
+            foreach(var renderer in app.Motor.Visual.GetComponentsInChildren<SkinnedMeshRenderer>())
+                for(int i=0;i<renderer.sharedMesh.blendShapeCount;i++)
+                    if(renderer.sharedMesh.GetBlendShapeName(i).EndsWith("Flight cloth"))
+                    {clothSurfaces++;clothFollowsPose&=renderer.GetBlendShapeWeight(i)>95;}
+            Check(clothSurfaces>=2&&clothFollowsPose,"Flight cloth, drawn folds and contour follow the bent-knee pose");if(failed)yield break;
+            foreach(var renderer in app.Motor.Visual.GetComponentsInChildren<Renderer>())
+                foreach(var material in renderer.sharedMaterials)
+                    if(!material||!material.shader||!material.shader.isSupported){Fail("Unsupported character material");yield break;}
+            Check(true,"Character materials supported on this renderer");
+        }
+        IEnumerator CharacterShot(string name,Vector3 position,Vector3 target,float fov,Camera camera)
+        {
+            camera.transform.position=app.Motor.Visual.TransformPoint(position);
+            camera.transform.LookAt(app.Motor.Visual.TransformPoint(target));camera.fieldOfView=fov;
+            app.Lighting.Refresh(app.Rules,true);camera.backgroundColor=new Color(.86f,.85f,.80f);
+            yield return Capture(name);
         }
         IEnumerator ArtViews()
         {
@@ -162,6 +213,8 @@ namespace Koriko
             }
             yield return new WaitForSeconds(.4f);
             Check(app.Motor.Frame.Speed<2.5,"Land slowly at "+destination.Id);
+            var rider=app.Motor.Visual.GetComponentInChildren<RiderPerformance>();
+            Check(rider&&rider.GroundContactError<.035f&&Mathf.Abs(rider.GroundFloorHeight-(float)destination.Landing.y)<.075f,"Shoes meet the visible landing court at "+destination.Id);if(failed)yield break;
         }
         IEnumerator CheckBakeryWithGamepad()
         {
@@ -234,11 +287,11 @@ namespace Koriko
             if(keyboard!=null){Keys();if(addedKeyboard)InputSystem.RemoveDevice(keyboard);}
             checks.Add("Renderer: "+SystemInfo.graphicsDeviceName+" / "+SystemInfo.graphicsDeviceType);
             checks.Add("Resolution: "+Screen.width+" x "+Screen.height);
-            checks.Add((ArtOnly?"Mean frame time during viewpoint captures (not a benchmark): ":"Mean frame time across this automated route: ")+(frames>0?frameTotal/frames*1000:0).ToString("F2")+" ms");
+            checks.Add((ArtOnly||CharacterOnly?"Mean frame time during viewpoint captures (not a benchmark): ":"Mean frame time across this automated route: ")+(frames>0?frameTotal/frames*1000:0).ToString("F2")+" ms");
             if(peakDrawCalls>0)checks.Add("Peak recorded draw calls: "+peakDrawCalls);
             if(peakTriangles>0)checks.Add("Peak recorded triangles: "+peakTriangles);
             drawCalls.Dispose();triangles.Dispose();
-            checks.Add(ArtOnly?"Fixed camera captures for visual inspection; not a traversal or input test.":"Synthetic keyboard and gamepad input; this does not establish physical controller or human playtest quality.");
+            checks.Add(CharacterOnly?"Native character study on a neutral background with synthetic takeoff input; not a route or performance benchmark.":ArtOnly?"Fixed camera captures for visual inspection; not a traversal or input test.":"Synthetic keyboard and gamepad input; this does not establish physical controller or human playtest quality.");
             File.WriteAllLines(Path.Combine(output,"result.txt"),checks);
             Debug.Log("KORIKO_FLIGHT_CHECK "+(failed?"FAILED":"PASSED")+" "+output);
             Application.Quit(failed?1:0);

@@ -9,7 +9,7 @@
 | `Assets/Koriko/Art/PaintedSurfaces.png` | Built-in image generation, 2026-09-27; prompt below | Sixteen related painted surface swatches, including paper for interface cards |
 | `Assets/Koriko/Art/PaintedSky.png` | Built-in image generation, 2026-09-27; prompt below | Panoramic cloud painting with a horizon blended into distance fog |
 | `Assets/Koriko/Art/KorikoNeighborhood.fbx` | Original project geometry, authored by `Tools/build_art.py` | Connected neighborhood, courts, gardens, quay and airship |
-| `Assets/Koriko/Art/KikiAndJiji.fbx` | Original project geometry, authored by `Tools/build_art.py` | Articulated prototype character and broom |
+| `Assets/Koriko/Art/KikiAndJiji.fbx` | Original project geometry, authored by `Tools/character_model.py`, exported by `Tools/build_art.py` | Film-referenced Kiki, Jiji, broom and shoulder bag; articulated limbs and flight cloth |
 | `art-source/*.blend` | Editable Blender 4.5.3 exports of the same source | Geometry and material editing |
 | `ItemIcons.png` | Existing browser project's `public/art/film-inventory-atlas.png` | Illustrated inventory and HUD icons |
 | `Portraits.png` | Existing browser project's `public/art/character-portraits.png` | Reserved for dialogue; currently unused |
@@ -42,10 +42,12 @@ Exact generation prompt:
 
 ## Material and model direction
 
-The environment shares a restricted palette and painted surface atlas. The [film pass](CEL_ART_PASS.md) introduces a separate character cel shader with authored lit/shadow colors and selective pixel-sized ink contours. The articulated character now has shaped cloth bow loops, tapered bangs, edited cheek normals, drawn facial/cloth accents and blink/lean poses held at 12 Hz. It remains a simplified prototype model, not a finished film-quality sculpt or a production skinned rig. Blender previews in `previews/` are source-art previews. Native Unity captures are kept separately under `verification/`.
+The environment shares a restricted palette and painted surface atlas. The [film pass](CEL_ART_PASS.md) introduced a separate character cel shader with authored lit/shadow colors and selective pixel-sized ink contours. The subsequent [character study](CHARACTER.md) rebuilt the face, eyes, continuous bob and fringe, ribbon, bow loops, loose smock, articulated limbs, red flats, bag and broom against specific official film stills. Face and hair normals keep cel shadows broad. Glossy rim bands are disabled; the palette uses dark navy cloth, almost-black hair, red ribbon and warm skin.
+
+The rig uses named transform pivots and a flight cloth blend shape. A two-joint arm solver keeps both hands on the broom while the torso leans, and the dress and drawn folds move over the bent legs. Ink fades at overlapping shoulder joins to avoid unwanted internal hatch marks. Blink, bow, head and leg poses are held at 12 Hz while controls and camera remain smooth. The editable source is original geometry; no film image is applied to the character. Blender previews in `previews/` are source-art previews. Native Unity captures are kept separately under `verification/`.
 
 The latest layout extends terrain beneath the distant trees and hills, connects the northern roads, and adds a park loop, orchard fencing and a small pasture with two cows. These are original project geometry, not canonical film landmarks. A painted cloud panorama now fills the sky, and night lighting warms the windows.
 
 The film pass adds gently shaped roof edges and dormers, a bakery gable, painted shop windows, illustrated location signs, balcony rails, and petal-shaped flowers. The Blender sources retain these details as editable geometry. Background materials now combine broad texture painting with authored vertex tones; character materials use explicitly chosen cel colors.
 
-Remaining art work includes character anatomy and expressions, distinctive film-location silhouettes, richer back gardens, ambient sound and proper movement/landing animation. The town layout is an authored interpretation rather than a canonical film map. Repeated frontages and simple foliage still read as procedural; matching the film needs bespoke art beyond changing the renderer.
+Remaining art work includes a character expression set and authored movement/landing animation, distinctive film-location silhouettes, richer back gardens and ambient sound. The town layout is an authored interpretation rather than a canonical film map. Repeated frontages and simple foliage still read as procedural; further environment work needs bespoke forms and placement beyond changing the renderer.

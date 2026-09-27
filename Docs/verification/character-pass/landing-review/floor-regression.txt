@@ -1,0 +1,6 @@
+Expected failing build before adding visible-surface collision:
+InvalidOperationException: Landing floor height mismatch at bakery: -8.715316E-06; expected visible court near 0.16
+
+The validation tolerance was tightened from 1 m to 0.075 m. The visible bakery and harbor courts top out at 0.20 m, clock paving at 0.16 m, Madame approach at 7.20 m, and the airship deck at 40.125 m. The original broad colliders were below these surfaces.
+
+The native sleep assertion also used an asymmetric exact lower bound. Reproducible arithmetic counterexample: round(80.003 + 100, 9) - 80.003 = 99.99999999999999. The assertion now requires absolute error below 1e-7 seconds; the sleep simulation is unchanged.

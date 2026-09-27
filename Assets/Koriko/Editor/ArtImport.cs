@@ -25,6 +25,7 @@ namespace Koriko.Editor
             var importer=(ModelImporter)assetImporter;
             importer.importCameras=false;importer.importLights=false;importer.importAnimation=false;
             importer.importNormals=ModelImporterNormals.Import;
+            importer.importBlendShapes=true;
             importer.importTangents=ModelImporterTangents.None;
             importer.meshCompression=ModelImporterMeshCompression.Off;
             importer.isReadable=false;importer.addCollider=false;

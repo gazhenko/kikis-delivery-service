@@ -613,144 +613,16 @@ def render_preview(name,pos,target,lens=50):
     bpy.data.objects.remove(camera,do_unlink=True);bpy.data.objects.remove(sun,do_unlink=True)
 
 def kiki():
-    global CHUNK
-    bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
-    CHUNK='Kiki';root=empty('KikiRig');body=empty('Body',(0,1.28,0),root)
-    # Independent import anchors: Unity may fold the single rig root differently
-    # from the neighborhood's multiple roots. Never reuse the world's correction.
-    for name,position in [('Origin',(0,0,0)),('Right',(1,0,0)),('Up',(0,1,0)),('Forward',(0,0,1))]:
-        empty('RiderAnchor_'+name,position,root)
-    # Parts are authored around named pivots for controllable flight poses.
-    def part(name,pos,size,material,parent=body):
-        obj=ellipsoid(name,pos,size,material,segments=32,rings=20)
-        bpy.context.view_layer.update()
-        matrix=obj.matrix_world.copy();obj.parent=parent;obj.matrix_world=matrix
-        return obj
-    def attach(obj,parent):
-        bpy.context.view_layer.update()
-        matrix=obj.matrix_world.copy();obj.parent=parent;obj.matrix_world=matrix;return obj
-    # A tailored bell dress: broad shoulders, slim waist, asymmetric flared hem.
-    rings=[(.72,.43,.33),(.85,.46,.34),(1.12,.31,.23),(1.38,.29,.22),(1.55,.36,.21),(1.66,.24,.16)]
-    verts=[]
-    for y,rx,rz in rings:
-        for i in range(24):
-            a=i*math.tau/24;wave=.02*math.cos(5*a)*(1 if y<1 else .2)
-            verts.append(((rx+wave)*math.cos(a),y+(.04*math.sin(a) if y<1 else 0),(rz+wave)*math.sin(a)))
-    faces=[]
-    for j in range(len(rings)-1):
-        for i in range(24):a=j*24+i;b=j*24+(i+1)%24;faces.append((a,b,b+24,a+24))
-    faces.append(tuple(reversed(range(24))));faces.append(tuple(range(120,144)))
-    dress=attach(mesh('Dress',verts,faces,'Dress'),body)
-    for p in dress.data.polygons:p.use_smooth=True
-    head=empty('Head',(0,1.84,.02));attach(head,body)
-    part('Neck',(0,1.67,.02),(.105,.15,.10),'Skin')
-    face=part('Face',(0,1.93,.055),(.275,.32,.235),'Skin',head)
-    for vertex in face.data.vertices:
-        if vertex.co.z<0:vertex.co.x*=1+vertex.co.z*.24
-    face.data.update()
-    # Simple cheek planes give one coherent cel shadow instead of spherical shading.
-    face.data.normals_split_custom_set_from_vertices([Vector((v.co.x*.65,v.co.y,v.co.z*.38)).normalized() for v in face.data.vertices])
-    part('Left ear',(-.274,1.95,.015),(.055,.08,.045),'Skin',head)
-    part('Right ear',(.274,1.95,.015),(.055,.08,.045),'Skin',head)
-    # Hair forms a bob around the back and temples, with individually shaped bangs.
-    hairverts=[];hairfaces=[]
-    for j in range(10):
-        polar=.06+j/9*2.08
-        for i in range(32):
-            a=i*math.tau/32
-            px=.302*math.sin(polar)*math.cos(a);pz=.284*math.sin(polar)*math.sin(a)
-            py=2.0+.30*math.cos(polar)
-            if pz>.09 and py<2.085:py=2.10+.035*math.sin(a*5)
-            hairverts.append((px,py,pz-.025))
-    for j in range(9):
-        for i in range(32):a=j*32+i;b=j*32+(i+1)%32;hairfaces.append((a,b,b+32,a+32))
-    hair=attach(mesh('Bob hair',hairverts,hairfaces,'Hair'),head)
-    for p in hair.data.polygons:p.use_smooth=True
-    for side in [-1,1]:part('Temple hair',(side*.252,1.95,.10),(.055,.12,.050),'Hair',head)
-    # Tapered, uneven bangs replace the prototype's row of round hair beads.
-    for x,y,z,w,slant in [(-.19,2.20,.202,.072,.018),(-.075,2.245,.249,.086,-.019),(.058,2.235,.253,.084,.026),(.183,2.20,.207,.070,.022)]:
-        front=[(x-w,y,z),(x+w,y+.014,z),(x+w*.6,y-.12,z+.023),(x+slant,y-.205,z+.028),(x-w*.65,y-.105,z+.031)]
-        verts=front+[(a,b,c-.036) for a,b,c in front]
-        faces=[(0,1,2,3,4),(9,8,7,6,5)]+[(i,(i+1)%5,(i+1)%5+5,i+5) for i in range(5)]
-        lock=attach(mesh('Swept hair lock',verts,faces,'Hair'),head)
-        for poly in lock.data.polygons:poly.use_smooth=True
-    for side in [-1,1]:
-        part('Eye white',(side*.112,1.985,.261),(.060,.065,.020),'White',head)
-        part('Brown iris',(side*.104,1.985,.279),(.026,.047,.011),'Eye',head)
-        part('Pupil',(side*.104,1.987,.290),(.014,.033,.005),'Ink',head)
-        part('Eye glint',(side*.104-.008,2.004,.295),(.007,.009,.003),'White',head)
-        attach(stroke('Upper eyelid',[(side*.112-.057,2.021,.278),(side*.112,2.047,.282),(side*.112+.057,2.023,.278)],.007,'Ink'),head)
-    part('Nose',(0,1.92,.299),(.027,.035,.025),'Skin',head)
-    attach(stroke('Quiet smile',[(-.030,1.845,.279),(0,1.840,.288),(.033,1.847,.279)],.005,'Eye'),head)
-    bow=empty('Bow',(0,2.3,.01));attach(bow,head)
-    part('Bow knot',(0,2.30,.015),(.065,.075,.065),'Bow',bow)
-    for side in [-1,1]:
-        outline=[(.025,2.30),(.18,2.49),(.38,2.51),(.40,2.30),(.29,2.21),(.10,2.265)]
-        verts=[(side*x,y,.026+.025*math.sin(x*6)) for x,y in outline]+[(side*x,y,-.045) for x,y in outline]
-        faces=[tuple(range(6)),tuple(reversed(range(6,12)))]+[(i,(i+1)%6,(i+1)%6+6,i+6) for i in range(6)]
-        loop=attach(mesh('Bow loop',verts,faces,'Bow'),bow)
-        bevel=loop.modifiers.new('Soft cloth corners','BEVEL');bevel.width=.018;bevel.segments=2
-        attach(stroke('Bow drawn fold',[(side*.055,2.30,.064),(side*.18,2.365,.068),(side*.33,2.425,.062)],.007,'BowShade'),bow)
-        attach(mesh('Bow tail',[(side*.04,2.29,.015),(side*.22,2.15,.023),(side*.20,2.245,.042)],[(0,1,2),(2,1,0)],'BowShade'),bow)
-    for side in [-1,1]:
-        attach(stroke('Dress drawn fold',[(side*.13,1.10,.220),(side*.18,.94,.274),(side*.205,.82,.301)],.006,'Ink'),body)
-    # Legs hang naturally beside the broom, hands reach the handle.
-    pivots={}
-    for side in [-1,1]:
-        label='Left' if side<0 else 'Right'
-        leg=empty(label+'Leg',(side*.20,.94,0));attach(leg,body);pivots[label+'Leg']=leg
-        attach(cylinder(label+' calf',(side*.24,.80,.08),(side*.27,.30,.05),.065,'Skin',vertices=24,radius2=.052),leg)
-        part(label+' shoe',(side*.27,.25,.115),(.085,.07,.16),'Shoe',leg)
-        arm=empty(label+'Arm',(side*.29,1.49,.01));attach(arm,body);pivots[label+'Arm']=arm
-        part(label+' sleeve',(side*.33,1.43,.06),(.15,.17,.14),'Dress',arm)
-        attach(cylinder(label+' forearm',(side*.38,1.35,.13),(side*.15,1.08,.54),.054,'Skin',vertices=24,radius2=.045),arm)
-        part(label+' hand',(side*.15,1.075,.54),(.065,.055,.065),'Skin',arm)
-    broom=empty('Broom');attach(broom,root)
-    attach(cylinder('Broom handle',(0,.97,-1.08),(0,1.07,1.33),.035,'Paint_6',vertices=12),broom)
-    strawverts=[];strawfaces=[]
-    for z,r in [(-.88,.05),(-1.35,.15),(-1.75,.24)]:
-        for i in range(24):
-            a=i*math.tau/24;strawverts.append((math.cos(a)*r,.94+math.sin(a)*r,z-.06*math.sin(a*5)))
-    for j in range(2):
-        for i in range(24):
-            a=j*24+i;b=j*24+(i+1)%24;strawfaces.append((a,b,b+24,a+24))
-    strawfaces.append(tuple(range(48,72)))
-    attach(mesh('Bound broom straw',strawverts,strawfaces,'Paint_15'),broom)
-    for i in range(25):
-        a=i*2.39996;r=.22*math.sqrt((i+.5)/25)
-        attach(cylinder('Broom straw',(0,.97,-.86),(math.cos(a)*r,.92+math.sin(a)*r,-1.75-r*.3),.024,'Gold',vertices=6,radius2=.008),broom)
-    attach(cylinder('Broom binding',(0,.97,-.98),(0,.97,-.88),.085,'Bow',vertices=12),broom)
-    # Jiji sits behind Kiki, with large pointed ears, a curved tail and bright eyes.
-    jiji=empty('Jiji',(0,1.13,-.69));attach(jiji,root)
-    part('Jiji body',(0,1.25,-.72),(.13,.19,.15),'Ink',jiji)
-    part('Jiji head',(0,1.49,-.68),(.14,.145,.115),'Ink',jiji)
-    for side in [-1,1]:
-        attach(mesh('Jiji ear',[(side*.04,1.59,-.70),(side*.145,1.76,-.72),(side*.15,1.52,-.64)],[(0,1,2),(2,1,0)],'Ink'),jiji)
-        part('Jiji eye',(side*.06,1.51,-.575),(.047,.052,.011),'White',jiji)
-        part('Jiji pupil',(side*.059,1.51,-.565),(.012,.035,.005),'Ink',jiji)
-    part('Jiji nose',(0,1.465,-.558),(.019,.013,.011),'Flower',jiji)
-    for side in [-1,1]:
-        attach(stroke('Jiji whisker',[(side*.07,1.465,-.573),(side*.18,1.475,-.59)],.003,'Ink'),jiji)
-    tail=[(0,1.14,-.83),(.14,1.10,-1.02),(.24,1.24,-1.1),(.22,1.39,-1.13),(.13,1.44,-1.10)]
-    curve=bpy.data.curves.new('Jiji curling tail','CURVE');curve.dimensions='3D';curve.resolution_u=8;curve.bevel_depth=.025;curve.bevel_resolution=3
-    spline=curve.splines.new('BEZIER');spline.bezier_points.add(len(tail)-1)
-    for point,position in zip(spline.bezier_points,tail):point.co=xyz(position);point.handle_left_type='AUTO';point.handle_right_type='AUTO'
-    tail_object=bpy.data.objects.new('Jiji curling tail',curve);bpy.context.collection.objects.link(tail_object)
-    bpy.ops.object.select_all(action='DESELECT');tail_object.select_set(True);bpy.context.view_layer.objects.active=tail_object;bpy.ops.object.convert(target='MESH')
-    tail_object=bpy.context.object;finish(tail_object,'Jiji curling tail','Ink');attach(tail_object,jiji)
-    head.scale*=.91
-    jiji.location.y+=.16
-    for obj in bpy.context.scene.objects:
-        if obj.type=='MESH':
-            if not obj.data.uv_layers:paint_uv(obj,.5)
-            paint_tones(obj,True)
-    export('KikiAndJiji')
-    render_preview('kiki-model',(3,2.4,4),(0,1.25,-.05),42)
-    render_preview('kiki-rear',(-3,2.7,-4),(0,1.25,-.05),42)
+    sys.path.insert(0,str(ROOT/'Tools'))
+    from character_model import build_character
+    build_character(globals())
 
 if '--character-only' not in sys.argv:
     world()
     resources=ROOT/'Assets/Koriko/Resources';resources.mkdir(parents=True,exist_ok=True)
     (resources/'KorikoLayout.json').write_text(json.dumps(dict(buildings=BUILDINGS,landings=CatalogDestinations),indent=2))
 kiki()
-print('ART_COMPLETE',len(BUILDINGS),'authored buildings; six delivery courts; articulated Kiki/Jiji; FBX and editable Blender sources')
+if '--character-only' in sys.argv:
+    print('CHARACTER_ART_COMPLETE: articulated Kiki/Jiji, flight cloth, FBX, editable Blender source and five angle previews')
+else:
+    print('ART_COMPLETE',len(BUILDINGS),'authored buildings; six delivery courts; articulated Kiki/Jiji; FBX and editable Blender sources')

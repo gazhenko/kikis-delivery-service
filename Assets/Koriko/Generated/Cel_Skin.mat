@@ -30,7 +30,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Emission: 0
-    - _Face: 0.6
+    - _Face: 0.85
     - _NormalFlatten: 0
     - _PaintScale: 1
     - _Rim: 0
@@ -41,8 +41,8 @@ Material:
     - _Wind: 0
     m_Colors:
     - _AtlasRect: {r: 0, g: 0, b: 1, a: 1}
-    - _Color: {r: 0.95, g: 0.73, b: 0.54, a: 1}
-    - _LightTint: {r: 0.936, g: 0.75200003, b: 0.586, a: 1}
-    - _ShadowTint: {r: 0.76, g: 0.47, b: 0.39, a: 1}
+    - _Color: {r: 0.98, g: 0.81, b: 0.67, a: 1}
+    - _LightTint: {r: 0.96000004, g: 0.816, b: 0.69, a: 1}
+    - _ShadowTint: {r: 0.81, g: 0.62, b: 0.53, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -1,6 +1,6 @@
 # Verification record — 2026-09-27
 
-This document records the first playable desktop prototype at commit `e773890`. The subsequent cel-rendering and painted-art pass has its own [verification record and native screenshots](verification/film-pass/README.md), including a fresh 18-check run at 1080p. The baseline results below remain unchanged for comparison.
+This document records the first playable desktop prototype at commit `e773890`. The subsequent [painted-art pass](verification/film-pass/README.md) records its own 18-check run. The latest [character rebuild and native screenshots](verification/character-pass/README.md) include six focused character checks and 23 route checks at 1080p, with added visible-floor contact assertions. The baseline results below remain unchanged for comparison.
 
 ## Build and hardware
 
