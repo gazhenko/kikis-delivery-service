@@ -1,0 +1,6 @@
+{
+  "name": "Koriko.Runtime",
+  "rootNamespace": "Koriko",
+  "references": ["Koriko.Core", "Unity.InputSystem", "Unity.Cinemachine", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime", "UnityEngine.UI"],
+  "autoReferenced": true
+}

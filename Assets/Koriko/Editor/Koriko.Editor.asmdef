@@ -1,0 +1,7 @@
+{
+  "name": "Koriko.Editor",
+  "rootNamespace": "Koriko.Editor",
+  "references": ["Koriko.Core", "Koriko.Runtime", "Unity.Cinemachine", "Unity.RenderPipelines.Universal.Runtime", "Unity.RenderPipelines.Core.Runtime", "Unity.InputSystem", "UnityEngine.UI"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

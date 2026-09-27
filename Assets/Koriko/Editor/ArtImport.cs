@@ -1,0 +1,31 @@
+using UnityEditor;
+using UnityEngine;
+
+namespace Koriko.Editor
+{
+    public sealed class ArtImport : AssetPostprocessor
+    {
+        void OnPreprocessTexture()
+        {
+            if(!assetPath.StartsWith("Assets/Koriko/Art/"))return;
+            var importer=(TextureImporter)assetImporter;
+            bool surface=assetPath.EndsWith("PaintedSurfaces.png");
+            importer.textureType=TextureImporterType.Default;
+            importer.sRGBTexture=true;importer.maxTextureSize=2048;
+            importer.mipmapEnabled=surface;importer.filterMode=FilterMode.Bilinear;
+            importer.wrapMode=TextureWrapMode.Clamp;importer.anisoLevel=surface?4:1;
+            importer.textureCompression=TextureImporterCompression.Uncompressed;
+            importer.alphaIsTransparency=!surface;
+        }
+        void OnPreprocessModel()
+        {
+            if(!assetPath.StartsWith("Assets/Koriko/Art/"))return;
+            var importer=(ModelImporter)assetImporter;
+            importer.importCameras=false;importer.importLights=false;importer.importAnimation=false;
+            importer.importNormals=ModelImporterNormals.Import;
+            importer.importTangents=ModelImporterTangents.None;
+            importer.meshCompression=ModelImporterMeshCompression.Off;
+            importer.isReadable=false;importer.addCollider=false;
+        }
+    }
+}
