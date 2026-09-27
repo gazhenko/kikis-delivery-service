@@ -19,6 +19,12 @@ namespace Koriko
             sky=Color.Lerp(sky,new Color(.83f,.64f,.52f),Mathf.Clamp01(sunset)*.6f);
             Shader.SetGlobalFloat("_KorikoDaylight",daylight);
             Shader.SetGlobalColor("_KorikoHorizonColor",sky.linear);
+            if(Camera)
+            {
+                // A separate foreground key preserves a drawn face from every flight angle.
+                Vector3 key=(-Camera.transform.forward*.65f+Camera.transform.right*.45f+Vector3.up*.8f).normalized;
+                Shader.SetGlobalVector("_KorikoCelLightDirection",key);
+            }
             RenderSettings.fog=true;RenderSettings.fogMode=FogMode.Linear;RenderSettings.fogStartDistance=115;RenderSettings.fogEndDistance=390;
             RenderSettings.fogColor=sky;RenderSettings.ambientLight=Color.Lerp(new Color(.22f,.28f,.43f),new Color(.7f,.75f,.71f),daylight);
             if(Camera)Camera.backgroundColor=sky;

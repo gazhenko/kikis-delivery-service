@@ -10,22 +10,19 @@ Shader "Koriko/Painted"
         _Softness("Shadow softness", Range(.005,.3)) = .12
         _Wind("Leaf movement", Range(0,1)) = 0
         _Emission("Window warmth", Range(0,2)) = 0
+        _LightTint("Sunlit paint", Color) = (1,.98,.87,1)
+        _PaintScale("Paint scale", Float) = 1
+        _ShadowStrength("Cast shadow paint", Range(0,1)) = .7
+        _NormalFlatten("Canopy normal simplification", Range(0,1)) = 0
+        _VertexPaint("Authored paint tones", Range(0,1)) = 1
+        _Face("Face", Float) = 0
+        _Rim("Accent", Float) = 0
     }
     SubShader
     {
         Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" }
         HLSLINCLUDE
-        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-        CBUFFER_START(UnityPerMaterial)
-            float4 _BaseMap_ST, _Color, _AtlasRect, _ShadowTint;
-            float _TextureWeight, _Softness, _Wind, _Emission;
-        CBUFFER_END
-        float3 PaintedWorldPosition(float3 positionOS)
-        {
-            float3 world=TransformObjectToWorld(positionOS);
-            world.x+=sin(world.z*.45+_Time.y*1.2)*sin(world.y*.8+_Time.y)*.065*_Wind;
-            return world;
-        }
+        #include "FilmCommon.hlsl"
         ENDHLSL
         Pass
         {
@@ -42,33 +39,37 @@ Shader "Koriko/Painted"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
-            float _KorikoDaylight;
-            struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
-            struct Varyings { float4 positionCS:SV_POSITION; float3 normalWS:TEXCOORD0; float2 uv:TEXCOORD1; float3 positionWS:TEXCOORD2; float fog:TEXCOORD3; UNITY_VERTEX_INPUT_INSTANCE_ID UNITY_VERTEX_OUTPUT_STEREO };
+            struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float4 color:COLOR; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            struct Varyings { float4 positionCS:SV_POSITION; float3 normalWS:TEXCOORD0; float2 uv:TEXCOORD1; float3 positionWS:TEXCOORD2; float fog:TEXCOORD3; float3 paint:TEXCOORD4; UNITY_VERTEX_INPUT_INSTANCE_ID UNITY_VERTEX_OUTPUT_STEREO };
             Varyings Vert(Attributes input)
             {
                 Varyings o; UNITY_SETUP_INSTANCE_ID(input); UNITY_TRANSFER_INSTANCE_ID(input,o); UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 float3 world=PaintedWorldPosition(input.positionOS.xyz);
                 o.positionWS=world; o.positionCS=TransformWorldToHClip(world);
                 o.normalWS=TransformObjectToWorldNormal(input.normalOS); o.uv=input.uv; o.fog=ComputeFogFactor(o.positionCS.z);
+                o.paint=lerp(float3(1,1,1),input.color.rgb,_VertexPaint);
                 return o;
             }
             half4 Frag(Varyings input):SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(input);
-                float2 mirrored=1-abs(frac(input.uv*.5)*2-1);
+                float2 mirrored=1-abs(frac(input.uv*_PaintScale*.5)*2-1);
                 float2 uv=_AtlasRect.xy+mirrored*_AtlasRect.zw;
                 half3 paint=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,uv).rgb;
-                half3 albedo=lerp(_Color.rgb,paint,_TextureWeight);
+                half3 albedo=lerp(_Color.rgb,paint,_TextureWeight)*input.paint;
                 Light sun=GetMainLight(TransformWorldToShadowCoord(input.positionWS));
-                half n=dot(normalize(input.normalWS),sun.direction)*.5+.5;
-                half shade=lerp(.12,.62,smoothstep(.35-_Softness,.35+_Softness,n));
-                shade=lerp(shade,1,smoothstep(.72-_Softness,.72+_Softness,n));
-                shade=lerp(.12,shade,sun.shadowAttenuation);
-                half3 coloredShade=lerp(_ShadowTint.rgb,half3(1.06,1.01,.91),shade);
-                half3 lightColor=lerp(half3(.26,.32,.52),half3(1,1,1),_KorikoDaylight);
+                float3 normal=normalize(lerp(input.normalWS,float3(0,1,0),_NormalFlatten));
+                float light=dot(normal,sun.direction);
+                // Broad paint marks modulate a shadow edge, rather than becoming surface noise.
+                float stroke=dot(paint,half3(.2126,.7152,.0722))-.5;
+                float shade=smoothstep(-.08-_Softness,.34+_Softness,light+stroke*.16);
+                float cast=smoothstep(.25,.72,sun.shadowAttenuation);
+                shade*=lerp(1,cast,_ShadowStrength);
+                half3 coloredShade=lerp(_ShadowTint.rgb,_LightTint.rgb,shade);
+                half3 lightColor=lerp(half3(.30,.41,.63),half3(1,1,1),_KorikoDaylight);
                 half3 color=albedo*coloredShade*lightColor;
-                color+=_Emission*half3(1,.65,.28)*(1-_KorikoDaylight);
+                float night=1-smoothstep(.15,.70,_KorikoDaylight);
+                color=lerp(color,half3(.86,.56,.25),saturate(_Emission*night));
                 return half4(MixFog(color,input.fog),1);
             }
             ENDHLSL

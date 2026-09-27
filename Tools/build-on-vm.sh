@@ -5,6 +5,10 @@ project_dir=$(cd -- "$(dirname -- "$0")/.." && pwd)
 bash "$project_dir/Tools/sync-to-vm.sh"
 ssh -o BatchMode=yes -o StrictHostKeyChecking=yes kiki-unity \
   'mkdir -p /home/jim/Projects/kikis-delivery-desktop/Logs && /home/jim/Unity/6000.3.20f1/Editor/Unity -batchmode -nographics -buildTarget StandaloneOSX -projectPath /home/jim/Projects/kikis-delivery-desktop -executeMethod Koriko.Editor.DesktopBuild.Mac -quit -logFile /home/jim/Projects/kikis-delivery-desktop/Logs/mac-build.log'
+# Unity can report a successful player export while a platform shader compiled to
+# its pink error fallback. Reject that export before replacing the local player.
+ssh -o BatchMode=yes -o StrictHostKeyChecking=yes kiki-unity \
+  'if grep -q "Shader error in" /home/jim/Projects/kikis-delivery-desktop/Logs/mac-build.log; then grep "Shader error in" /home/jim/Projects/kikis-delivery-desktop/Logs/mac-build.log; exit 1; fi'
 mkdir -p "$project_dir/Builds/mac"
 rsync -az kiki-unity:/home/jim/Projects/kikis-delivery-desktop/Builds/mac/ "$project_dir/Builds/mac/"
 # Preserve generated GUIDs and scene references without overwriting authored source.

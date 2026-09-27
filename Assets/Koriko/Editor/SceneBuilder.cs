@@ -27,8 +27,8 @@ namespace Koriko.Editor
         };
         static readonly Dictionary<string,Color> colors=new Dictionary<string,Color>{
             {"Ink",new Color(.075f,.089f,.112f)},{"Skin",new Color(.95f,.73f,.54f)},{"Hair",new Color(.105f,.073f,.064f)},
-            {"Dress",new Color(.095f,.10f,.17f)},{"Bow",new Color(.66f,.09f,.105f)},{"Shoe",new Color(.65f,.22f,.12f)},
-            {"White",new Color(.97f,.91f,.74f)},{"Eye",new Color(.26f,.12f,.075f)},{"Sea",new Color(.14f,.39f,.45f)},
+            {"Dress",new Color(.095f,.10f,.17f)},{"Bow",new Color(.66f,.09f,.105f)},{"BowShade",new Color(.57f,.12f,.18f)},{"Shoe",new Color(.65f,.22f,.12f)},
+            {"White",new Color(.97f,.91f,.74f)},{"Eye",new Color(.26f,.12f,.075f)},{"Sea",new Color(.24f,.53f,.57f)},
             {"Foam",new Color(.7f,.84f,.79f)},{"Leaf",new Color(.26f,.41f,.20f)},{"LeafLight",new Color(.44f,.56f,.28f)},
             {"Flower",new Color(.83f,.42f,.42f)},{"Lavender",new Color(.53f,.48f,.63f)},{"Gold",new Color(.88f,.65f,.24f)},
             {"Glass",new Color(.19f,.32f,.35f)},{"Distant",new Color(.34f,.48f,.49f)},{"Cloud",new Color(.92f,.94f,.86f)}
@@ -82,7 +82,14 @@ namespace Koriko.Editor
                     var visible=mesh.GetComponent<MeshRenderer>();if(visible)visible.enabled=false;
                     mesh.gameObject.AddComponent<MeshCollider>().sharedMesh=mesh.sharedMesh;colliders++;
                 }
-                else GameObjectUtility.SetStaticEditorFlags(mesh.gameObject,StaticEditorFlags.BatchingStatic|StaticEditorFlags.OccluderStatic|StaticEditorFlags.OccludeeStatic);
+                else
+                {
+                    GameObjectUtility.SetStaticEditorFlags(mesh.gameObject,StaticEditorFlags.BatchingStatic|StaticEditorFlags.OccluderStatic|StaticEditorFlags.OccludeeStatic);
+                    // Broad painted floors receive building/tree shadows. Casting them back
+                    // onto their own near-coplanar triangles exposes a distracting seam grid.
+                    if(mesh.name=="Landscape__Paint_9"||mesh.name=="Streets__Paint_8"||mesh.name=="Streets__Paint_7")
+                        mesh.GetComponent<Renderer>().shadowCastingMode=ShadowCastingMode.Off;
+                }
             }
             if(colliders<40)throw new InvalidOperationException("Authored collision meshes are missing.");
             var sky=Material("PaintedSky",Shader.Find("Koriko/PaintedSky"));
@@ -102,7 +109,8 @@ namespace Koriko.Editor
             var rider=(GameObject)PrefabUtility.InstantiatePrefab(riderAsset);
             AlignAnchors(rider.transform,new[]{"RiderAnchor_Origin","RiderAnchor_Right","RiderAnchor_Up","RiderAnchor_Forward"},new[]{Vector3.zero,Vector3.right,Vector3.up,Vector3.forward});
             rider.transform.SetParent(visual,false);
-            ApplyMaterials(rider,materials);AddCharacterInk(rider);
+            var characterMaterials=MakeCharacterMaterials();
+            ApplyMaterials(rider,characterMaterials);AddCharacterInk(rider);
             foreach(var t in rider.GetComponentsInChildren<Transform>())t.gameObject.layer=9;
             rider.AddComponent<RiderPerformance>().Motor=motor;
             var sun=new GameObject("Painted afternoon sun").AddComponent<Light>();sun.type=LightType.Directional;sun.shadows=LightShadows.Soft;sun.shadowStrength=.65f;sun.shadowBias=.08f;sun.shadowNormalBias=.3f;
@@ -112,9 +120,9 @@ namespace Koriko.Editor
             var canvas=canvasObject.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;
             var scaler=canvasObject.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,800);scaler.matchWidthOrHeight=.5f;
             var hud=canvasObject.AddComponent<GameHud>();hud.Font=AssetDatabase.LoadAssetAtPath<Font>(Art+"Fonts/AlegreyaSans-Regular.ttf");hud.Bold=AssetDatabase.LoadAssetAtPath<Font>(Art+"Fonts/AlegreyaSans-Bold.ttf");hud.Icons=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"ItemIcons.png");app.Hud=hud;
-            hud.Paper=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"PaintedSurfaces.png");
+            hud.Paper=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"PaintedFilmSurfaces.png");
             var events=new GameObject("Keyboard and controller UI",typeof(EventSystem));events.AddComponent<InputSystemUIInputModule>().AssignDefaultActions();
-            var flock=new GameObject("Town crows").AddComponent<CrowFlock>();flock.App=app;flock.Material=materials["Ink"];
+            var flock=new GameObject("Town crows").AddComponent<CrowFlock>();flock.App=app;flock.Material=characterMaterials["Ink"];
             Physics.SyncTransforms();
             foreach(var d in Catalog.Destinations)
             {
@@ -137,15 +145,64 @@ namespace Koriko.Editor
         static Dictionary<string,Material> MakeMaterials()
         {
             var shader=Shader.Find("Koriko/Painted");if(!shader)throw new InvalidOperationException("The painted shader did not import.");
-            var atlas=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"PaintedSurfaces.png");
+            var atlas=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"PaintedFilmSurfaces.png");
+            if(!atlas)throw new InvalidOperationException("Missing painted film surface atlas.");
             var result=new Dictionary<string,Material>();
             for(int i=0;i<16;i++)
             {
-                var m=Material("Paint_"+i,shader);m.SetTexture("_BaseMap",atlas);m.SetColor("_Color",palette[i]);m.SetVector("_AtlasRect",new Vector4(i%4*.25f+.002f,(3-i/4)*.25f+.002f,.246f,.246f));m.SetFloat("_TextureWeight",i==9||i==10?.4f:.65f);m.SetFloat("_Wind",i==10?1:0);result.Add(m.name,m);
+                var m=Material("Paint_"+i,shader);m.SetTexture("_BaseMap",atlas);m.SetColor("_Color",palette[i]);m.SetVector("_AtlasRect",new Vector4(i%4*.25f+.008f,(3-i/4)*.25f+.008f,.234f,.234f));
+                m.SetFloat("_TextureWeight",i==9?.42f:i==10?.38f:i<4?.55f:.75f);
+                m.SetFloat("_Wind",i==10?.6f:0);m.SetFloat("_PaintScale",1);m.SetFloat("_VertexPaint",1);
+                m.SetFloat("_NormalFlatten",i==10?.48f:0);m.SetFloat("_ShadowStrength",i==10?.3f:.72f);
+                m.SetFloat("_Softness",i==10?.17f:.09f);
+                m.SetColor("_ShadowTint",new Color(.66f,.72f,.79f));m.SetColor("_LightTint",new Color(1.08f,1.04f,.94f));
+                result.Add(m.name,m);
             }
             foreach(var entry in colors)
             {
-                var m=Material(entry.Key,shader);m.SetColor("_Color",entry.Value);m.SetFloat("_TextureWeight",0);m.SetFloat("_Softness",entry.Key=="Skin"||entry.Key=="Dress"?.035f:.12f);m.SetFloat("_Emission",entry.Key=="Glass"?.65f:0);result.Add(entry.Key,m);
+                var m=Material(entry.Key,entry.Key=="Sea"?Shader.Find("Koriko/PaintedSea"):shader);m.SetColor("_Color",entry.Value);
+                if(entry.Key!="Sea")
+                {
+                    m.SetFloat("_TextureWeight",0);m.SetFloat("_Softness",.12f);m.SetFloat("_PaintScale",1);m.SetFloat("_VertexPaint",1);
+                    m.SetFloat("_ShadowStrength",.6f);m.SetFloat("_NormalFlatten",entry.Key.StartsWith("Leaf")?.45f:0);
+                    m.SetColor("_ShadowTint",new Color(.64f,.71f,.79f));m.SetColor("_LightTint",new Color(1.05f,1.01f,.92f));
+                    m.SetFloat("_Emission",entry.Key=="Glass"?.85f:0);
+                }
+                result.Add(entry.Key,m);
+            }
+            var shopAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"ShopPaintings.png");
+            if(!shopAtlas)throw new InvalidOperationException("Missing shop paintings atlas.");
+            int[] boundaries={0,332,674,940,1254};
+            for(int i=0;i<8;i++)
+            {
+                int top=boundaries[i/2],bottom=boundaries[i/2+1];
+                var m=Material("Shop_"+i,shader);m.SetTexture("_BaseMap",shopAtlas);
+                m.SetVector("_AtlasRect",new Vector4(i%2*.5f+4/1254f,1-bottom/1254f+4/1254f,.5f-8/1254f,(bottom-top-8)/1254f));
+                m.SetFloat("_TextureWeight",1);m.SetFloat("_PaintScale",1);m.SetFloat("_VertexPaint",1);
+                m.SetFloat("_Softness",.16f);m.SetFloat("_ShadowStrength",.3f);m.SetFloat("_Emission",i<4?.08f:0);
+                m.SetColor("_ShadowTint",new Color(.82f,.85f,.88f));m.SetColor("_LightTint",new Color(1.04f,1.02f,.98f));
+                result.Add(m.name,m);
+            }
+            return result;
+        }
+        static Dictionary<string,Material> MakeCharacterMaterials()
+        {
+            var shader=Shader.Find("Koriko/CharacterCel");if(!shader)throw new InvalidOperationException("Character cel shader did not import.");
+            var result=new Dictionary<string,Material>();
+            foreach(var entry in colors.Concat(Enumerable.Range(0,16).Select(i=>new KeyValuePair<string,Color>("Paint_"+i,palette[i]))))
+            {
+                Color lit=entry.Value;
+                if(entry.Key=="Dress")lit=new Color(.22f,.26f,.40f);
+                if(entry.Key=="Hair")lit=new Color(.27f,.21f,.23f);
+                if(entry.Key=="Bow")lit=new Color(.84f,.22f,.24f);
+                if(entry.Key=="Ink")lit=new Color(.16f,.18f,.24f);
+                Color shadow=Color.Lerp(lit,new Color(.23f,.23f,.38f),.35f)*.76f;
+                if(entry.Key=="Skin")shadow=new Color(.76f,.47f,.39f);
+                var m=Material("Cel_"+entry.Key,shader);m.SetColor("_Color",lit);m.SetColor("_ShadowTint",shadow);
+                m.SetColor("_LightTint",Color.Lerp(lit,new Color(.88f,.84f,.77f),.20f));
+                m.SetFloat("_Softness",.005f);m.SetFloat("_Face",entry.Key=="Skin"?.6f:0);
+                m.SetFloat("_Rim",entry.Key=="Hair"?.4f:entry.Key=="Dress"?.15f:0);
+                result.Add(entry.Key,m);
             }
             return result;
         }
@@ -171,9 +228,10 @@ namespace Koriko.Editor
         static void AddCharacterInk(GameObject root)
         {
             var material=Material("CharacterOutline",Shader.Find("Koriko/Ink"));
+            material.SetFloat("_Thickness",1.25f);material.SetColor("_Color",new Color(.11f,.11f,.17f));
             foreach(var filter in root.GetComponentsInChildren<MeshFilter>().ToArray())
             {
-                if(!new[]{"Dress","Face","Bob hair","Bow loop"}.Any(n=>filter.name.StartsWith(n,StringComparison.Ordinal)))continue;
+                if(!new[]{"Dress","Face","Bob hair","Bow loop","Jiji body","Jiji head","Left calf","Right calf"}.Any(n=>filter.name.StartsWith(n,StringComparison.Ordinal)))continue;
                 var outline=new GameObject("Ink edge");outline.transform.SetParent(filter.transform,false);outline.AddComponent<MeshFilter>().sharedMesh=filter.sharedMesh;
                 var r=outline.AddComponent<MeshRenderer>();r.sharedMaterial=material;r.shadowCastingMode=ShadowCastingMode.Off;
             }

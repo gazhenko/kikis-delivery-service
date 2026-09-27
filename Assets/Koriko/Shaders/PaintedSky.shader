@@ -27,7 +27,11 @@ Shader "Koriko/PaintedSky"
             {
                 float3 direction=normalize(input.direction);
                 float2 uv=float2(atan2(direction.x,direction.z)/(2*PI)+.5,asin(clamp(direction.y,-1,1))/PI+.5);
-                half3 painted=SAMPLE_TEXTURE2D(_MainTex,sampler_MainTex,uv).rgb;
+                // atan2 wraps longitude from 1 to 0. The uncorrected derivative
+                // selects the coarsest mip along that seam, drawing a bright line.
+                float2 dx=ddx(uv),dy=ddy(uv);
+                dx.x-=round(dx.x);dy.x-=round(dy.x);
+                half3 painted=SAMPLE_TEXTURE2D_GRAD(_MainTex,sampler_MainTex,uv,dx,dy).rgb;
                 painted*=lerp(half3(.09,.14,.27),half3(1,1,1),_KorikoDaylight);
                 // The painted horizon meets the same atmospheric color as distant geometry.
                 float horizon=1-smoothstep(-.02,.19,direction.y);

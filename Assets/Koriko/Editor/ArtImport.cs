@@ -9,7 +9,7 @@ namespace Koriko.Editor
         {
             if(!assetPath.StartsWith("Assets/Koriko/Art/"))return;
             var importer=(TextureImporter)assetImporter;
-            bool surface=assetPath.EndsWith("PaintedSurfaces.png");
+            bool surface=assetPath.EndsWith("PaintedSurfaces.png")||assetPath.EndsWith("PaintedFilmSurfaces.png")||assetPath.EndsWith("ShopPaintings.png");
             bool sky=assetPath.EndsWith("PaintedSky.png");
             importer.textureType=TextureImporterType.Default;
             importer.sRGBTexture=true;importer.maxTextureSize=2048;

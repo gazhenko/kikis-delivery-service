@@ -1,5 +1,7 @@
 # Verification record — 2026-09-27
 
+This document records the first playable desktop prototype at commit `e773890`. The subsequent cel-rendering and painted-art pass has its own [verification record and native screenshots](verification/film-pass/README.md), including a fresh 18-check run at 1080p. The baseline results below remain unchanged for comparison.
+
 ## Build and hardware
 
 - Unity **6000.3.20f1**, URP **17.3.0**, Input System **1.17.0**, Cinemachine **3.1.7**. Unity Personal activation completed in the Ubuntu 24.04 Proxmox VM. Package resolution, C# compilation, shader compilation and the Mac export succeeded.

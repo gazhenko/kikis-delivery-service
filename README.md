@@ -10,11 +10,13 @@ Timed jobs, ingredient shopping, recipes, broom upgrades, crows, cozy/challengin
 
 ## Current status
 
-The Unity VM is licensed, the project compiles, and a universal Mac development build runs on Apple M1 Pro / Metal. The native player passed 18 automated checks at 1440 × 900 and 1920 × 1080. These cover a delivery, five destination landings, cooking, purchases, controller input, continuous menu time, sleep and save serialization. The independent core simulation has also passed 25 checks with .NET 8.
+The Unity VM is licensed, the project compiles, and a universal Mac development build runs on Apple M1 Pro / Metal. The latest painted-film pass adds character cel colors, selective ink contours, held animation poses, quieter painted scenery, illustrated shopfronts and graphic sea strokes. It passed all 18 native gameplay checks at 1920 × 1080, plus eight fixed art-view captures across noon, sunset and night. The route averaged 18.55 ms per frame (about 54 fps); this includes captures and menus, not a clean performance benchmark.
+
+The checks cover a delivery, five destination landings, cooking, purchases, controller input, continuous menu time, sleep and save serialization. The earlier prototype also passed at 1440 × 900, and the unchanged independent core simulation has passed 25 checks with .NET 8.
 
 The character, buildings and animation are still prototype art. This is a playable foundation for the desktop rebuild; it has not yet reached the requested hand-painted film quality. Audio and a physical-controller playtest remain outstanding.
 
-See [verification](Docs/VERIFICATION.md), [visual direction](Docs/DIRECTION.md), [asset provenance](Docs/ART.md) and [development VM](Docs/VM.md).
+See the [film-pass research and implementation](Docs/CEL_ART_PASS.md), [latest screenshots and verification](Docs/verification/film-pass/README.md), [baseline verification](Docs/VERIFICATION.md), [visual direction](Docs/DIRECTION.md), [asset provenance](Docs/ART.md) and [development VM](Docs/VM.md).
 
 ## Play the Mac build
 
@@ -66,6 +68,8 @@ blender --background --threads 4 --python Tools/build_art.py
 
 The core project does not need Unity. Blender generation rebuilds the two editable sources and FBX exports, then produces four preview PNGs in `Docs/previews/`. Run from this project directory. Do not regenerate source art over an artist's manual `.blend` edits without preserving those edits first.
 
-A development player accepts `--koriko-flight-check`. It creates synthetic keyboard and gamepad events to fly a delivery circuit with the real movement code and camera, checks bakery interactions, captures native screenshots, and writes `flight-check/result.txt` under Unity's persistent data directory. It exits nonzero on a failed check and never loads or writes the player's save. This runner has passed on the Mac; it complements a human/controller playtest. The final run's results and selected captures are in `Docs/verification/1920x1080/`.
+A development player accepts `--koriko-flight-check`. It creates synthetic keyboard and gamepad events to fly a delivery circuit with the real movement code and camera, checks bakery interactions, captures native screenshots, and writes `flight-check/result.txt` under Unity's persistent data directory. It exits nonzero on a failed check and never loads or writes the player's save. This runner has passed on the Mac; it complements a human/controller playtest. The latest run's results and captures are in `Docs/verification/film-pass/flight/`; the earlier prototype is retained in `Docs/verification/1920x1080/`.
+
+Use `--koriko-art-check` for eight repeatable art viewpoints, without gameplay assertions. This writes `art-check/` in the same persistent-data directory and also avoids player saves. `Tools/build-on-vm.sh` now rejects shader compiler errors before copying a player back from the VM.
 
 This first district has six delivery courts including home, rather than the previous region's 22 locations. Desktop is the current target; the original browser version remains the mobile/iPad route.

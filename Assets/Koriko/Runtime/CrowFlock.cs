@@ -1,5 +1,6 @@
 using Koriko.Core;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace Koriko
 {
@@ -27,7 +28,12 @@ namespace Koriko
         Transform Wing(Transform parent,int side)
         {
             var pivot=new GameObject(side<0?"Left wing":"Right wing").transform;pivot.SetParent(parent,false);pivot.localPosition=new Vector3(side*.13f,.05f,0);
-            Shape(pivot,PrimitiveType.Sphere,new Vector3(side*.36f,0,-.08f),new Vector3(.8f,.055f,.38f));return pivot;
+            var points=new[]{new Vector3(0,0,.1f),new Vector3(.3f,.025f,.17f),new Vector3(.65f,.02f,.12f),new Vector3(.84f,0,-.13f),new Vector3(.6f,0,-.1f),new Vector3(.74f,0,-.26f),new Vector3(.47f,0,-.19f),new Vector3(.5f,0,-.4f),new Vector3(.25f,0,-.29f),new Vector3(0,0,-.18f)};
+            var normals=new Vector3[points.Length];for(int i=0;i<points.Length;i++){points[i].x*=side;normals[i]=Vector3.up;}
+            var indices=new List<int>();for(int i=1;i<points.Length-1;i++){indices.AddRange(new[]{0,i,i+1,0,i+1,i});}
+            var mesh=new Mesh{name="Drawn feather silhouette",vertices=points,triangles=indices.ToArray(),normals=normals};mesh.RecalculateBounds();
+            pivot.gameObject.AddComponent<MeshFilter>().sharedMesh=mesh;pivot.gameObject.AddComponent<MeshRenderer>().sharedMaterial=Material;
+            return pivot;
         }
         void Update()
         {
@@ -43,7 +49,7 @@ namespace Koriko
                 var direction=target-birds[i].position;
                 birds[i].position=Vector3.MoveTowards(birds[i].position,target,dt*(chase?(rules.State.difficulty==Difficulty.Cozy?10:13.5f):4));
                 if(direction.sqrMagnitude>.01f)birds[i].rotation=Quaternion.Slerp(birds[i].rotation,Quaternion.LookRotation(direction),dt*6);
-                float flap=Mathf.Sin(Time.time*13+i)*38;
+                float flap=Mathf.Sin(Mathf.Floor(Time.time*12)/12*13+i)*38;
                 wingsLeft[i].localRotation=Quaternion.Euler(0,0,flap);wingsRight[i].localRotation=Quaternion.Euler(0,0,-flap);
                 if(chase&&Vector3.Distance(birds[i].position,player+Vector3.up)<1.6f)rules.CrowHit(App.Motor.Boosting);
             }

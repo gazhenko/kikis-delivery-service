@@ -4,6 +4,8 @@
 
 | Asset | Source | Role |
 | --- | --- | --- |
+| `Assets/Koriko/Art/PaintedFilmSurfaces.png` | Built-in image generation, 2026-09-27; [exact prompt](references/painted-film-atlas.md) | Current, quieter poster-color surfaces and interface paper |
+| `Assets/Koriko/Art/ShopPaintings.png` | Built-in image generation, 2026-09-27; [exact prompt](references/shop-paintings.md) | Painted interiors and signs mapped onto actual storefronts |
 | `Assets/Koriko/Art/PaintedSurfaces.png` | Built-in image generation, 2026-09-27; prompt below | Sixteen related painted surface swatches, including paper for interface cards |
 | `Assets/Koriko/Art/PaintedSky.png` | Built-in image generation, 2026-09-27; prompt below | Panoramic cloud painting with a horizon blended into distance fog |
 | `Assets/Koriko/Art/KorikoNeighborhood.fbx` | Original project geometry, authored by `Tools/build_art.py` | Connected neighborhood, courts, gardens, quay and airship |
@@ -40,8 +42,10 @@ Exact generation prompt:
 
 ## Material and model direction
 
-The environment shares a restricted palette and atlas. Characters use solid cel colors, selective expanded outlines and a transform hierarchy for head, limbs, bow and Jiji. The character is a simplified prototype model, not a finished film-quality sculpt or a production skinned rig. Blender previews in `previews/` are source-art previews. Native Unity captures in `verification/1920x1080/` show the tested material, lighting, UI and camera result on Metal.
+The environment shares a restricted palette and painted surface atlas. The [film pass](CEL_ART_PASS.md) introduces a separate character cel shader with authored lit/shadow colors and selective pixel-sized ink contours. The articulated character now has shaped cloth bow loops, tapered bangs, edited cheek normals, drawn facial/cloth accents and blink/lean poses held at 12 Hz. It remains a simplified prototype model, not a finished film-quality sculpt or a production skinned rig. Blender previews in `previews/` are source-art previews. Native Unity captures are kept separately under `verification/`.
 
 The latest layout extends terrain beneath the distant trees and hills, connects the northern roads, and adds a park loop, orchard fencing and a small pasture with two cows. These are original project geometry, not canonical film landmarks. A painted cloud panorama now fills the sky, and night lighting warms the windows.
 
-Remaining art work includes character anatomy and expressions, distinctive film-location silhouettes, hand-shaped roof details, richer back gardens, ambient sound and proper movement/landing animation. The town layout is an authored interpretation rather than a canonical film map. Repeated frontages and simple foliage still read as procedural; matching the film needs bespoke art beyond changing the renderer.
+The film pass adds gently shaped roof edges and dormers, a bakery gable, painted shop windows, illustrated location signs, balcony rails, and petal-shaped flowers. The Blender sources retain these details as editable geometry. Background materials now combine broad texture painting with authored vertex tones; character materials use explicitly chosen cel colors.
+
+Remaining art work includes character anatomy and expressions, distinctive film-location silhouettes, richer back gardens, ambient sound and proper movement/landing animation. The town layout is an authored interpretation rather than a canonical film map. Repeated frontages and simple foliage still read as procedural; matching the film needs bespoke art beyond changing the renderer.

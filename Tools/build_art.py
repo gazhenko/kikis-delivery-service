@@ -18,7 +18,7 @@ bpy.ops.object.select_all(action='SELECT')
 bpy.ops.object.delete(use_global=False)
 bpy.context.scene.unit_settings.system = 'METRIC'
 bpy.context.scene.unit_settings.scale_length = 1
-ATLAS = bpy.data.images.load(str(ART / 'PaintedSurfaces.png'))
+ATLAS = bpy.data.images.load(str(ART / 'PaintedFilmSurfaces.png'))
 MATERIALS = {}
 SHAPES = {}
 CHUNK = 'Town'
@@ -60,12 +60,27 @@ def mat(name, color, tile=None):
 for i in range(16): mat('Paint_'+str(i),(1,1,1),i)
 for name,color in {
     'Ink':(.075,.089,.112),'Skin':(.95,.73,.54),'Hair':(.105,.073,.064),
-    'Dress':(.095,.10,.17),'Bow':(.66,.09,.105),'Shoe':(.65,.22,.12),
+    'Dress':(.22,.26,.40),'Bow':(.84,.22,.24),'BowShade':(.57,.12,.18),'Shoe':(.65,.22,.12),
     'White':(.97,.91,.74),'Eye':(.26,.12,.075),'Sea':(.14,.39,.45),
     'Foam':(.7,.84,.79),'Leaf':(.26,.41,.20),'LeafLight':(.44,.56,.28),
     'Flower':(.83,.42,.42),'Lavender':(.53,.48,.63),'Gold':(.88,.65,.24),
     'Glass':(.19,.32,.35),'Distant':(.34,.48,.49),'Cloud':(.92,.94,.86)
 }.items(): mat(name,color)
+
+# The generated shop paintings have slightly unequal row heights; use inspected
+# pixel boundaries rather than letting neighboring artwork bleed into a window.
+SHOP_ROWS=[0,332,674,940,1254]
+SHOP_ATLAS=bpy.data.images.load(str(ART/'ShopPaintings.png'))
+for i in range(8):
+    m=mat('Shop_'+str(i),(.9,.86,.74));nodes=m.node_tree.nodes;links=m.node_tree.links
+    uv=nodes.new('ShaderNodeTexCoord');scale=nodes.new('ShaderNodeVectorMath');scale.operation='MULTIPLY'
+    top,bottom=SHOP_ROWS[i//2:i//2+2]
+    scale.inputs[1].default_value=(.5-8/1254,(bottom-top-8)/1254,1)
+    links.new(uv.outputs['UV'],scale.inputs[0])
+    offset=nodes.new('ShaderNodeVectorMath');offset.operation='ADD';offset.inputs[1].default_value=(i%2*.5+4/1254,1-bottom/1254+4/1254,0);links.new(scale.outputs[0],offset.inputs[0])
+    texture=nodes.new('ShaderNodeTexImage');texture.image=SHOP_ATLAS;links.new(offset.outputs[0],texture.inputs[0])
+    multiply=next(n for n in nodes if n.type=='MIX_RGB' and n.blend_type=='MULTIPLY')
+    links.new(texture.outputs['Color'],multiply.inputs[1])
 
 def finish(obj,name,material,parent=None):
     obj.name=name;obj.data.materials.append(MATERIALS[material])
@@ -114,6 +129,53 @@ def empty(name,pos=(0,0,0),parent=None):
     if parent:obj.parent=parent
     return obj
 
+def stroke(name,points,width,material,parent=None):
+    """An authored pen line in 3D, used sparingly at architectural/cloth seams."""
+    curve=bpy.data.curves.new(name,'CURVE');curve.dimensions='3D';curve.resolution_u=5
+    curve.bevel_depth=width;curve.bevel_resolution=1
+    spline=curve.splines.new('BEZIER');spline.bezier_points.add(len(points)-1)
+    for point,position in zip(spline.bezier_points,points):
+        point.co=xyz(position);point.handle_left_type='AUTO';point.handle_right_type='AUTO'
+    obj=bpy.data.objects.new(name,curve);bpy.context.collection.objects.link(obj)
+    bpy.ops.object.select_all(action='DESELECT');obj.select_set(True);bpy.context.view_layer.objects.active=obj
+    bpy.ops.object.convert(target='MESH');obj=bpy.context.object
+    return finish(obj,name,material,parent)
+
+def paint_tones(obj,character=False):
+    """Store broad painted value groups and contour taper in the source mesh."""
+    data=obj.data
+    colors=data.color_attributes.new(name='Paint tones',type='FLOAT_COLOR',domain='POINT')
+    zs=[v.co.z for v in data.vertices];lo=min(zs);span=max(.001,max(zs)-lo)
+    material=data.materials[0].name
+    for index,v in enumerate(data.vertices):
+        t=(v.co.z-lo)/span
+        if character:
+            # Avoid a mechanical uniform-weight outline around the whole cel.
+            alpha=.78+.22*math.sin(t*math.pi)
+            colors.data[index].color=(1,1,1,alpha)
+        elif material in ['Paint_10','Leaf','LeafLight']:
+            colors.data[index].color=(.78+t*.27,.86+t*.20,.87+t*.15,1)
+        elif material=='Paint_9':
+            co=obj.matrix_world@v.co
+            wash=.96+.035*math.sin(co.x*.04+co.y*.022)
+            colors.data[index].color=(wash,wash,1,1)
+        else:
+            colors.data[index].color=(.94+t*.07,.96+t*.06,1,1)
+
+def hand_shape_building(name,x,z,y,h):
+    """A shared continuous warp keeps windows, walls and roofs aligned."""
+    bpy.context.view_layer.update()
+    phase=sum(ord(c) for c in name)*.37
+    for obj in bpy.context.scene.objects:
+        if obj.type!='MESH' or obj.get('chunk')!=name:continue
+        matrix=obj.matrix_world.copy();inverse=matrix.inverted()
+        for vertex in obj.data.vertices:
+            p=matrix@vertex.co;level=max(0,(p.z-y)/h)
+            p.x+=level*(.11*math.sin(phase)+.035*math.sin((p.y+z)*.3))
+            p.z+=min(1,level)*.085*math.sin((p.x-x)*.31+phase)
+            vertex.co=inverse@p
+        obj.data.update()
+
 def height(x,z):
     def smooth(v):
         t=max(0,min(1,v));return t*t*(3-2*t)
@@ -155,6 +217,13 @@ def window(name,x,y,z,w=1.5,h=2,front=-1,shutters=True):
             box(name+' shutter',(x+side*(w*.7+.1),y,z),(w*.35,h,.12),'Paint_3')
             for q in [-.42,.0,.42]:box(name+' shutter slat',(x+side*(w*.7+.1),y+q*h,z+front*.08),(w*.32,.045,.06),'White')
 
+def painting(name,x,y,z,w,h,tile):
+    vertices=[(x-w/2,y-h/2,z),(x+w/2,y-h/2,z),(x+w/2,y+h/2,z),(x-w/2,y+h/2,z)]
+    obj=mesh(name,vertices,[(0,1,2,3),(3,2,1,0)],'Shop_'+str(tile))
+    uv=obj.data.uv_layers.new(name='Illustration coordinates');corners=[(0,0),(1,0),(1,1),(0,1)]
+    for loop in obj.data.loops:uv.data[loop.index].uv=corners[loop.vertex_index]
+    return obj
+
 BUILDINGS=[]
 def building(name,x,z,w,d,h,paint=0,style='shop',front=-1):
     global CHUNK
@@ -181,12 +250,12 @@ def building(name,x,z,w,d,h,paint=0,style='shop',front=-1):
         for level in range(floors):
             for col in range(count):
                 wx=x+(col-(count-1)/2)*(w/(count+.3));wy=y+2.1+level*3.4
-                if face==front and level==0 and col==count//2:continue
+                if face==front and level==0 and (col==count//2 or style in ['shop','bakery']):continue
                 window(name+' window',wx,wy,z+face*(d/2+.04),w=1.25 if w<12 else 1.65,h=1.9,front=face,shutters=(level>0))
                 if face==front and level==1 and col%2==0:
                     box(name+' flower box',(wx,wy-1.15,z+face*(d/2+.3)),(2,.3,.5),'Paint_6')
                     for a in range(5):ellipsoid(name+' geranium',(wx+(a-2)*.32,wy-.85,z+face*(d/2+.3)),(.25,.2,.25),'Flower',segments=8,rings=6)
-    doorx=x+(count//2-(count-1)/2)*(w/(count+.3));doorz=z+front*(d/2+.12)
+    doorx=x if style in ['shop','bakery'] else x+(count//2-(count-1)/2)*(w/(count+.3));doorz=z+front*(d/2+.12)
     box(name+' doorframe',(doorx,y+1.4,doorz),(1.95,2.8,.18),'Paint_6')
     box(name+' door',(doorx,y+1.3,doorz+front*.11),(1.55,2.55,.08),'Paint_3' if style!='bakery' else 'Paint_6')
     box(name+' door glass',(doorx,y+1.7,doorz+front*.17),(1.08,1.0,.05),'Glass')
@@ -205,9 +274,50 @@ def building(name,x,z,w,d,h,paint=0,style='shop',front=-1):
     if w>13:
         box(name+' dormer',(x-w*.15,y+h+.65,z+front*d*.2),(2.7,1.6,2.2),'Paint_'+str(paint))
         roof(name+' dormer roof',x-w*.15,y+h+1.45,z+front*d*.2,3,2.4,.7,tile)
+        window(name+' attic window',x-w*.15,y+h+.70,z+front*(d*.2+1.13),.95,1.1,front,False)
+    # A few painted roof strokes and edge timbers replace a perfectly extruded silhouette.
+    for face in [-1,1]:
+        rz=z+face*(d/2+.61)
+        stroke(name+' drawn roof verge',[(x-w/2-.53,y+h,rz),(x-w*.24,y+h+h*.15+.06,rz),(x+.08,y+h+h*.28,rz),(x+w*.26,y+h+h*.14-.05,rz),(x+w/2+.53,y+h,rz)],.048,'Paint_6')
+    stroke(name+' crooked ridge',[(x+.02,y+h+h*.28+.05,z-d/2-.6),(x-.04,y+h+h*.28+.11,z),(x+.05,y+h+h*.28+.05,z+d/2+.6)],.075,tile)
+    if style in ['bakery','shop']:
+        # Hanging signs and deep shop windows give the street an inhabited human scale.
+        sx=x-w*.32;sz=z+front*(d/2+.7)
+        cylinder(name+' sign bracket',(sx,y+4.9,sz-front*.6),(sx,y+4.9,sz+front*1.4),.05,'Paint_6')
+        box(name+' hanging sign',(sx,y+4.35,sz+front*1.25),(.16,.9,1.25),'Paint_6')
+        ellipsoid(name+' sign medallion',(sx,y+4.35,sz+front*1.25),(.10,.31,.45),'Gold',segments=12,rings=8)
+        if style=='shop':
+            variant=1+sum(ord(c) for c in name)%3
+            for wx in [x-w*.29,x+w*.29]:
+                window(name+' shop display',wx,y+1.65,z+front*(d/2+.22),min(4.4,w*.30),2.1,front,False)
+                if name!='Tombo_Workshop':painting(name+' painted display',wx,y+1.65,z+front*(d/2+.37),min(4.4,w*.30)-.12,1.97,variant)
+        sign=4 if style=='bakery' else 5 if name=='Tombo_Workshop' else 7
+        box(name+' painted sign frame',(x,y+4.05,z+front*(d/2+.20)),(2.55,1.20,.18),'Paint_6')
+        painting(name+' illustrated sign',x,y+4.05,z+front*(d/2+.30),2.38,1.03,sign)
+    if style=='bakery':
+        # Osono's warm timber shopfront is the first bespoke landmark treatment.
+        for wx in [x-w*.35,x+w*.30]:
+            window('Bakery display',wx,y+1.6,z+front*(d/2+.22),4.4,2.1,front,False)
+            painting('Bakery painted bread',wx,y+1.6,z+front*(d/2+.37),4.27,1.97,0)
+            box('Bakery display shelf',(wx,y+.72,z+front*(d/2+.40)),(4.6,.18,.30),'Paint_6')
+        box('Bakery fascia',(x,y+3.05,z+front*(d/2+.32)),(w,.44,.22),'Paint_6')
+        # An intentionally irregular gable over the door anchors the delivery courtyard.
+        box('Bakery central gable',(x,y+h+.6,z+front*(d*.35)),(4.5,2.1,3.9),'Paint_0')
+        roof('Bakery central gable roof',x,y+h+1.6,z+front*(d*.35),5.5,4.3,2.1,'Paint_4')
+        window('Bakery gable window',x,y+h+.85,z+front*(d*.35+2),1.5,1.8,front,True)
+        c=roof('COL_BakeryGable',x,y+h+1.6,z+front*(d*.35),5.5,4.3,2.1,'Ink');c.hide_render=True
+    if name=='Harbor_Post_House':
+        box('Post house sign frame',(doorx,y+3.7,doorz+front*.10),(2.55,1.25,.17),'Paint_6')
+        painting('Post house envelope',doorx,y+3.7,doorz+front*.20,2.38,1.10,6)
+    if style=='townhouse' and w>20:
+        bx=x-w*.24;bz=z+front*(d/2+.65)
+        box(name+' balcony floor',(bx,y+3.9,bz),(4,.20,1.3),'Paint_7')
+        cylinder(name+' balcony rail',(bx-2,y+4.85,bz+front*.60),(bx+2,y+4.85,bz+front*.60),.045,'Paint_6')
+        for q in range(9):cylinder(name+' balcony spindle',(bx-1.85+q*.46,y+4,bz+front*.60),(bx-1.85+q*.46,y+4.82,bz+front*.60),.026,'Paint_6',vertices=6)
     # Simple colliders preserve generous flight space around decorative trim.
     c=box('COL_'+name,(x,y+h/2,z),(w,h,d),'Ink');c.hide_render=True
     c=roof('COL_Roof_'+name,x,y+h,z,w,d,h*.28,'Ink');c.hide_render=True
+    hand_shape_building(name,x,z,y,h)
 
 def path(name,points,width,tile='Paint_8'):
     global CHUNK
@@ -230,8 +340,22 @@ def tree(name,x,z,size=1,kind='broad'):
         for i in range(3):ellipsoid(name+' narrow crown',(x,y+size*(4+i*2),z),(size*(1.5-i*.3),size*2.5,size*1.45),'Paint_10',segments=12,rings=8)
     else:
         for dx,dy,dz,s in [(-1.9,-.6,0,1),(.9,.25,.25,1.2),(0,.05,-1.6,1),(1.7,-.5,1.3,.9),(-.4,1.25,.5,.85)]:
-            ellipsoid(name+' leafy mass',(x+dx*size,y+crown+dy*size,z+dz*size),(2.5*size*s,2.2*size*s,2.5*size*s),'Paint_10',segments=12,rings=8)
+            canopy=ellipsoid(name+' leafy mass',(x+dx*size,y+crown+dy*size,z+dz*size),(2.5*size*s,2.2*size*s,2.5*size*s),'Paint_10',segments=12,rings=8)
+            for vertex in canopy.data.vertices:
+                co=vertex.co;co*=1+.075*math.sin(co.x*5+dx)+.045*math.sin(co.y*7+co.z*4)
+            canopy.data.update()
         for dx,dz in [(-1.5,.5),(1.5,.2)]:cylinder(name+' branch',(x,y+crown*.55,z),(x+dx*size,y+crown,z+dz*size),.14*size,'Paint_6',radius2=.05)
+
+def flower_head(name,x,y,z,color):
+    vertices=[];faces=[]
+    for petal in range(5):
+        theta=petal*math.tau/5+.18;start=len(vertices)
+        for j in range(8):
+            a=j*math.tau/8;radial=.75*(.12+math.cos(a)*.15);across=.75*math.sin(a)*.085
+            vertices.append((x+math.cos(theta)*radial-math.sin(theta)*across,y+.025*math.cos(a)**2,z+math.sin(theta)*radial+math.cos(theta)*across))
+        face=tuple(range(start,start+8));faces.extend([face,tuple(reversed(face))])
+    mesh(name+' painted petals',vertices,faces,color)
+    ellipsoid(name+' warm flower center',(x,y+.025,z),(.047,.026,.047),'Gold',segments=8,rings=5)
 
 def bed(name,x,z,w,d,color='Flower',y=None):
     if y is None:y=height(x,z)
@@ -240,7 +364,7 @@ def bed(name,x,z,w,d,color='Flower',y=None):
     for i in range(max(3,int(w*d*.4))):
         px=x+random.uniform(-w*.44,w*.44);pz=z+random.uniform(-d*.4,d*.4)
         ellipsoid(name+' shrub',(px,y+.42,pz),(.55,.4,.52),'Leaf',segments=8,rings=6)
-        for j in range(3):ellipsoid(name+' flowers',(px+(j-1)*.19,y+.76,pz+random.uniform(-.2,.2)),(.18,.13,.18),color,segments=6,rings=5)
+        for j in range(3):flower_head(name+' flowers',px+(j-1)*.25,y+.76,pz+random.uniform(-.2,.2),color)
 
 def lamp(x,z):
     y=height(x,z)
@@ -294,9 +418,11 @@ def world():
     collision=ground.copy();collision.data=ground.data.copy();collision.name='COL_Ground';bpy.context.collection.objects.link(collision);collision.hide_render=True
     box('Quay seawall',(0,-2,-76),(1400,4,2.3),'Paint_7')
     box('Sea',(0,-2.1,-676),(2000,.1,1200),'Sea')
-    for i in range(60):
-        x=random.uniform(-240,240);z=random.uniform(-360,-90)
-        box('Sea painted glint',(x,-2.02,z),(random.uniform(2,10),.015,.1),'Foam')
+    # Moving drawn wave strokes now live in the sea shader, with no scattered glint boxes.
+    for x in range(-170,180,22):
+        stroke('Quay foam stroke',[(x,-2.01,-77.4),(x+7,-2.01,-77.8),(x+15,-2.01,-77.3)],.075,'Foam')
+    # Continuous forecourts join both shop rows to their pavements.
+    box('Market street forecourts',(0,.025,1),(314,.06,25),'Paint_7')
     roads=[([-155,0],[151,0],8),([-130,-62],[148,-62],8),([-42,-58],[-42,-4],7),([-42,4],[-42,129],7),([64,-58],[64,-4],7),([64,4],[64,129],7),([-42,78],[140,78],6),([-125,129],[142,129],5)]
     for index,(a,b,w) in enumerate(roads):
         path('Pavement_'+str(index),[a,b],w+3.2,'Paint_7')
@@ -439,7 +565,8 @@ def world():
     for obj in list(bpy.context.scene.objects):
         if obj.type=='MESH':
             material=obj.data.materials[0].name
-            paint_uv(obj,22 if material=='Paint_9' else 7 if material=='Paint_10' else 4 if material in ['Paint_0','Paint_1','Paint_2','Paint_3'] else 3)
+            if not obj.data.uv_layers:paint_uv(obj,30 if material=='Paint_9' else 9 if material=='Paint_10' else 10 if material in ['Paint_0','Paint_1','Paint_2','Paint_3'] else 4 if material in ['Paint_4','Paint_5'] else 3)
+            paint_tones(obj)
     consolidate()
     export('KorikoNeighborhood')
     # Artist previews are Blender renders, clearly separate from Unity verification.
@@ -517,7 +644,12 @@ def kiki():
     for p in dress.data.polygons:p.use_smooth=True
     head=empty('Head',(0,1.84,.02));attach(head,body)
     part('Neck',(0,1.67,.02),(.105,.15,.10),'Skin')
-    part('Face',(0,1.93,.055),(.275,.32,.25),'Skin',head,)
+    face=part('Face',(0,1.93,.055),(.275,.32,.235),'Skin',head)
+    for vertex in face.data.vertices:
+        if vertex.co.z<0:vertex.co.x*=1+vertex.co.z*.24
+    face.data.update()
+    # Simple cheek planes give one coherent cel shadow instead of spherical shading.
+    face.data.normals_split_custom_set_from_vertices([Vector((v.co.x*.65,v.co.y,v.co.z*.38)).normalized() for v in face.data.vertices])
     part('Left ear',(-.274,1.95,.015),(.055,.08,.045),'Skin',head)
     part('Right ear',(.274,1.95,.015),(.055,.08,.045),'Skin',head)
     # Hair forms a bob around the back and temples, with individually shaped bangs.
@@ -534,20 +666,34 @@ def kiki():
         for i in range(32):a=j*32+i;b=j*32+(i+1)%32;hairfaces.append((a,b,b+32,a+32))
     hair=attach(mesh('Bob hair',hairverts,hairfaces,'Hair'),head)
     for p in hair.data.polygons:p.use_smooth=True
-    for x,y,z,s in [(-.23,1.92,.10,.09),(.23,1.92,.1,.09),(-.17,2.11,.235,.08),(-.06,2.12,.272,.07),(.06,2.13,.276,.08),(.18,2.12,.23,.09)]:part('Hair lock',(x,y,z),(s,.14,.052),'Hair',head)
+    for side in [-1,1]:part('Temple hair',(side*.252,1.95,.10),(.055,.12,.050),'Hair',head)
+    # Tapered, uneven bangs replace the prototype's row of round hair beads.
+    for x,y,z,w,slant in [(-.19,2.20,.202,.072,.018),(-.075,2.245,.249,.086,-.019),(.058,2.235,.253,.084,.026),(.183,2.20,.207,.070,.022)]:
+        front=[(x-w,y,z),(x+w,y+.014,z),(x+w*.6,y-.12,z+.023),(x+slant,y-.205,z+.028),(x-w*.65,y-.105,z+.031)]
+        verts=front+[(a,b,c-.036) for a,b,c in front]
+        faces=[(0,1,2,3,4),(9,8,7,6,5)]+[(i,(i+1)%5,(i+1)%5+5,i+5) for i in range(5)]
+        lock=attach(mesh('Swept hair lock',verts,faces,'Hair'),head)
+        for poly in lock.data.polygons:poly.use_smooth=True
     for side in [-1,1]:
-        part('Eye white',(side*.112,1.99,.267),(.065,.072,.021),'White',head)
-        part('Brown iris',(side*.10,1.99,.285),(.027,.05,.013),'Eye',head)
-        part('Pupil',(side*.10,1.992,.297),(.014,.035,.006),'Ink',head)
-        part('Eye glint',(side*.10-.008,2.009,.302),(.008,.012,.004),'White',head)
-        attach(cylinder('Upper eyelid',(side*.112-.057,2.034,.281),(side*.112+.057,2.04,.281),.008,'Ink'),head)
+        part('Eye white',(side*.112,1.985,.261),(.060,.065,.020),'White',head)
+        part('Brown iris',(side*.104,1.985,.279),(.026,.047,.011),'Eye',head)
+        part('Pupil',(side*.104,1.987,.290),(.014,.033,.005),'Ink',head)
+        part('Eye glint',(side*.104-.008,2.004,.295),(.007,.009,.003),'White',head)
+        attach(stroke('Upper eyelid',[(side*.112-.057,2.021,.278),(side*.112,2.047,.282),(side*.112+.057,2.023,.278)],.007,'Ink'),head)
     part('Nose',(0,1.92,.299),(.027,.035,.025),'Skin',head)
-    attach(cylinder('Quiet smile',(-.033,1.845,.302),(.033,1.845,.302),.006,'Eye'),head)
+    attach(stroke('Quiet smile',[(-.030,1.845,.279),(0,1.840,.288),(.033,1.847,.279)],.005,'Eye'),head)
     bow=empty('Bow',(0,2.3,.01));attach(bow,head)
-    part('Bow knot',(0,2.30,.015),(.055,.08,.065),'Bow',bow)
+    part('Bow knot',(0,2.30,.015),(.065,.075,.065),'Bow',bow)
     for side in [-1,1]:
-        ob=part('Bow loop',(side*.18,2.36,-.003),(.18,.13,.055),'Bow',bow);ob.rotation_euler[1]=side*.35
-        attach(mesh('Bow tail',[(side*.035,2.32,.035),(side*.22,2.19,.045),(side*.13,2.18,.055)],[(0,1,2)],'Bow'),bow)
+        outline=[(.025,2.30),(.18,2.49),(.38,2.51),(.40,2.30),(.29,2.21),(.10,2.265)]
+        verts=[(side*x,y,.026+.025*math.sin(x*6)) for x,y in outline]+[(side*x,y,-.045) for x,y in outline]
+        faces=[tuple(range(6)),tuple(reversed(range(6,12)))]+[(i,(i+1)%6,(i+1)%6+6,i+6) for i in range(6)]
+        loop=attach(mesh('Bow loop',verts,faces,'Bow'),bow)
+        bevel=loop.modifiers.new('Soft cloth corners','BEVEL');bevel.width=.018;bevel.segments=2
+        attach(stroke('Bow drawn fold',[(side*.055,2.30,.064),(side*.18,2.365,.068),(side*.33,2.425,.062)],.007,'BowShade'),bow)
+        attach(mesh('Bow tail',[(side*.04,2.29,.015),(side*.22,2.15,.023),(side*.20,2.245,.042)],[(0,1,2),(2,1,0)],'BowShade'),bow)
+    for side in [-1,1]:
+        attach(stroke('Dress drawn fold',[(side*.13,1.10,.220),(side*.18,.94,.274),(side*.205,.82,.301)],.006,'Ink'),body)
     # Legs hang naturally beside the broom, hands reach the handle.
     pivots={}
     for side in [-1,1]:
@@ -583,6 +729,8 @@ def kiki():
         part('Jiji eye',(side*.06,1.51,-.575),(.047,.052,.011),'White',jiji)
         part('Jiji pupil',(side*.059,1.51,-.565),(.012,.035,.005),'Ink',jiji)
     part('Jiji nose',(0,1.465,-.558),(.019,.013,.011),'Flower',jiji)
+    for side in [-1,1]:
+        attach(stroke('Jiji whisker',[(side*.07,1.465,-.573),(side*.18,1.475,-.59)],.003,'Ink'),jiji)
     tail=[(0,1.14,-.83),(.14,1.10,-1.02),(.24,1.24,-1.1),(.22,1.39,-1.13),(.13,1.44,-1.10)]
     curve=bpy.data.curves.new('Jiji curling tail','CURVE');curve.dimensions='3D';curve.resolution_u=8;curve.bevel_depth=.025;curve.bevel_resolution=3
     spline=curve.splines.new('BEZIER');spline.bezier_points.add(len(tail)-1)
@@ -590,9 +738,12 @@ def kiki():
     tail_object=bpy.data.objects.new('Jiji curling tail',curve);bpy.context.collection.objects.link(tail_object)
     bpy.ops.object.select_all(action='DESELECT');tail_object.select_set(True);bpy.context.view_layer.objects.active=tail_object;bpy.ops.object.convert(target='MESH')
     tail_object=bpy.context.object;finish(tail_object,'Jiji curling tail','Ink');attach(tail_object,jiji)
-    head.scale*=.86
+    head.scale*=.91
+    jiji.location.y+=.16
     for obj in bpy.context.scene.objects:
-        if obj.type=='MESH' and not obj.data.uv_layers:paint_uv(obj,.5)
+        if obj.type=='MESH':
+            if not obj.data.uv_layers:paint_uv(obj,.5)
+            paint_tones(obj,True)
     export('KikiAndJiji')
     render_preview('kiki-model',(3,2.4,4),(0,1.25,-.05),42)
     render_preview('kiki-rear',(-3,2.7,-4),(0,1.25,-.05),42)

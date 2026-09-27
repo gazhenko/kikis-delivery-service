@@ -1,0 +1,7 @@
+PASS Art viewpoints captured with all scene shaders supported
+Renderer: Apple M1 Pro / Metal
+Resolution: 1920 x 1080
+Mean frame time during viewpoint captures (not a benchmark): 20.12 ms
+Peak recorded draw calls: 1100
+Peak recorded triangles: 1758822
+Fixed camera captures for visual inspection; not a traversal or input test.

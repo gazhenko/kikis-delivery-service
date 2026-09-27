@@ -10,6 +10,7 @@ using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Unity.Profiling;
+using Unity.Cinemachine;
 
 namespace Koriko
 {
@@ -17,7 +18,8 @@ namespace Koriko
     /// It never loads or writes the player's save. Results are evidence only after it runs.</summary>
     public sealed class DevelopmentFlightCheck : MonoBehaviour
     {
-        public static bool Requested => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0;
+        public static bool ArtOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-art-check")>=0;
+        public static bool Requested => Debug.isDebugBuild&&(ArtOnly||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
         GameApp app;
         Keyboard keyboard;
         Gamepad gamepad;
@@ -36,7 +38,7 @@ namespace Koriko
         }
         IEnumerator Start()
         {
-            output=Path.Combine(Application.persistentDataPath,"flight-check");Directory.CreateDirectory(output);
+            output=Path.Combine(Application.persistentDataPath,ArtOnly?"art-check":"flight-check");Directory.CreateDirectory(output);
             drawCalls=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Draw Calls Count",1);
             triangles=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Triangles Count",1);
             app=FindFirstObjectByType<GameApp>();
@@ -47,6 +49,7 @@ namespace Koriko
             InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
             yield return null;
             app.Begin(Difficulty.Cozy);app.Hud.ClosePanel();
+            if(ArtOnly){yield return ArtViews();if(!failed)Finish();yield break;}
             Check(app.Rules.Accept(app.Rules.State.jobs[0].id),"Collect bakery parcel");
             yield return Capture("01-bakery");
             yield return FlyTo(Catalog.FindDestination("clock"));
@@ -85,6 +88,36 @@ namespace Koriko
                     if(material==null||material.shader==null||!material.shader.isSupported){Fail("Unsupported or missing scene material");yield break;}
             Check(true,"All scene material shaders supported on this renderer");
             Finish();
+        }
+        IEnumerator ArtViews()
+        {
+            // Fixed native viewpoints for art review. No player saves or gameplay assertions.
+            app.Rules.State.elapsed=75;
+            yield return Capture("01-bakery-noon-hud");
+            app.enabled=false;
+            var canvas=app.Hud.GetComponent<Canvas>();canvas.enabled=false;
+            var follow=FindFirstObjectByType<CinemachineThirdPersonFollow>();
+            follow.Damping=Vector3.zero;
+            yield return ArtView("02-bakery-front",Catalog.Home.Landing,0,12,10,75,follow);
+            yield return ArtView("03-kiki-three-quarter",Catalog.Home.Landing,235,3,3.4f,75,follow);
+            yield return ArtView("04-clock-square",Catalog.FindDestination("clock").Landing,12,-8,12,75,follow);
+            yield return ArtView("05-garden-overlook",new Point(90,14,91),-130,24,10,75,follow);
+            yield return ArtView("06-painted-sea",new Point(121,10,-55),190,12,10,75,follow);
+            yield return ArtView("07-bakery-sunset",Catalog.Home.Landing,0,12,10,147,follow);
+            yield return ArtView("08-bakery-night",Catalog.Home.Landing,0,12,10,225,follow);
+            foreach(var renderer in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+                foreach(var material in renderer.sharedMaterials)
+                    if(material==null||material.shader==null||!material.shader.isSupported){Fail("Unsupported or missing art material: "+(material?material.name:"null")+" on "+renderer.name);yield break;}
+            Check(true,"Art viewpoints captured with all scene shaders supported");
+        }
+        IEnumerator ArtView(string name,Point point,float yaw,float pitch,float distance,double time,CinemachineThirdPersonFollow follow)
+        {
+            app.Motor.Warp(point);app.Rules.State.elapsed=time;
+            follow.CameraDistance=distance;
+            app.Motor.CameraOrbit.rotation=Quaternion.Euler(pitch,yaw,0);
+            yield return new WaitForSeconds(.25f);
+            app.Lighting.Refresh(app.Rules,true);
+            yield return Capture(name);
         }
         IEnumerator FlyTo(Destination destination,float cruiseHeight=-1)
         {
@@ -201,11 +234,11 @@ namespace Koriko
             if(keyboard!=null){Keys();if(addedKeyboard)InputSystem.RemoveDevice(keyboard);}
             checks.Add("Renderer: "+SystemInfo.graphicsDeviceName+" / "+SystemInfo.graphicsDeviceType);
             checks.Add("Resolution: "+Screen.width+" x "+Screen.height);
-            checks.Add("Mean frame time across this automated route: "+(frames>0?frameTotal/frames*1000:0).ToString("F2")+" ms");
+            checks.Add((ArtOnly?"Mean frame time during viewpoint captures (not a benchmark): ":"Mean frame time across this automated route: ")+(frames>0?frameTotal/frames*1000:0).ToString("F2")+" ms");
             if(peakDrawCalls>0)checks.Add("Peak recorded draw calls: "+peakDrawCalls);
             if(peakTriangles>0)checks.Add("Peak recorded triangles: "+peakTriangles);
             drawCalls.Dispose();triangles.Dispose();
-            checks.Add("Synthetic keyboard and gamepad input; this does not establish physical controller or human playtest quality.");
+            checks.Add(ArtOnly?"Fixed camera captures for visual inspection; not a traversal or input test.":"Synthetic keyboard and gamepad input; this does not establish physical controller or human playtest quality.");
             File.WriteAllLines(Path.Combine(output,"result.txt"),checks);
             Debug.Log("KORIKO_FLIGHT_CHECK "+(failed?"FAILED":"PASSED")+" "+output);
             Application.Quit(failed?1:0);
