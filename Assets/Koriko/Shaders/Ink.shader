@@ -1,6 +1,6 @@
 Shader "Koriko/Ink"
 {
-    Properties { _Color("Ink",Color)=(.12,.12,.18,1) _Thickness("Width in pixels",Range(0,4))=1.25 }
+    Properties { _Color("Ink",Color)=(.12,.12,.18,1) _Thickness("Width in pixels",Range(0,4))=1.25 _Cloth("Rider cloth contact",Range(0,1))=0 }
     SubShader
     {
         Tags { "RenderType"="Opaque" "RenderPipeline"="UniversalPipeline" "Queue"="Geometry-1" }
@@ -13,12 +13,13 @@ Shader "Koriko/Ink"
             #pragma fragment Frag
             #pragma multi_compile_fog
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            CBUFFER_START(UnityPerMaterial) float4 _Color; float _Thickness; CBUFFER_END
+            #include "CharacterDeform.hlsl"
+            CBUFFER_START(UnityPerMaterial) float4 _Color; float _Thickness, _Cloth; CBUFFER_END
             struct A { float4 p:POSITION; float3 n:NORMAL; float4 color:COLOR; };
             struct V { float4 p:SV_POSITION; float fog:TEXCOORD0; };
             V Vert(A a)
             {
-                V v;float3 world=TransformObjectToWorld(a.p.xyz);v.p=TransformWorldToHClip(world);
+                V v;float3 world=RiderWorldPosition(a.p.xyz,_Cloth);v.p=TransformWorldToHClip(world);
                 float3 normal=TransformWorldToViewDir(TransformObjectToWorldNormal(a.n),true);
                 float2 direction=normal.xy/max(length(normal.xy),.0001);
                 // Perspective independent width; authored alpha tapers selected contours.

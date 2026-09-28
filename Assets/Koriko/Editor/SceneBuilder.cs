@@ -115,10 +115,13 @@ namespace Koriko.Editor
             AlignAnchors(rider.transform,new[]{"RiderAnchor_Origin","RiderAnchor_Right","RiderAnchor_Up","RiderAnchor_Forward"},new[]{Vector3.zero,Vector3.right,Vector3.up,Vector3.forward});
             rider.transform.SetParent(visual,false);
             var riderNodes=rider.GetComponentsInChildren<Transform>();
-            foreach(string part in new[]{"LeftForearm","RightForearm","LeftHand","RightHand","LeftGrip","RightGrip","LeftKnee","RightKnee","LeftEyePivot","RightEyePivot","Left sole","Right sole"})
+            foreach(string part in new[]{"LeftForearm","RightForearm","LeftHand","RightHand","LeftGrip","RightGrip","LeftKnee","RightKnee","LeftEyePivot","RightEyePivot","Left sole","Right sole","LeftBowLoop","RightBowLoop","JijiHead","JijiTail","LeftJijiEar","RightJijiEar","LeftBrow","RightBrow"})
                 if(!riderNodes.Any(t=>t.name==part))throw new InvalidOperationException("Character articulation is missing: "+part);
             if(!rider.GetComponentsInChildren<SkinnedMeshRenderer>().Any(r=>Enumerable.Range(0,r.sharedMesh.blendShapeCount).Any(i=>r.sharedMesh.GetBlendShapeName(i).EndsWith("Flight cloth"))))
                 throw new InvalidOperationException("Character flight cloth shape did not survive FBX import.");
+            foreach(string shape in new[]{"Hair stream","Hair left","Hair right","Hem left","Hem right","Gaze left","Gaze right"})
+                if(!rider.GetComponentsInChildren<SkinnedMeshRenderer>().Any(r=>Enumerable.Range(0,r.sharedMesh.blendShapeCount).Any(i=>r.sharedMesh.GetBlendShapeName(i).EndsWith(shape))))
+                    throw new InvalidOperationException("Character secondary animation shape did not import: "+shape);
             var characterMaterials=MakeCharacterMaterials();
             ApplyMaterials(rider,characterMaterials);AddCharacterInk(rider);
             foreach(var t in rider.GetComponentsInChildren<Transform>())t.gameObject.layer=9;
@@ -222,6 +225,7 @@ namespace Koriko.Editor
                 m.SetColor("_LightTint",Color.Lerp(lit,new Color(.88f,.84f,.77f),.20f));
                 m.SetFloat("_Softness",.005f);m.SetFloat("_Face",entry.Key=="Skin"?.85f:0);
                 m.SetFloat("_Rim",0);
+                m.SetFloat("_Cloth",entry.Key=="Dress"||entry.Key=="DressShade"?1:0);
                 result.Add(entry.Key,m);
             }
             return result;
@@ -249,6 +253,9 @@ namespace Koriko.Editor
         {
             var material=Material("CharacterOutline",Shader.Find("Koriko/Ink"));
             material.SetFloat("_Thickness",1.15f);material.SetColor("_Color",new Color(.105f,.08f,.13f));
+            material.SetFloat("_Cloth",0);
+            var clothMaterial=Material("CharacterClothOutline",Shader.Find("Koriko/Ink"));
+            clothMaterial.CopyPropertiesFromMaterial(material);clothMaterial.SetFloat("_Cloth",1);
             bool Draw(string name)=>new[]{"Dress","Face","Bob hair","Jiji body","Jiji head","Left calf","Right calf","Left sleeve","Right sleeve","Left forearm","Right forearm","Left shoe","Right shoe","Satchel body"}.Contains(name)||name.StartsWith("Bow loop",StringComparison.Ordinal);
             foreach(var filter in root.GetComponentsInChildren<MeshFilter>().ToArray())
             {
@@ -261,7 +268,7 @@ namespace Koriko.Editor
                 if(!Draw(source.name))continue;
                 var outline=new GameObject("Ink edge");outline.transform.SetParent(source.transform,false);
                 var r=outline.AddComponent<SkinnedMeshRenderer>();r.sharedMesh=source.sharedMesh;r.bones=source.bones;r.rootBone=source.rootBone;r.localBounds=source.localBounds;
-                r.sharedMaterial=material;r.shadowCastingMode=ShadowCastingMode.Off;
+                r.sharedMaterial=source.name=="Dress"?clothMaterial:material;r.shadowCastingMode=ShadowCastingMode.Off;
             }
         }
         static void NormalizeWorld(Transform root)

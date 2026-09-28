@@ -24,7 +24,7 @@ The face has a continuous cheek/jaw/nose surface. Thin conforming meshes carry t
 
 Elbows and knees have named pivots and rounded joints. Two-joint arm solving keeps the hands attached to broom grip targets while the body leans. A salmon shoulder bag with fitted straps, low red flats with closed toes, bound broom straw and a refined Jiji complete the silhouette. On the ground, the visible soles are fitted to the actual floor height; this accounts for the controller settling into its collision skin. Original import anchors and gameplay collision dimensions remain intact.
 
-Character materials have their own lit/shadow colors, with the hair and dress kept dark and free of shiny accent bands. Skin has controlled cheek normals and simplified cel lighting. Selective contours support the silhouette. The animated dress contour receives the same blend-shape weight as the cloth itself. Character poses are held at 12 Hz; movement and camera controls remain smooth.
+Character materials have their own lit/shadow colors, with the hair and dress kept dark and free of shiny accent bands. Skin has controlled cheek normals and simplified cel lighting. Selective contours support the silhouette. The animated dress contour receives the same blend-shape weight as the cloth itself. The subsequent [motion pass](MOTION.md) replaces the uniform 12 Hz pose hold with takeoff, bank, boost, brake and landing performances, independent secondary motion, face-conforming gaze and brief smear drawings. Movement and camera controls remain responsive.
 
 ## Acceptance and verification
 

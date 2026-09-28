@@ -1,0 +1,15 @@
+PASS Landing returns visible shoes to the court within 3.5 cm
+PASS Rest has no smear deformation
+FAIL Real controls exercise takeoff, cruising, steering, braking and touchdown
+PASS Boost reaches actual flight speed above 23 m/s
+PASS Hands follow the animated broom within 2.5 cm throughout the reel
+PASS Grounded drawings keep the lowest shoe on the floor
+PASS Left/right banks and leading gaze produce distinct poses
+PASS Body action and delayed bow motion have visible pose range
+PASS Smears occur briefly on fast actions, never as a continuous trail
+PASS Hair and cloth wind morphs survived native import
+Samples: 762; smear drawings: 20; longest exposure: 2/24 s; events: 10
+Max hand error 0.0000 m; max sole error 0.0000 m; bank range -20.6..24.4 degrees; body pitch -9.0..29.5
+Bow overlap range -25.8..28.2 degrees; peak speed 26.32 m/s
+Native Metal/Unity captures: Apple M1 Pro at 1280 x 720
+Fixed 24 Hz simulation capture for animation review, using synthetic keyboard input. This is not a frame-rate benchmark or a physical controller test.

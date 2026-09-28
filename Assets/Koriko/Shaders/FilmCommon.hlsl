@@ -6,7 +6,7 @@ CBUFFER_START(UnityPerMaterial)
     float4 _BaseMap_ST, _Color, _AtlasRect, _ShadowTint, _LightTint;
     float _TextureWeight, _Softness, _Wind, _Emission;
     float _PaintScale, _ShadowStrength, _NormalFlatten, _VertexPaint;
-    float _Face, _Rim, _Reserved0, _Reserved1;
+    float _Face, _Rim, _Cloth, _Reserved1;
 CBUFFER_END
 float _KorikoDaylight;
 float4 _KorikoHorizonColor;

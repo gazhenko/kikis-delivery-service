@@ -20,7 +20,7 @@ namespace Koriko
     {
         public static bool ArtOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-art-check")>=0;
         public static bool CharacterOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-character-check")>=0;
-        public static bool Requested => Debug.isDebugBuild&&(ArtOnly||CharacterOnly||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
+        public static bool Requested => Debug.isDebugBuild&&(ArtOnly||CharacterOnly||DevelopmentMotionCheck.Requested||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
         GameApp app;
         Keyboard keyboard;
         Gamepad gamepad;
@@ -35,7 +35,7 @@ namespace Koriko
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Install()
         {
-            if(Requested)new GameObject("Development flight check").AddComponent<DevelopmentFlightCheck>();
+            if(Requested&&!DevelopmentMotionCheck.Requested)new GameObject("Development flight check").AddComponent<DevelopmentFlightCheck>();
         }
         IEnumerator Start()
         {

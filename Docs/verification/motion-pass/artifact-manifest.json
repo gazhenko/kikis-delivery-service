@@ -1,0 +1,12 @@
+{
+  "zip": "Builds/mac/Kiki-Delivery-Mac.zip",
+  "zip_bytes": 128644769,
+  "sha256": "3bab45cad9e37550d39bb87325f0a37bb968fff37e442c2e5d4e027cfedf04a3",
+  "codesign": "codesign --verify --deep --strict passed",
+  "runtime": "Apple M1 Pro / Metal",
+  "motion_resolution": "1280x720",
+  "character_and_route_resolution": "1920x1080",
+  "motion_checks": 10,
+  "character_checks": 6,
+  "route_checks": 23
+}

@@ -8,6 +8,7 @@ Shader "Koriko/CharacterCel"
         _Softness("Cel edge antialias", Range(.001,.05))=.006
         _Face("Face normal simplification", Range(0,1))=0
         _Rim("Restrained edge accent", Range(0,1))=.1
+        _Cloth("Rider cloth contact", Range(0,1))=0
         _BaseMap("Paint atlas", 2D)="white"{}
         _AtlasRect("Atlas cell", Vector)=(0,0,1,1)
         _TextureWeight("Paint amount", Range(0,1))=0
@@ -32,12 +33,13 @@ Shader "Koriko/CharacterCel"
             #pragma multi_compile_fog
             #pragma multi_compile_instancing
             #include "FilmCommon.hlsl"
+            #include "CharacterDeform.hlsl"
             struct A { float4 p:POSITION; float3 n:NORMAL; float4 color:COLOR; UNITY_VERTEX_INPUT_INSTANCE_ID };
             struct V { float4 p:SV_POSITION; float3 n:TEXCOORD0; float3 world:TEXCOORD1; float fog:TEXCOORD2; UNITY_VERTEX_INPUT_INSTANCE_ID UNITY_VERTEX_OUTPUT_STEREO };
             V Vert(A a)
             {
                 V o;UNITY_SETUP_INSTANCE_ID(a);UNITY_TRANSFER_INSTANCE_ID(a,o);UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                o.world=TransformObjectToWorld(a.p.xyz);o.p=TransformWorldToHClip(o.world);
+                o.world=RiderWorldPosition(a.p.xyz,_Cloth);o.p=TransformWorldToHClip(o.world);
                 o.n=TransformObjectToWorldNormal(a.n);o.fog=ComputeFogFactor(o.p.z);return o;
             }
             half4 Frag(V i):SV_Target
@@ -59,7 +61,57 @@ Shader "Koriko/CharacterCel"
             }
             ENDHLSL
         }
-        UsePass "Koriko/Painted/ShadowCaster"
-        UsePass "Koriko/Painted/DepthOnly"
+        Pass
+        {
+            Name "ShadowCaster"
+            Tags { "LightMode"="ShadowCaster" }
+            ZWrite On ZTest LEqual ColorMask 0 Cull Back
+            HLSLPROGRAM
+            #pragma vertex ShadowVert
+            #pragma fragment DepthFrag
+            #pragma multi_compile_instancing
+            #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
+            #include "FilmCommon.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
+            #include "CharacterDeform.hlsl"
+            float3 _LightDirection;
+            float3 _LightPosition;
+            struct A { float4 p:POSITION;float3 n:NORMAL;UNITY_VERTEX_INPUT_INSTANCE_ID };
+            float4 ShadowVert(A a):SV_POSITION
+            {
+                UNITY_SETUP_INSTANCE_ID(a);
+                float3 world=RiderWorldPosition(a.p.xyz,_Cloth),normal=TransformObjectToWorldNormal(a.n);
+                #if defined(_CASTING_PUNCTUAL_LIGHT_SHADOW)
+                    float3 light=normalize(_LightPosition-world);
+                #else
+                    float3 light=_LightDirection;
+                #endif
+                float4 clip=TransformWorldToHClip(ApplyShadowBias(world,normal,light));
+                #if UNITY_REVERSED_Z
+                    clip.z=min(clip.z,UNITY_NEAR_CLIP_VALUE*clip.w);
+                #else
+                    clip.z=max(clip.z,UNITY_NEAR_CLIP_VALUE*clip.w);
+                #endif
+                return clip;
+            }
+            half4 DepthFrag():SV_Target{return 0;}
+            ENDHLSL
+        }
+        Pass
+        {
+            Name "DepthOnly"
+            Tags { "LightMode"="DepthOnly" }
+            ZWrite On ColorMask R Cull Back
+            HLSLPROGRAM
+            #pragma vertex DepthVert
+            #pragma fragment DepthFrag
+            #pragma multi_compile_instancing
+            #include "FilmCommon.hlsl"
+            #include "CharacterDeform.hlsl"
+            struct A { float4 p:POSITION;UNITY_VERTEX_INPUT_INSTANCE_ID };
+            float4 DepthVert(A a):SV_POSITION{UNITY_SETUP_INSTANCE_ID(a);return TransformWorldToHClip(RiderWorldPosition(a.p.xyz,_Cloth));}
+            half4 DepthFrag():SV_Target{return 0;}
+            ENDHLSL
+        }
     }
 }

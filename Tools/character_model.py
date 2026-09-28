@@ -173,7 +173,17 @@ def build_character(api):
         # The open painted patch faces the front of the character.
         for polygon in obj.data.polygons:
             if polygon.normal.y>0: polygon.flip()
-        return attach(origin(obj,(cx,cy,face_front(cx,cy))),parent)
+        obj=attach(origin(obj,(cx,cy,face_front(cx,cy))),parent)
+        if name in ('Brown iris','Pupil','Eye glint'):
+            obj.shape_key_add(name='Basis')
+            for side,label in [(-1,'Gaze left'),(1,'Gaze right')]:
+                key=obj.shape_key_add(name=label)
+                for v in key.data:
+                    v.co.x+=side*.008
+                    # Paint must travel ON the face, not through the white patch.
+                    # A straight local translation submerged one iris on turns.
+                    v.co.y=-(face_front(cx+v.co.x,cy+v.co.z)+offset-face_front(cx,cy))
+        return obj
 
     for side in (-1,1):
         label='Left' if side<0 else 'Right'
@@ -193,12 +203,14 @@ def build_character(api):
         for i in range(9):
             t=i/8;x=eye_x-.047+t*.094;y=2.085+.011*math.sin(math.pi*t)-side*(t-.5)*.010
             brow.append((x,y,face_front(x,y)+.004))
-        line(label+' eyebrow',brow,.0038,'Hair',head)
+        brow_pivot=attach(empty(label+'Brow',(eye_x,2.090,face_front(eye_x,2.09))),head)
+        line(label+' eyebrow',brow,.0038,'Hair',brow_pivot)
         patch('Cheek blush',side*.176,1.946,.025,.0095,'Blush',head,.003)
         ear=part(label+' ear',(side*.264,1.971,.022),(.044,.072,.027),'Skin',head)
         line('Ear inner line',[(side*.277,2.003,.046),(side*.291,2.015,.043),(side*.288,1.978,.048)],.0028,'Lip',head)
     line('Nose mark',[(.011,1.922,face_front(.011,1.922)+.004),(.018,1.921,face_front(.018,1.921)+.004)],.0025,'Lip',head)
     line('Quiet smile',[(-.026,1.857,face_front(-.026,1.857)+.004),(-.009,1.853,face_front(-.009,1.853)+.004),(.012,1.853,face_front(.012,1.853)+.004),(.028,1.860,face_front(.028,1.860)+.004)],.003,'Lip',head)
+    breath_mouth=patch('Breath mouth',0,1.855,.016,.022,'Lip',head,.005)
 
     # One continuous bob and fringe. The authored hairline follows the film's
     # irregular locks, so no separate slab roots can expose a shaved temple.
@@ -260,6 +272,7 @@ def build_character(api):
     bow=attach(empty('Bow',(0,2.333,-.048)),head)
     part('Bow knot',(0,2.338,-.015),(.047,.050,.043),'Bow',bow)
     for side in (-1,1):
+        loop=attach(empty(('Left' if side<0 else 'Right')+'BowLoop',(side*.028,2.337,-.015)),bow)
         boundaries=[
             [(.025,2.337,0),(.073,2.420,0),(.179,2.601,0),(.254,2.597,0)],
             [(.254,2.597,0),(.335,2.602,0),(.410,2.487,0),(.380,2.415,0)],
@@ -288,8 +301,8 @@ def build_character(api):
                     faces.append((a,b,b+n,a+n))
         for i in range(n):
             a=rings*n+i;b=rings*n+(i+1)%n;faces.append((a,b,b+layer,a+layer))
-        attach(smooth(mesh('Bow loop '+str(side),vertices,faces,'Bow')),bow)
-        line('Bow gathered fold',[(side*.048,2.346,.004),(side*.116,2.369,.030),(side*.222,2.408,.044)],.0035,'BowShade',bow)
+        attach(smooth(mesh('Bow loop '+str(side),vertices,faces,'Bow')),loop)
+        line('Bow gathered fold',[(side*.048,2.346,.004),(side*.116,2.369,.030),(side*.222,2.408,.044)],.0035,'BowShade',loop)
 
     # Loose smock: broad continuous shoulders, no fitted waist or spherical cuffs.
     dress_rows=[(.735,.32,.264,-.025),(.77,.365,.272,-.027),(.93,.331,.248,-.023),(1.13,.286,.225,-.015),(1.36,.269,.198,.0),(1.52,.318,.174,.004),(1.61,.309,.154,.003),(1.67,.206,.124,.0),(1.685,.112,.096,.0)]
@@ -322,6 +335,21 @@ def build_character(api):
             dy=y-1.015;dz=(z+.075)*(1-.20*weight)
             v.co.z=1.015+dy*math.cos(angle)-dz*math.sin(angle)
             v.co.y=-(-.075+dy*math.sin(angle)+dz*math.cos(angle)+.165*weight)
+            v.co.x*=1+.12*weight
+            # A little ease around the knees lets the limbs trail the body
+            # without breaking through the side of the moving smock.
+            v.co.z+=.022*weight
+        # Additive wind shapes are authored in the seated cloth's frame. The
+        # ink surface and drawn fold meshes receive exactly the same offsets.
+        for side,name in [(-1,'Hem left'),(1,'Hem right')]:
+            key=obj.shape_key_add(name=name)
+            for source,v in zip(obj.data.vertices,key.data):
+                x,y=source.co.x,source.co.z
+                w=max(0,min(1,(1.36-y)/.625))**2
+                edge=.5+.5*max(-1,min(1,side*x/.32))
+                v.co.x+=side*.032*w
+                v.co.z+=(.035*edge+.015)*w
+                v.co.y+=.020*w
     flight_cloth(dress)
     for side in (-1,1):
         fold=line('Dress fold',[(side*.209,1.38,.123),(side*.213,1.19,.150),(side*.248,1.04,.155)],.0035,'DressShade',body)
@@ -329,7 +357,7 @@ def build_character(api):
 
     # Limbs have articulated elbows and knees. Grip targets live on the broom,
     # allowing the runtime to solve the arms while the torso leans independently.
-    broom=empty('Broom',parent=root)
+    broom=empty('Broom',(0,1.0,-.15),root)
     for side in (-1,1):
         label='Left' if side<0 else 'Right'
         shoulder=(side*.247,1.602,.017)
@@ -354,7 +382,9 @@ def build_character(api):
         leg=attach(empty(label+'Leg',hip),body)
         shin=attach(empty(label+'Knee',knee),leg)
         foot=attach(empty(label+'Foot',ankle),shin)
-        tube(label+' thigh',[hip,(side*.177,.82,.035),knee],[(.091,.095),(.081,.085),(.069,.066)],'Skin',leg)
+        # The upper thigh stays inside the dress in every pose. Omit that
+        # hidden surface so a wind ripple cannot expose intersecting skin.
+        tube(label+' thigh',[(side*.181,.770,.048),(side*.184,.685,.053),knee],[(.078,.079),(.075,.071),(.069,.066)],'Skin',leg)
         part(label+' kneecap',knee,(.072,.074,.072),'Skin',shin)
         tube(label+' calf',[knee,(side*.19,.461,.035),(side*.193,.245,.018),ankle],[(.068,.065),(.074,.066),(.045,.044),(.035,.037)],'Skin',shin)
         part(label+' foot',(side*.192,.114,.067),(.049,.052,.080),'Skin',foot)
@@ -409,19 +439,37 @@ def build_character(api):
         line('Broom binding',points,.012,'BowShade',broom)
 
     # Jiji's design stays spare: tall ears, an oval head and a narrow chest.
-    jiji=attach(empty('Jiji',(0,1.04,-.76)),root)
+    jiji=attach(empty('Jiji',(0,1.04,-.76)),broom)
     tube('Jiji body',[(0,1.032,-.77),(0,1.16,-.79),(0,1.36,-.774)],[(.118,.096),(.095,.091),(.073,.067)],'Ink',jiji)
-    part('Jiji head',(0,1.425,-.754),(.139,.127,.096),'Ink',jiji)
+    cat_head=attach(empty('JijiHead',(0,1.354,-.754)),jiji)
+    part('Jiji head',(0,1.425,-.754),(.139,.127,.096),'Ink',cat_head)
     for side in (-1,1):
-        attach(smooth(mesh('Jiji ear',[(side*.032,1.505,-.771),(side*.126,1.687,-.780),(side*.142,1.453,-.710),(side*.083,1.523,-.731)],[(0,1,3),(1,2,3),(2,0,3),(2,1,0)],'Ink')),jiji)
-        attach(mesh('Jiji inner ear',[(side*.053,1.52,-.743),(side*.12,1.65,-.758),(side*.126,1.489,-.714)],[(0,1,2),(2,1,0)],'HairShade'),jiji)
-        part('Jiji eye',(side*.057,1.442,-.664),(.047,.050,.009),'White',jiji)
-        part('Jiji pupil',(side*.056,1.442,-.654),(.013,.032,.004),'Ink',jiji)
+        ear=attach(empty(('Left' if side<0 else 'Right')+'JijiEar',(side*.083,1.49,-.754)),cat_head)
+        attach(smooth(mesh('Jiji ear',[(side*.032,1.505,-.771),(side*.126,1.687,-.780),(side*.142,1.453,-.710),(side*.083,1.523,-.731)],[(0,1,3),(1,2,3),(2,0,3),(2,1,0)],'Ink')),ear)
+        attach(mesh('Jiji inner ear',[(side*.053,1.52,-.743),(side*.12,1.65,-.758),(side*.126,1.489,-.714)],[(0,1,2),(2,1,0)],'HairShade'),ear)
+        part('Jiji eye',(side*.057,1.442,-.664),(.047,.050,.009),'White',cat_head)
+        part('Jiji pupil',(side*.056,1.442,-.654),(.013,.032,.004),'Ink',cat_head)
         tube('Jiji front paw',[(side*.055,1.236,-.702),(side*.055,1.09,-.690),(side*.055,1.025,-.680)],[(.022,.02),(.022,.019),(.027,.022)],'Ink',jiji,segments=12,steps=4)
-    part('Jiji nose',(0,1.396,-.654),(.013,.009,.006),'Lip',jiji)
-    line('Jiji mouth',[(0,1.385,-.656),(-.012,1.380,-.657)],.0025,'Ink',jiji)
-    line('Jiji curling tail',[(0,1.05,-.85),(.13,1.08,-1.025),(.22,1.24,-1.06),(.205,1.38,-1.04),(.15,1.415,-1.01)],.020,'Ink',jiji)
-    part('Jiji tail tip',(.15,1.415,-1.01),(.020,.020,.020),'Ink',jiji)
+    part('Jiji nose',(0,1.396,-.654),(.013,.009,.006),'Lip',cat_head)
+    line('Jiji mouth',[(0,1.385,-.656),(-.012,1.380,-.657)],.0025,'Ink',cat_head)
+    tail=attach(empty('JijiTail',(0,1.05,-.85)),jiji)
+    line('Jiji curling tail',[(0,1.05,-.85),(.13,1.08,-1.025),(.22,1.24,-1.06),(.205,1.38,-1.04),(.15,1.415,-1.01)],.020,'Ink',tail)
+    part('Jiji tail tip',(.15,1.415,-1.01),(.020,.020,.020),'Ink',tail)
+
+    # Keep the crown attached while the lower bob and nape follow the wind.
+    # These are editable morphs, shared by the native silhouette renderer.
+    for obj in list(bpy.context.scene.objects):
+        if obj.type!='MESH' or not (obj.name=='Bob hair' or obj.name.startswith('Nape hair lock')):continue
+        obj.shape_key_add(name='Basis')
+        for side,name in [(0,'Hair stream'),(-1,'Hair left'),(1,'Hair right')]:
+            key=obj.shape_key_add(name=name)
+            for v in key.data:
+                x,y,z=v.co.x,v.co.z,-v.co.y
+                w=max(0,min(1,(2.13-y)/.33))**2
+                if z>.10 and abs(x)<.23:w*=.12
+                v.co.x+=side*.100*w
+                v.co.y+=(.125 if side==0 else .025)*w
+                v.co.z+=(.04 if side==0 else .01)*w
 
     bpy.context.view_layer.update()
     for obj in bpy.context.scene.objects:
@@ -454,6 +502,7 @@ def build_character(api):
     # Preserve the film's youthful proportions without an oversized doll head.
     head.scale*=.92
     api['export']('KikiAndJiji')
+    breath_mouth.hide_render=True
     render_study(api,'kiki-model',(3,2.35,4),(0,1.34,-.04),3.1)
     render_study(api,'kiki-front',(0,1.65,6),(0,1.40,0),3.05)
     render_study(api,'kiki-profile',(6,1.85,0),(0,1.35,0),3.1)

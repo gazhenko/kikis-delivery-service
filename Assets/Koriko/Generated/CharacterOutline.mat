@@ -25,6 +25,7 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _Cloth: 0
     - _Thickness: 1.15
     m_Colors:
     - _Color: {r: 0.105, g: 0.08, b: 0.13, a: 1}
