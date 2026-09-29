@@ -1,0 +1,34 @@
+# Environment art: Koriko street and garden pass
+
+This pass develops the existing native Unity district. It preserves Kiki's rig, motion, cel materials, delivery rules, six destination coordinates, flight controls and continuous clock.
+
+The intended flight is bakery takeoff over a warm terracotta shopping street, a clear view of the clock tower above the roofs, an open descent into the market, then a turn toward the working waterfront. The return via the northern lane crosses enclosed gardens, a greenhouse, pasture and orchard before the bakery comes back into view. The short bakery-to-clock leg is approximately ten seconds at ordinary cruise speed, with additional time for takeoff and landing; longer trips retain the current delivery timers.
+
+## Reference and interpretation
+
+The [official Studio Ghibli film gallery](https://www.ghibli.jp/works/majo/) is the visual reference. Stills 013 and 022 inform projecting window trim, flower boxes, narrow façades and muted plaster. Still 024 informs joined urban blocks, mixed roof silhouettes and the promenade along the water. Still 036 informs layered tree masses, planted wall edges and worn masonry. These are visual studies, not a claim to reconstruct the film's exact geography. No film pixels, production meshes or proprietary scene files are distributed in the project.
+
+The supplied project has original Blender geometry and generated bitmap paintings. It does not contain the film's production environment assets. New geometry remains editable in `art-source/KorikoNeighborhood.blend`; `Tools/environment_art.py` supplies the authored street and planting rules through the existing art builder.
+
+## Changes
+
+- Ordinary broad building lots are divided into attached narrow frontages. Aligned street faces, shared rear aprons, string courses, pilasters, balconies and flower boxes connect each row. Gables, hips and mansards vary the roofscape.
+- The bakery has a narrower timber shopfront and richer upper planting. The clock tower has corner buttresses, a recessed belfry and a taller green spire. These remain recognizable approach landmarks.
+- Green spaces have paths, clipped borders, meadow margins and understory tied to their use. Private plots have vegetable rows, trellises, washing, a greenhouse and water barrels; the orchard has a potting shed and wild edges. A stone stair now connects Madame's raised garden to the street, with the pergola grounded at its top.
+- The quay has a continuous promenade, capstones, timber piers, mooring ropes, loading carts, packing crates, barrels and a net-mending frame. Coastal rocks soften its distant edges.
+- Trees use asymmetric layered crowns with visible branching and broken silhouettes. A quieter ground wash replaces the distracting directional grass pattern. Environmental surface shading has broader, cooler painted shadows. The character's materials and lighting remain separate.
+- The district exports 87 building/landmark footprints and 32 path segments or circuits. Spatial material batches allow regional culling. The minimap reads path geometry and building footprints from the same authored layout export.
+
+## Surface asset provenance
+
+New asset: `Assets/Koriko/Art/EnvironmentSurfaces-v2.png`, 1254 × 1254, generated with the **built-in imagegen tool**. The original atlas is retained for character-associated cloth, paper and straw cells. Measured environment row boundaries are 0, 314, 628, 941 and 1254 pixels. Native review exposed an initially incorrect row boundary that admitted wood into the foliage and slate into the grass; pixel sampling identified the correct boundary, now shared by Blender and Unity. Sampling insets, mipmaps and anisotropic filtering are enabled for the new atlas. Its brick and verdigris cells are used by garden walls and the clock spire.
+
+Final generation prompt:
+
+> Use case: stylized-concept. Asset type: production 3D environment diffuse texture atlas for a hand-painted animated-film seaside town inspired by the backgrounds of Kiki's Delivery Service. Create ONE perfectly square opaque image divided into EXACTLY 4 equal columns and 4 equal rows, 16 equal square material swatches filling all space, no borders, no gaps, no text. Orthographic FLAT material surfaces only, no objects or perspective, no baked directional light, no cast shadows. Cohesive restrained gouache and watercolor background-painting style: softly pooled pigment, broad irregular tonal washes, deliberate few drawn edges, subtle wear; not photorealistic, no noisy grain, no diagonal hatching, no sharp black outlines. Each cell seamless-looking within itself. Exact order, top row left to right: warm ivory limewash plaster, faded dusty apricot pink plaster, muted honey ochre plaster, weathered sage-green painted vertical wood planks. Second row: warm russet small terracotta roof tiles in subtle horizontal staggered courses, desaturated blue-gray small overlapping slate roof tiles, warm dark umber timber horizontal planks, pale warm limestone small rectangular masonry courses with soft mortar. Third row: gray-beige rounded small street cobbles with quiet narrow joints, a nearly flat meadow-green gouache wash with large subtle cloudy pale olive patches and NO grass blades or stripes, irregular layered leafy-green paint masses with deep teal shadow and olive highlights painted in BROAD flat clusters NOT individual tiny leaves, soft earthy brown garden soil. Fourth row: muted warm reddish brick in horizontal staggered rows, dark blue-green weathered copper, faded red striped awning cloth with very subtle broad stripes, straw gold reeds. Keep the meadow and foliage cells especially painterly and low-frequency, softly lit and low contrast to avoid repeating pattern artifacts. The first three plaster cells must be almost plain softly mottled colors, no bricks or cracks.
+
+## Rebuild and review
+
+Run Blender with `--python Tools/build_art.py -- --world-only` to export the environment without touching the character files. The source pass checks that physical buildings leave clear landing centers. `--koriko-environment-check` in the development player captures twelve native views, including street level, rooftops, gardens, quay, evening and night. `--koriko-flight-check` separately drives the real controls through delivery approaches and landings and records route frame time. All development checks use a fresh isolated game and do not read or write the player's save.
+
+Completed native checks and visual revisions are recorded in [the environment verification report](verification/environment-pass/README.md). Fixed views are art review evidence, not a flight test or performance benchmark.

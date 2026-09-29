@@ -4,11 +4,12 @@
 
 | Asset | Source | Role |
 | --- | --- | --- |
-| `Assets/Koriko/Art/PaintedFilmSurfaces.png` | Built-in image generation, 2026-09-27; [exact prompt](references/painted-film-atlas.md) | Current, quieter poster-color surfaces and interface paper |
+| `Assets/Koriko/Art/EnvironmentSurfaces-v2.png` | Built-in image generation, 2026-09-28; [exact prompt and integration](ENVIRONMENT.md) | Current environmental plaster, roofs, stone, foliage, meadow, soil, brick and copper |
+| `Assets/Koriko/Art/PaintedFilmSurfaces.png` | Built-in image generation, 2026-09-27; [exact prompt](references/painted-film-atlas.md) | Retained paper, cloth and straw cells, including interface paper |
 | `Assets/Koriko/Art/ShopPaintings.png` | Built-in image generation, 2026-09-27; [exact prompt](references/shop-paintings.md) | Painted interiors and signs mapped onto actual storefronts |
 | `Assets/Koriko/Art/PaintedSurfaces.png` | Built-in image generation, 2026-09-27; prompt below | Sixteen related painted surface swatches, including paper for interface cards |
 | `Assets/Koriko/Art/PaintedSky.png` | Built-in image generation, 2026-09-27; prompt below | Panoramic cloud painting with a horizon blended into distance fog |
-| `Assets/Koriko/Art/KorikoNeighborhood.fbx` | Original project geometry, authored by `Tools/build_art.py` | Connected neighborhood, courts, gardens, quay and airship |
+| `Assets/Koriko/Art/KorikoNeighborhood.fbx` | Original project geometry, authored by `Tools/build_art.py` and `Tools/environment_art.py` | Connected street frontages, courts, gardens, quay and airship |
 | `Assets/Koriko/Art/KikiAndJiji.fbx` | Original project geometry, authored by `Tools/character_model.py`, exported by `Tools/build_art.py` | Film-referenced Kiki, Jiji, broom and shoulder bag; articulated limbs and flight cloth |
 | `art-source/*.blend` | Editable Blender 4.5.3 exports of the same source | Geometry and material editing |
 | `ItemIcons.png` | Existing browser project's `public/art/film-inventory-atlas.png` | Illustrated inventory and HUD icons |
@@ -50,4 +51,6 @@ The latest layout extends terrain beneath the distant trees and hills, connects 
 
 The film pass adds gently shaped roof edges and dormers, a bakery gable, painted shop windows, illustrated location signs, balcony rails, and petal-shaped flowers. The Blender sources retain these details as editable geometry. Background materials now combine broad texture painting with authored vertex tones; character materials use explicitly chosen cel colors.
 
-Remaining art work includes dialogue-specific acting, distinctive film-location silhouettes, richer back gardens and ambient sound. The flight performance uses authored action accents with procedural overlap, rather than imported production-film clips. The town layout is an authored interpretation rather than a canonical film map. Repeated frontages and simple foliage still read as procedural; further environment work needs bespoke forms and placement beyond changing the renderer.
+The dedicated [environment pass](ENVIRONMENT.md) develops narrow joined frontages, mixed roof profiles, upper-floor trim, a copper-spired clock tower, connected service yards, a greenhouse, kitchen plots, meadow edges and a working quay. Layered leaf masses replace the older round tree and bed shapes. The new painted atlas removes directional grass marks; native review caught and corrected atlas bleed, roof normals and Madame's disconnected garden entrance. [Native captures and all-six-court verification](verification/environment-pass/README.md) record the final result.
+
+Remaining art work includes dialogue-specific acting, more bespoke secondary architecture and boats, background town animation and ambient sound. The flight performance uses authored action accents with procedural overlap. The town layout remains an authored interpretation rather than a canonical film map; modular architecture and the distant hills still benefit from further bespoke treatment.

@@ -34,15 +34,15 @@ Material:
     - _NormalFlatten: 0
     - _PaintScale: 1
     - _Rim: 0
-    - _ShadowStrength: 0.72
-    - _Softness: 0.09
-    - _TextureWeight: 0.75
+    - _ShadowStrength: 0.68
+    - _Softness: 0.12
+    - _TextureWeight: 0.7
     - _VertexPaint: 1
     - _Wind: 0
     m_Colors:
     - _AtlasRect: {r: 0.258, g: 0.008, b: 0.234, a: 0.234}
     - _Color: {r: 0.1, g: 0.14, b: 0.23, a: 1}
     - _LightTint: {r: 1.08, g: 1.04, b: 0.94, a: 1}
-    - _ShadowTint: {r: 0.66, g: 0.72, b: 0.79, a: 1}
+    - _ShadowTint: {r: 0.63, g: 0.73, b: 0.8, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -19,14 +19,16 @@ bpy.ops.object.delete(use_global=False)
 bpy.context.scene.unit_settings.system = 'METRIC'
 bpy.context.scene.unit_settings.scale_length = 1
 ATLAS = bpy.data.images.load(str(ART / 'PaintedFilmSurfaces.png'))
+ENV_ATLAS = bpy.data.images.load(str(ART / 'EnvironmentSurfaces-v2.png'))
+ENV_ROWS = [0,314,628,941,1254]
 MATERIALS = {}
 SHAPES = {}
 CHUNK = 'Town'
 PALETTE=[(.89,.82,.67),(.74,.52,.45),(.77,.61,.37),(.56,.67,.52),(.55,.27,.18),(.28,.37,.43),(.32,.25,.17),(.67,.64,.53),(.46,.46,.39),(.40,.53,.26),(.23,.36,.20),(.43,.31,.18),(.95,.91,.81),(.10,.14,.23),(.68,.11,.13),(.79,.62,.29)]
 
 def xyz(v): return (v[0], -v[2], v[1])
-def mat(name, color, tile=None):
-    if tile is not None:color=PALETTE[tile]
+def mat(name, color, tile=None,environment_cell=False):
+    if tile is not None and not environment_cell:color=PALETTE[tile]
     m = bpy.data.materials.new(name)
     m.diffuse_color = (*color, 1)
     m.use_nodes = True
@@ -47,17 +49,21 @@ def mat(name, color, tile=None):
         minus=nodes.new('ShaderNodeVectorMath');minus.operation='SUBTRACT';minus.inputs[1].default_value=(1,1,1);links.new(twice.outputs[0],minus.inputs[0])
         absolute=nodes.new('ShaderNodeVectorMath');absolute.operation='ABSOLUTE';links.new(minus.outputs[0],absolute.inputs[0])
         mirror=nodes.new('ShaderNodeVectorMath');mirror.operation='SUBTRACT';mirror.inputs[0].default_value=(1,1,1);links.new(absolute.outputs[0],mirror.inputs[1])
-        scale=nodes.new('ShaderNodeVectorMath');scale.operation='SCALE';scale.inputs[3].default_value=.246
+        scale=nodes.new('ShaderNodeVectorMath');scale.operation='MULTIPLY'
+        top,bottom=ENV_ROWS[tile//4:tile//4+2] if tile<12 or environment_cell else (tile//4*313.5,(tile//4+1)*313.5)
+        scale.inputs[1].default_value=(.25-8/1254,(bottom-top-8)/1254,1)
         links.new(mirror.outputs[0],scale.inputs[0])
-        add=nodes.new('ShaderNodeVectorMath');add.operation='ADD';add.inputs[1].default_value=((tile%4)*.25+.002,(3-tile//4)*.25+.002,0)
+        add=nodes.new('ShaderNodeVectorMath');add.operation='ADD';add.inputs[1].default_value=((tile%4)*.25+4/1254,1-bottom/1254+4/1254,0)
         links.new(scale.outputs[0],add.inputs[0])
-        tex=nodes.new('ShaderNodeTexImage');tex.image=ATLAS;tex.interpolation='Linear';links.new(add.outputs[0],tex.inputs[0])
+        tex=nodes.new('ShaderNodeTexImage');tex.image=ENV_ATLAS if tile<12 or environment_cell else ATLAS;tex.interpolation='Linear';links.new(add.outputs[0],tex.inputs[0])
         painted=nodes.new('ShaderNodeMixRGB');painted.inputs[0].default_value=.4 if tile in [9,10] else .65;painted.inputs[1].default_value=(*color,1);links.new(tex.outputs[0],painted.inputs[2]);links.new(painted.outputs[0],multiply.inputs[1])
     emit=nodes.new('ShaderNodeEmission');links.new(multiply.outputs[0],emit.inputs[0]);links.new(emit.outputs[0],out.inputs[0])
     MATERIALS[name]=m
     return m
 
 for i in range(16): mat('Paint_'+str(i),(1,1,1),i)
+mat('Environment_Brick',(.63,.37,.28),12,True)
+mat('Environment_Copper',(.28,.45,.40),13,True)
 for name,color in {
     'Ink':(.075,.089,.112),'Skin':(.95,.73,.54),'Hair':(.105,.073,.064),
     'Dress':(.22,.26,.40),'Bow':(.84,.22,.24),'BowShade':(.57,.12,.18),'Shoe':(.65,.22,.12),
@@ -135,7 +141,9 @@ def stroke(name,points,width,material,parent=None):
     curve.bevel_depth=width;curve.bevel_resolution=1
     spline=curve.splines.new('BEZIER');spline.bezier_points.add(len(points)-1)
     for point,position in zip(spline.bezier_points,points):
-        point.co=xyz(position);point.handle_left_type='AUTO';point.handle_right_type='AUTO'
+        point.co=xyz(position)
+        handle='VECTOR' if 'roof verge' in name or 'glazing bar' in name else 'AUTO'
+        point.handle_left_type=handle;point.handle_right_type=handle
     obj=bpy.data.objects.new(name,curve);bpy.context.collection.objects.link(obj)
     bpy.ops.object.select_all(action='DESELECT');obj.select_set(True);bpy.context.view_layer.objects.active=obj
     bpy.ops.object.convert(target='MESH');obj=bpy.context.object
@@ -157,8 +165,8 @@ def paint_tones(obj,character=False):
             colors.data[index].color=(.78+t*.27,.86+t*.20,.87+t*.15,1)
         elif material=='Paint_9':
             co=obj.matrix_world@v.co
-            wash=.96+.035*math.sin(co.x*.04+co.y*.022)
-            colors.data[index].color=(wash,wash,1,1)
+            wash=.96+.065*math.sin(co.x*.031+math.sin(co.y*.053)*1.5)+.045*math.sin(co.y*.075+co.x*.012)
+            colors.data[index].color=(wash, .97+(wash-.96)*.65, .95+(wash-.96)*.4,1)
         else:
             colors.data[index].color=(.94+t*.07,.96+t*.06,1,1)
 
@@ -200,10 +208,11 @@ def roof(name,cx,y,cz,w,d,rise,tile,parent=None):
 def paint_uv(obj,scale=3):
     if obj.type!='MESH':return
     uv=obj.data.uv_layers.new(name='Paint coordinates')
+    matrix=obj.matrix_world.copy()
     for face in obj.data.polygons:
         n=face.normal; axis=max(range(3),key=lambda i:abs(n[i]));u,v=[i for i in range(3) if i!=axis]
         for li in face.loop_indices:
-            co=obj.matrix_world @ obj.data.vertices[obj.data.loops[li].vertex_index].co
+            co=matrix @ obj.data.vertices[obj.data.loops[li].vertex_index].co
             uv.data[li].uv=(co[u]/scale,co[v]/scale)
 
 def window(name,x,y,z,w=1.5,h=2,front=-1,shutters=True):
@@ -225,6 +234,7 @@ def painting(name,x,y,z,w,h,tile):
     return obj
 
 BUILDINGS=[]
+PATHS=[]
 def building(name,x,z,w,d,h,paint=0,style='shop',front=-1):
     global CHUNK
     y=height(x,z);CHUNK=name
@@ -237,7 +247,7 @@ def building(name,x,z,w,d,h,paint=0,style='shop',front=-1):
     for side in [-1,1]:
         cylinder(name+' gutter',(x+side*(w/2+.4),y+h-.2,z-d/2-.4),(x+side*(w/2+.4),y+h-.2,z+d/2+.4),.09,'Ink')
         cylinder(name+' downpipe',(x+side*(w/2-.2),y+.25,z+front*(d/2+.22)),(x+side*(w/2-.2),y+h,z+front*(d/2+.22)),.075,'Ink')
-    count=max(2,int(w/3.6));floors=max(1,int(h/3.7))
+    count=max(2,int(w/3.6));floors=max(1,1+int((h-3.05)/3.4))
     for side in [-1,1]:
         for level in range(floors):
             for dz in [-d*.25,d*.25]:
@@ -321,6 +331,7 @@ def building(name,x,z,w,d,h,paint=0,style='shop',front=-1):
 
 def path(name,points,width,tile='Paint_8'):
     global CHUNK
+    PATHS.append(dict(name=name,width=width,tile=tile,points=[dict(x=p[0],z=p[1]) for p in points]))
     CHUNK='Streets';vertices=[];faces=[]
     for a,b in zip(points,points[1:]):
         dx=b[0]-a[0];dz=b[1]-a[1];dist=math.hypot(dx,dz);steps=max(1,int(dist/3))
@@ -363,8 +374,7 @@ def bed(name,x,z,w,d,color='Flower',y=None):
     for dx,dz,sw,sd in [(0,-d/2,w,.18),(0,d/2,w,.18),(-w/2,0,.18,d),(w/2,0,.18,d)]:box(name+' stone edging',(x+dx,y+.18,z+dz),(sw,.28,sd),'Paint_7')
     for i in range(max(3,int(w*d*.4))):
         px=x+random.uniform(-w*.44,w*.44);pz=z+random.uniform(-d*.4,d*.4)
-        ellipsoid(name+' shrub',(px,y+.42,pz),(.55,.4,.52),'Leaf',segments=8,rings=6)
-        for j in range(3):flower_head(name+' flowers',px+(j-1)*.25,y+.76,pz+random.uniform(-.2,.2),color)
+        environment.shrub(name+' flowering bush',px,pz,.62,y=y+.10,flower=color)
 
 def lamp(x,z):
     y=height(x,z)
@@ -431,11 +441,18 @@ def world():
     box('Bakery court',(-113,.10,9),(23,.2,11),'Paint_8')
     box('Harbor court',(121,.1,-55),(22,.2,11),'Paint_8')
     box('Tombo court',(-31,.1,49),(18,.2,11),'Paint_8')
-    box('Madame raised garden',(90,5.0,103),(45,4,42),'Paint_7')
-    c=box('COL_MadameGarden',(90,5.0,103),(45,4,42),'Ink');c.hide_render=True
-    box('Madame garden lawn',(90,7.015,103),(44,.05,41),'Paint_9')
-    box('Madame approach',(90,7.1,92),(16,.2,20),'Paint_8')
-    path('Madame ramp',[(64,78),(78,83),(90,86)],5,'Paint_7')
+    # The raised garden has a real stair opening facing the street, rather than
+    # a surface path that disappears through the front retaining wall.
+    for index,(cx,cz,sw,sd) in enumerate([(76.75,103,18.5,42),(103.25,103,18.5,42),(90,106,8,36)]):
+        box('Madame garden terrace',(cx,5.0,cz),(sw,4,sd),'Paint_7')
+        c=box('COL_MadameGarden_'+str(index),(cx,5.0,cz),(sw,4,sd),'Ink');c.hide_render=True
+        box('Madame garden lawn',(cx,7.015,cz),(sw-.08,.05,sd-.08),'Paint_9')
+    box('Madame approach',(90,7.1,95),(16,.2,14),'Paint_8')
+    path('Madame street approach',[(64,78),(90,78),(90,82)],3.4,'Paint_7')
+    stair_base=height(90,82)
+    for step in range(12):
+        top=stair_base+(7.2-stair_base)*(step+1)/12
+        box('Madame stone stair',(90,(top+stair_base-.2)/2,82+(step+.5)*.5),(8,top-stair_base+.2,.5),'Paint_7')
     # Each row fronts a continuous street. Roof and facade variation follows lot widths.
     building('Osono_Bakery',-113,23,22,15,8.4,0,'bakery')
     for i,(x,w,h,p) in enumerate([(-144,17,10,2),(-89,22,12,1),(-67,20,9.6,3)]):building('Bakery_Row_'+str(i),x,20,w,17,h,p)
@@ -482,9 +499,11 @@ def world():
         box('Garden boundary',(x,7.6,103),(.6,1.2,42),'Paint_7')
         for z in [87,100,116]:tree('Garden cypress',x+(-2 if x<90 else 2),z,.85,'cypress')
     for x,z,w,d in [(76,91,7,12),(104,91,7,12),(76,110,8,6),(103,125,10,4)]:bed('Madame roses',x,z,w,d,y=7)
-    for dx in [-3,3]:cylinder('Garden arch post',(90+dx,7,82),(90+dx,10,82),.13,'Paint_6')
-    for dz in [-.7,.7]:cylinder('Garden pergola',(86.5,10,82+dz),(93.5,10,82+dz),.13,'Paint_6')
-    for i in range(9):ellipsoid('Climbing roses',(86.7+i*.8,10.1,82),(.65,.5,.7),'Flower',segments=8,rings=6)
+    for dx in [-3,3]:cylinder('Garden arch post',(90+dx,7,88),(90+dx,10,88),.13,'Paint_6')
+    for dz in [-.7,.7]:cylinder('Garden pergola',(86.5,10,88+dz),(93.5,10,88+dz),.13,'Paint_6')
+    for i in range(9):
+        environment.leafy_mass('Pergola rose foliage',86.7+i*.8,10.05,88,.65,.42,.67,i)
+        flower_head('Pergola rose blossom',86.7+i*.8,10.52,88,'Flower')
     # Bakery life is grouped by its doors and garden, never across the landing court.
     CHUNK='Bakery_Courtyard'
     bed('Bakery flower bed',-128,10,4,9);bed('Bakery herbs',-99,11,3,8,'Lavender')
@@ -546,8 +565,8 @@ def world():
     box('Pasture water trough',(-128,height(-128,96)+.35,96),(2.6,.7,1.1),'Paint_7')
     box('Trough water',(-128,height(-128,96)+.72,96),(2.3,.04,.8),'Sea')
     CHUNK='Wooded_Hills'
-    for i in range(65):
-        x=-177+(i%22)*17+random.uniform(-3,3);z=163+(i//22)*15+random.uniform(-3,3)
+    for i in range(90):
+        x=-176+(i%30)*12+random.uniform(-2.4,2.4);z=163+(i//30)*14+random.uniform(-2.5,2.5)
         tree('Hillside tree',x,z,1.1+random.random()*.65,'cypress' if i%7==0 else 'broad')
     CHUNK='Background_Groves'
     for cx,cz in [(-170,242),(-45,284),(96,242),(232,277)]:
@@ -557,6 +576,7 @@ def world():
                 tree('Distant grove',x,z,1.45+random.random()*.5)
     for side in [-1,1]:
         for i in range(10):tree('Town edge tree',side*165, -47+i*18,1.1)
+    environment.finish_world()
     for d in CatalogDestinations:
         empty('Anchor_'+d['id'],(d['x'],d['y'],d['z']))
     # Export each street/material assembly as one mesh. Colliders and anchors stay separate.
@@ -565,9 +585,11 @@ def world():
     for obj in list(bpy.context.scene.objects):
         if obj.type=='MESH':
             material=obj.data.materials[0].name
-            if not obj.data.uv_layers:paint_uv(obj,30 if material=='Paint_9' else 9 if material=='Paint_10' else 10 if material in ['Paint_0','Paint_1','Paint_2','Paint_3'] else 4 if material in ['Paint_4','Paint_5'] else 3)
+            if not obj.data.uv_layers:paint_uv(obj,72 if material=='Paint_9' else 8 if material=='Paint_10' else 12 if material in ['Paint_0','Paint_1','Paint_2','Paint_3'] else 2.4 if material in ['Paint_4','Paint_5'] else 3)
             paint_tones(obj)
+    print('Paint coordinates complete; consolidating spatial material batches',flush=True)
     consolidate()
+    print('Spatial batches complete; exporting environment',flush=True)
     export('KorikoNeighborhood')
     # Artist previews are Blender renders, clearly separate from Unity verification.
     render_preview('neighborhood-aerial',(150,120,-175),(-10,0,30),42)
@@ -580,17 +602,46 @@ CatalogDestinations=[
 ]
 
 def consolidate():
+    """Join static world batches without thousands of dependency-graph unlink passes.
+
+    Copy source positions, polygon winding, smoothing, UVs and painted vertex
+    colors explicitly, then remove the source IDs together. No character meshes
+    or collision meshes use this path.
+    """
     groups={}
     for obj in list(bpy.context.scene.objects):
         if obj.type=='MESH' and not obj.name.startswith('COL_'):
             key=(obj.get('chunk','Town'),obj.data.materials[0].name)
             groups.setdefault(key,[]).append(obj)
+    removed=[];source_vertices=0;merged_vertices=0;source_faces=0;merged_faces=0
     for (chunk,material),objects in groups.items():
-        bpy.ops.object.select_all(action='DESELECT')
-        for obj in objects:obj.select_set(True)
-        bpy.context.view_layer.objects.active=objects[0]
-        if len(objects)>1:bpy.ops.object.join()
-        objects[0].name=chunk+'__'+material
+        if len(objects)==1:
+            objects[0].name=chunk+'__'+material
+            continue
+        vertices=[];faces=[];smooth=[];uvs=[];tones=[]
+        for obj in objects:
+            data=obj.data;matrix=obj.matrix_world.copy();offset=len(vertices)
+            vertices.extend(tuple(matrix@v.co) for v in data.vertices)
+            faces.extend(tuple(v+offset for v in face.vertices) for face in data.polygons)
+            smooth.extend(face.use_smooth for face in data.polygons)
+            layer=data.uv_layers.active
+            uvs.extend(value for loop in layer.data for value in loop.uv)
+            color=data.color_attributes.get('Paint tones')
+            tones.extend(value for vertex in color.data for value in vertex.color)
+            source_vertices+=len(data.vertices);source_faces+=len(data.polygons)
+            removed.append(obj)
+        data=bpy.data.meshes.new(chunk+'__'+material)
+        data.from_pydata(vertices,[],faces);data.update()
+        data.polygons.foreach_set('use_smooth',smooth)
+        data.uv_layers.new(name='Paint coordinates').data.foreach_set('uv',uvs)
+        data.color_attributes.new(name='Paint tones',type='FLOAT_COLOR',domain='POINT').data.foreach_set('color',tones)
+        data.materials.append(MATERIALS[material])
+        obj=bpy.data.objects.new(chunk+'__'+material,data);bpy.context.collection.objects.link(obj)
+        obj['chunk']=chunk;merged_vertices+=len(data.vertices);merged_faces+=len(data.polygons)
+    assert source_vertices==merged_vertices and source_faces==merged_faces,'World batch merge dropped source geometry'
+    data_to_remove={obj.data for obj in removed if obj.data.users==1}
+    bpy.data.batch_remove(ids=set(removed)|data_to_remove)
+    print('WORLD_BATCH_PASS:',len(groups),'material batches;',merged_vertices,'merged vertices;',merged_faces,'merged polygons; UV and paint attributes retained',flush=True)
 
 def export(name):
     bpy.ops.object.select_all(action='DESELECT')
@@ -617,12 +668,18 @@ def kiki():
     from character_model import build_character
     build_character(globals())
 
+sys.path.insert(0,str(ROOT/'Tools'))
+import environment_art as environment
+environment.install(globals())
+
 if '--character-only' not in sys.argv:
     world()
     resources=ROOT/'Assets/Koriko/Resources';resources.mkdir(parents=True,exist_ok=True)
-    (resources/'KorikoLayout.json').write_text(json.dumps(dict(buildings=BUILDINGS,landings=CatalogDestinations),indent=2))
-kiki()
+    (resources/'KorikoLayout.json').write_text(json.dumps(dict(buildings=BUILDINGS,paths=PATHS,landings=CatalogDestinations),indent=2))
+if '--world-only' not in sys.argv:kiki()
 if '--character-only' in sys.argv:
     print('CHARACTER_ART_COMPLETE: articulated Kiki/Jiji, flight cloth, FBX, editable Blender source and five angle previews')
+elif '--world-only' in sys.argv:
+    print('ENVIRONMENT_ART_COMPLETE',len(BUILDINGS),'authored frontages and landmarks;',len(PATHS),'connected paths; six delivery courts; character assets preserved')
 else:
     print('ART_COMPLETE',len(BUILDINGS),'authored buildings; six delivery courts; articulated Kiki/Jiji; FBX and editable Blender sources')

@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: c74e2f7f43ab06026b6b6ad656974feb, type: 3}
+        m_Texture: {fileID: 2800000, guid: 60813c0cb2a04c101b799bd5ec9d9469, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
@@ -34,15 +34,15 @@ Material:
     - _NormalFlatten: 0
     - _PaintScale: 1
     - _Rim: 0
-    - _ShadowStrength: 0.72
-    - _Softness: 0.09
-    - _TextureWeight: 0.75
+    - _ShadowStrength: 0.68
+    - _Softness: 0.12
+    - _TextureWeight: 0.7
     - _VertexPaint: 1
     - _Wind: 0
     m_Colors:
-    - _AtlasRect: {r: 0.508, g: 0.508, b: 0.234, a: 0.234}
+    - _AtlasRect: {r: 0.50398725, g: 0.5031898, b: 0.24202552, a: 0.24242425}
     - _Color: {r: 0.32, g: 0.25, b: 0.17, a: 1}
     - _LightTint: {r: 1.08, g: 1.04, b: 0.94, a: 1}
-    - _ShadowTint: {r: 0.66, g: 0.72, b: 0.79, a: 1}
+    - _ShadowTint: {r: 0.63, g: 0.73, b: 0.8, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

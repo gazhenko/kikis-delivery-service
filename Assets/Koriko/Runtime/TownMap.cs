@@ -8,7 +8,9 @@ namespace Koriko
     public sealed class TownMap : MaskableGraphic
     {
         [Serializable] public class Building { public string name;public float x,y,z,width,depth,height; }
-        [Serializable] public class Layout { public Building[] buildings; }
+        [Serializable] public class MapPoint { public float x,z; }
+        [Serializable] public class MapPath { public float width;public string tile;public MapPoint[] points; }
+        [Serializable] public class Layout { public Building[] buildings;public MapPath[] paths; }
         public GameApp App;
         Layout layout;
         float next;
@@ -30,11 +32,27 @@ namespace Koriko
         {
             int n=v.currentVertCount;v.AddVert(p,color,Vector2.zero);for(int i=0;i<=12;i++){float a=i*Mathf.PI*2/12;v.AddVert(p+new Vector2(Mathf.Cos(a),Mathf.Sin(a))*radius,color,Vector2.zero);if(i>0)v.AddTriangle(n,n+i,n+i+1);}
         }
+        void Path(VertexHelper v,MapPath path,Color color)
+        {
+            if(path.points==null)return;
+            for(int j=1;j<path.points.Length;j++)
+            {
+                var a=path.points[j-1];var b=path.points[j];
+                Vector2 delta=new Vector2(b.x-a.x,b.z-a.z);
+                if(delta.sqrMagnitude<.001f)continue;
+                Vector2 n=new Vector2(-delta.y,delta.x).normalized*path.width*.5f;
+                int i=v.currentVertCount;
+                v.AddVert(P(a.x+n.x,a.z+n.y),color,Vector2.zero);v.AddVert(P(a.x-n.x,a.z-n.y),color,Vector2.zero);
+                v.AddVert(P(b.x-n.x,b.z-n.y),color,Vector2.zero);v.AddVert(P(b.x+n.x,b.z+n.y),color,Vector2.zero);
+                v.AddTriangle(i,i+1,i+2);v.AddTriangle(i,i+2,i+3);
+            }
+        }
         protected override void OnPopulateMesh(VertexHelper v)
         {
             v.Clear();var r=rectTransform.rect;Quad(v,r.min,r.max,new Color(.60f,.68f,.49f));Quad(v,P(-175,-145),P(180,-76),new Color(.38f,.60f,.63f));
             var road=new Color(.89f,.83f,.68f);
-            Quad(v,P(-155,-4),P(151,4),road);Quad(v,P(-130,-66),P(148,-58),road);Quad(v,P(-46,-62),P(-38,129),road);Quad(v,P(60,-62),P(68,129),road);Quad(v,P(-42,75),P(140,81),road);Quad(v,P(-125,126.5f),P(142,131.5f),road);Quad(v,P(-10,3),P(42,47),road);
+            if(layout?.paths!=null)foreach(var path in layout.paths)Path(v,path,path.tile=="Paint_8"?new Color(.76f,.73f,.63f):road);
+            Quad(v,P(-10,3),P(42,47),road);
             if(layout?.buildings!=null)foreach(var b in layout.buildings)Quad(v,P(b.x-b.width/2,b.z-b.depth/2),P(b.x+b.width/2,b.z+b.depth/2),new Color(.65f,.40f,.29f));
             foreach(var d in Catalog.Destinations)
             {

@@ -158,17 +158,22 @@ namespace Koriko.Editor
         static Dictionary<string,Material> MakeMaterials()
         {
             var shader=Shader.Find("Koriko/Painted");if(!shader)throw new InvalidOperationException("The painted shader did not import.");
-            var atlas=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"PaintedFilmSurfaces.png");
-            if(!atlas)throw new InvalidOperationException("Missing painted film surface atlas.");
+            var atlas=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"EnvironmentSurfaces-v2.png");
+            var originalAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"PaintedFilmSurfaces.png");
+            if(!atlas||!originalAtlas)throw new InvalidOperationException("Missing painted environment surface atlas.");
+            // Inspected pixel boundaries: generated rows are not exactly equal height.
+            int[] surfaceRows={0,314,628,941,1254};
             var result=new Dictionary<string,Material>();
             for(int i=0;i<16;i++)
             {
-                var m=Material("Paint_"+i,shader);m.SetTexture("_BaseMap",atlas);m.SetColor("_Color",palette[i]);m.SetVector("_AtlasRect",new Vector4(i%4*.25f+.008f,(3-i/4)*.25f+.008f,.234f,.234f));
-                m.SetFloat("_TextureWeight",i==9?.42f:i==10?.38f:i<4?.55f:.75f);
+                var m=Material("Paint_"+i,shader);m.SetTexture("_BaseMap",i<12?atlas:originalAtlas);m.SetColor("_Color",palette[i]);
+                int top=surfaceRows[i/4],bottom=surfaceRows[i/4+1];
+                m.SetVector("_AtlasRect",i<12?new Vector4(i%4*.25f+5/1254f,1-bottom/1254f+5/1254f,.25f-10/1254f,(bottom-top-10)/1254f):new Vector4(i%4*.25f+.008f,(3-i/4)*.25f+.008f,.234f,.234f));
+                m.SetFloat("_TextureWeight",i==9?.35f:i==10?.48f:i<3?.70f:i==8?.55f:.70f);
                 m.SetFloat("_Wind",i==10?.6f:0);m.SetFloat("_PaintScale",1);m.SetFloat("_VertexPaint",1);
-                m.SetFloat("_NormalFlatten",i==10?.48f:0);m.SetFloat("_ShadowStrength",i==10?.3f:.72f);
-                m.SetFloat("_Softness",i==10?.17f:.09f);
-                m.SetColor("_ShadowTint",new Color(.66f,.72f,.79f));m.SetColor("_LightTint",new Color(1.08f,1.04f,.94f));
+                m.SetFloat("_NormalFlatten",i==10?.65f:0);m.SetFloat("_ShadowStrength",i==10?.35f:.68f);
+                m.SetFloat("_Softness",i==10?.20f:.12f);
+                m.SetColor("_ShadowTint",new Color(.63f,.73f,.80f));m.SetColor("_LightTint",new Color(1.08f,1.04f,.94f));
                 result.Add(m.name,m);
             }
             foreach(var entry in colors)
@@ -182,6 +187,17 @@ namespace Koriko.Editor
                     m.SetFloat("_Emission",entry.Key=="Glass"?.85f:0);
                 }
                 result.Add(entry.Key,m);
+            }
+            for(int cell=12;cell<=13;cell++)
+            {
+                string name=cell==12?"Environment_Brick":"Environment_Copper";
+                var m=Material(name,shader);m.SetTexture("_BaseMap",atlas);
+                m.SetColor("_Color",cell==12?new Color(.63f,.37f,.28f):new Color(.28f,.45f,.40f));
+                m.SetVector("_AtlasRect",new Vector4(cell%4*.25f+5/1254f,5/1254f,.25f-10/1254f,(1254-941-10)/1254f));
+                m.SetFloat("_TextureWeight",.72f);m.SetFloat("_PaintScale",1);m.SetFloat("_VertexPaint",1);
+                m.SetFloat("_Softness",.12f);m.SetFloat("_ShadowStrength",.68f);
+                m.SetColor("_ShadowTint",new Color(.63f,.73f,.80f));m.SetColor("_LightTint",new Color(1.08f,1.04f,.94f));
+                result.Add(name,m);
             }
             var shopAtlas=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"ShopPaintings.png");
             if(!shopAtlas)throw new InvalidOperationException("Missing shop paintings atlas.");

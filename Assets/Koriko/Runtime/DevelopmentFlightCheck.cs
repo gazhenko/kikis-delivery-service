@@ -20,7 +20,8 @@ namespace Koriko
     {
         public static bool ArtOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-art-check")>=0;
         public static bool CharacterOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-character-check")>=0;
-        public static bool Requested => Debug.isDebugBuild&&(ArtOnly||CharacterOnly||DevelopmentMotionCheck.Requested||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
+        public static bool EnvironmentOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-environment-check")>=0;
+        public static bool Requested => Debug.isDebugBuild&&(ArtOnly||CharacterOnly||EnvironmentOnly||DevelopmentMotionCheck.Requested||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
         GameApp app;
         Keyboard keyboard;
         Gamepad gamepad;
@@ -39,7 +40,7 @@ namespace Koriko
         }
         IEnumerator Start()
         {
-            output=Path.Combine(Application.persistentDataPath,CharacterOnly?"character-check":ArtOnly?"art-check":"flight-check");Directory.CreateDirectory(output);
+            output=Path.Combine(Application.persistentDataPath,EnvironmentOnly?"environment-check":CharacterOnly?"character-check":ArtOnly?"art-check":"flight-check");Directory.CreateDirectory(output);
             drawCalls=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Draw Calls Count",1);
             triangles=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Triangles Count",1);
             app=FindFirstObjectByType<GameApp>();
@@ -50,6 +51,7 @@ namespace Koriko
             InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
             yield return null;
             app.Begin(Difficulty.Cozy);app.Hud.ClosePanel();
+            if(EnvironmentOnly){yield return EnvironmentViews();if(!failed)Finish();yield break;}
             if(CharacterOnly){yield return CharacterViews();if(!failed)Finish();yield break;}
             if(ArtOnly){yield return ArtViews();if(!failed)Finish();yield break;}
             Check(app.Rules.Accept(app.Rules.State.jobs[0].id),"Collect bakery parcel");
@@ -65,6 +67,9 @@ namespace Koriko
             yield return FlyTo(Catalog.FindDestination("madame"));
             if(failed)yield break;
             yield return Capture("04-madame-garden");
+            yield return FlyTo(Catalog.FindDestination("tombo"));
+            if(failed)yield break;
+            yield return Capture("04b-tombo-workshop");
             // Approach below the envelope; the cargo court is under the airship.
             yield return FlyTo(Catalog.FindDestination("airship"),46);
             if(failed)yield break;
@@ -138,6 +143,35 @@ namespace Koriko
             camera.transform.position=app.Motor.Visual.TransformPoint(position);
             camera.transform.LookAt(app.Motor.Visual.TransformPoint(target));camera.fieldOfView=fov;
             app.Lighting.Refresh(app.Rules,true);camera.backgroundColor=new Color(.86f,.85f,.80f);
+            yield return Capture(name);
+        }
+        IEnumerator EnvironmentViews()
+        {
+            app.Rules.State.elapsed=75;
+            yield return Capture("01-bakery-player-view");
+            app.enabled=false;app.Hud.GetComponent<Canvas>().enabled=false;
+            var camera=Camera.main;camera.GetComponent<CinemachineBrain>().enabled=false;
+            camera.cullingMask=1<<8;camera.fieldOfView=52;
+            yield return EnvironmentShot("02-town-roofscape",new Vector3(-125,62,-85),new Vector3(-8,5,43),75,camera);
+            yield return EnvironmentShot("03-bakery-street",new Vector3(-137,4,-2),new Vector3(-110,5,20),75,camera);
+            yield return EnvironmentShot("04-clock-square",new Vector3(-16,10,1),new Vector3(24,15,36),75,camera);
+            yield return EnvironmentShot("05-garden-rooms",new Vector3(56,27,15),new Vector3(110,4,55),75,camera);
+            yield return EnvironmentShot("06-public-garden",new Vector3(-10,10,46),new Vector3(25,3,68),75,camera);
+            yield return EnvironmentShot("07-harbor-street",new Vector3(93,5,-71),new Vector3(123,5,-43),75,camera);
+            yield return EnvironmentShot("08-working-waterfront",new Vector3(-28,20,-130),new Vector3(18,2,-52),75,camera);
+            yield return EnvironmentShot("09-pasture-orchard",new Vector3(-164,22,73),new Vector3(-118,8,124),75,camera);
+            yield return EnvironmentShot("10-madame-approach",new Vector3(77,12,75),new Vector3(92,13,111),75,camera);
+            yield return EnvironmentShot("11-bakery-evening",new Vector3(-132,5,-3),new Vector3(-112,4,23),147,camera);
+            yield return EnvironmentShot("12-town-night",new Vector3(-30,24,-8),new Vector3(20,9,32),225,camera);
+            foreach(var renderer in FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+                foreach(var material in renderer.sharedMaterials)
+                    if(!material||!material.shader||!material.shader.isSupported){Fail("Unsupported environment material on "+renderer.name);yield break;}
+            Check(true,"Twelve native environment views captured; all scene shaders supported");
+        }
+        IEnumerator EnvironmentShot(string name,Vector3 position,Vector3 target,double time,Camera camera)
+        {
+            camera.transform.position=position;camera.transform.LookAt(target);
+            app.Rules.State.elapsed=time;app.Lighting.Refresh(app.Rules,true);
             yield return Capture(name);
         }
         IEnumerator ArtViews()
@@ -287,11 +321,11 @@ namespace Koriko
             if(keyboard!=null){Keys();if(addedKeyboard)InputSystem.RemoveDevice(keyboard);}
             checks.Add("Renderer: "+SystemInfo.graphicsDeviceName+" / "+SystemInfo.graphicsDeviceType);
             checks.Add("Resolution: "+Screen.width+" x "+Screen.height);
-            checks.Add((ArtOnly||CharacterOnly?"Mean frame time during viewpoint captures (not a benchmark): ":"Mean frame time across this automated route: ")+(frames>0?frameTotal/frames*1000:0).ToString("F2")+" ms");
+            checks.Add((ArtOnly||CharacterOnly||EnvironmentOnly?"Mean frame time during viewpoint captures (not a benchmark): ":"Mean frame time across this automated route: ")+(frames>0?frameTotal/frames*1000:0).ToString("F2")+" ms");
             if(peakDrawCalls>0)checks.Add("Peak recorded draw calls: "+peakDrawCalls);
             if(peakTriangles>0)checks.Add("Peak recorded triangles: "+peakTriangles);
             drawCalls.Dispose();triangles.Dispose();
-            checks.Add(CharacterOnly?"Native character study on a neutral background with synthetic takeoff input; not a route or performance benchmark.":ArtOnly?"Fixed camera captures for visual inspection; not a traversal or input test.":"Synthetic keyboard and gamepad input; this does not establish physical controller or human playtest quality.");
+            checks.Add(CharacterOnly?"Native character study on a neutral background with synthetic takeoff input; not a route or performance benchmark.":ArtOnly||EnvironmentOnly?"Fixed camera captures for visual inspection; not a traversal or input test.":"Synthetic keyboard and gamepad input; this does not establish physical controller or human playtest quality.");
             File.WriteAllLines(Path.Combine(output,"result.txt"),checks);
             Debug.Log("KORIKO_FLIGHT_CHECK "+(failed?"FAILED":"PASSED")+" "+output);
             Application.Quit(failed?1:0);
