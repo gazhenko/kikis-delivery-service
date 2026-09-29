@@ -1,0 +1,167 @@
+frame,seconds,action,beat,speed,grounded,mounted,walk,flight,gripError,soleError,footSlide,broomClearance,smear
+0,0.0000,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+1,0.0417,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+2,0.0833,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+3,0.1250,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+4,0.1667,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+5,0.2083,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+6,0.2500,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00001,0.01400,0.000
+7,0.2917,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00001,0.01400,0.000
+8,0.3333,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+9,0.3750,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+10,0.4167,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+11,0.4583,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+12,0.5000,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+13,0.5417,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+14,0.5833,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00001,0.00001,0.01400,0.000
+15,0.6250,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+16,0.6667,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+17,0.7083,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+18,0.7500,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+19,0.7917,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+20,0.8333,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+21,0.8750,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+22,0.9167,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+23,0.9583,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00001,0.01400,0.000
+24,1.0000,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+25,1.0417,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00001,0.01400,0.000
+26,1.0833,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+27,1.1250,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+28,1.1667,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00001,0.00000,0.01400,0.000
+29,1.2083,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+30,1.2500,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+31,1.2917,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+32,1.3333,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+33,1.3750,Rest / shoulder Jiji,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+34,1.4167,Walk forward,Walk / carry broom,0.928,True,False,0.208,0.000,0.00000,0.00000,0.00000,0.03184,0.000
+35,1.4583,Walk forward,Walk / carry broom,1.446,True,False,0.417,0.000,0.00001,0.00000,0.00000,0.05381,0.000
+36,1.5000,Walk forward,Walk / carry broom,1.735,True,False,0.625,0.000,0.00000,0.00000,0.00000,0.07702,0.000
+37,1.5417,Walk forward,Walk / carry broom,1.896,True,False,0.833,0.000,0.00001,0.00000,0.00000,0.09623,0.000
+38,1.5833,Walk forward,Walk / carry broom,1.986,True,False,0.946,0.000,0.00000,0.00000,0.00000,0.09930,0.000
+39,1.6250,Walk forward,Walk / carry broom,2.037,True,False,0.970,0.000,0.00000,0.00000,0.00000,0.09026,0.000
+40,1.6667,Walk forward,Walk / carry broom,2.065,True,False,0.983,0.000,0.00000,0.00000,0.00000,0.08168,0.000
+41,1.7083,Walk forward,Walk / carry broom,2.080,True,False,0.991,0.000,0.00001,0.00000,0.00000,0.07839,0.000
+42,1.7500,Walk forward,Walk / carry broom,2.089,True,False,0.995,0.000,0.00001,0.00001,0.00000,0.08244,0.000
+43,1.7917,Walk forward,Walk / carry broom,2.094,True,False,0.997,0.000,0.00001,0.00000,0.00001,0.09243,0.000
+44,1.8333,Walk forward,Walk / carry broom,2.097,True,False,0.998,0.000,0.00001,0.00000,0.00000,0.10424,0.000
+45,1.8750,Walk forward,Walk / carry broom,2.098,True,False,0.999,0.000,0.00000,0.00000,0.00000,0.11286,0.000
+46,1.9167,Walk forward,Walk / carry broom,2.099,True,False,0.999,0.000,0.00001,0.00000,0.00000,0.11464,0.000
+47,1.9583,Walk forward,Walk / carry broom,2.099,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.10885,0.000
+48,2.0000,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.09796,0.000
+49,2.0417,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.08665,0.000
+50,2.0833,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.07976,0.000
+51,2.1250,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.08024,0.000
+52,2.1667,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.08789,0.000
+53,2.2083,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.09944,0.000
+54,2.2500,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.10994,0.000
+55,2.2917,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.11491,0.000
+56,2.3333,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00001,0.11221,0.000
+57,2.3750,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.10300,0.000
+58,2.4167,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.09123,0.000
+59,2.4583,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.08192,0.000
+60,2.5000,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.07907,0.000
+61,2.5417,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.08389,0.000
+62,2.5833,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.09432,0.000
+63,2.6250,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.10590,0.000
+64,2.6667,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.11366,0.000
+65,2.7083,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.11430,0.000
+66,2.7500,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.10754,0.000
+67,2.7917,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.09626,0.000
+68,2.8333,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.08530,0.000
+69,2.8750,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.07935,0.000
+70,2.9167,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.08095,0.000
+71,2.9583,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.08941,0.000
+72,3.0000,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.10113,0.000
+73,3.0417,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.11107,0.000
+74,3.0833,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00001,0.00001,0.11500,0.000
+75,3.1250,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.11122,0.000
+76,3.1667,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.10136,0.000
+77,3.2083,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.08963,0.000
+78,3.2500,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.08106,0.000
+79,3.2917,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00001,0.07930,0.000
+80,3.3333,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.08512,0.000
+81,3.3750,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.09602,0.000
+82,3.4167,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00001,0.10734,0.000
+83,3.4583,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.11424,0.000
+84,3.5000,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.11375,0.000
+85,3.5417,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00001,0.10610,0.000
+86,3.5833,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00001,0.09456,0.000
+87,3.6250,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.08406,0.000
+88,3.6667,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.07909,0.000
+89,3.7083,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00001,0.08179,0.000
+90,3.7500,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.09100,0.000
+91,3.7917,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00001,0.00001,0.10277,0.000
+92,3.8333,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.11208,0.000
+93,3.8750,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.11493,0.000
+94,3.9167,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.11011,0.000
+95,3.9583,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.09968,0.000
+96,4.0000,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.08810,0.000
+97,4.0417,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.08033,0.000
+98,4.0833,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00001,0.00000,0.07970,0.000
+99,4.1250,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00001,0.08646,0.000
+100,4.1667,Walk forward,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.09774,0.000
+101,4.2083,Turn and walk,Walk / carry broom,1.495,True,False,0.792,0.000,0.00000,0.00000,0.00001,0.08940,0.000
+102,4.2500,Turn and walk,Walk / carry broom,1.587,True,False,0.756,0.000,0.00001,0.00000,0.00001,0.09033,0.000
+103,4.2917,Turn and walk,Walk / carry broom,1.773,True,False,0.844,0.000,0.00000,0.00000,0.00000,0.09389,0.000
+104,4.3333,Turn and walk,Walk / carry broom,1.907,True,False,0.908,0.000,0.00001,0.00000,0.00000,0.08694,0.000
+105,4.3750,Turn and walk,Walk / carry broom,1.990,True,False,0.947,0.000,0.00001,0.00000,0.00000,0.07852,0.000
+106,4.4167,Turn and walk,Walk / carry broom,2.038,True,False,0.970,0.000,0.00000,0.00000,0.00000,0.07742,0.000
+107,4.4583,Turn and walk,Walk / carry broom,2.065,True,False,0.983,0.000,0.00001,0.00000,0.00000,0.08559,0.000
+108,4.5000,Turn and walk,Walk / carry broom,2.080,True,False,0.991,0.000,0.00001,0.00000,0.00000,0.09878,0.000
+109,4.5417,Turn and walk,Walk / carry broom,2.089,True,False,0.995,0.000,0.00001,0.00000,0.00000,0.11027,0.000
+110,4.5833,Turn and walk,Walk / carry broom,2.094,True,False,0.997,0.000,0.00001,0.00000,0.00000,0.11470,0.000
+111,4.6250,Turn and walk,Walk / carry broom,2.097,True,False,0.998,0.000,0.00000,0.00000,0.00000,0.11042,0.000
+112,4.6667,Turn and walk,Walk / carry broom,2.098,True,False,0.999,0.000,0.00001,0.00000,0.00000,0.09981,0.000
+113,4.7083,Turn and walk,Walk / carry broom,2.099,True,False,0.999,0.000,0.00001,0.00000,0.00000,0.08794,0.000
+114,4.7500,Turn and walk,Walk / carry broom,2.099,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.08016,0.000
+115,4.7917,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.07987,0.000
+116,4.8333,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.08710,0.000
+117,4.8750,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.09863,0.000
+118,4.9167,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.10943,0.000
+119,4.9583,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.11483,0.000
+120,5.0000,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.11253,0.000
+121,5.0417,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.10354,0.000
+122,5.0833,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.09175,0.000
+123,5.1250,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.08222,0.000
+124,5.1667,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.07903,0.000
+125,5.2083,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.08355,0.000
+126,5.2500,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00001,0.09383,0.000
+127,5.2917,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00001,0.10547,0.000
+128,5.3333,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.11348,0.000
+129,5.3750,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.11443,0.000
+130,5.4167,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.10792,0.000
+131,5.4583,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.09674,0.000
+132,5.5000,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.08567,0.000
+133,5.5417,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.07945,0.000
+134,5.5833,Turn and walk,Walk / carry broom,2.100,True,False,1.000,0.000,0.00001,0.00000,0.00000,0.08074,0.000
+135,5.6250,Stop / settle feet,Walk / carry broom,1.172,True,False,0.792,0.000,0.00000,0.00000,0.00000,0.07034,0.000
+136,5.6667,Stop / settle feet,Walk / carry broom,0.654,True,False,0.583,0.000,0.00000,0.00000,0.00000,0.05775,0.000
+137,5.7083,Stop / settle feet,Walk / carry broom,0.365,True,False,0.375,0.000,0.00000,0.00000,0.00000,0.04314,0.000
+138,5.7500,Stop / settle feet,Walk / carry broom,0.204,True,False,0.167,0.000,0.00000,0.00000,0.00000,0.02725,0.000
+139,5.7917,Stop / settle feet,Rest / broom at side,0.114,True,False,0.054,0.000,0.00001,0.00000,0.00000,0.01836,0.000
+140,5.8333,Stop / settle feet,Rest / broom at side,0.063,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+141,5.8750,Stop / settle feet,Rest / broom at side,0.035,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+142,5.9167,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+143,5.9583,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+144,6.0000,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+145,6.0417,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+146,6.0833,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+147,6.1250,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+148,6.1667,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+149,6.2083,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+150,6.2500,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+151,6.2917,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+152,6.3333,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+153,6.3750,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+154,6.4167,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+155,6.4583,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+156,6.5000,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+157,6.5417,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+158,6.5833,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+159,6.6250,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+160,6.6667,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+161,6.7083,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+162,6.7500,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+163,6.7917,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+164,6.8333,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+165,6.8750,Stop / settle feet,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000

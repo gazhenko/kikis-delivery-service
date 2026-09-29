@@ -13,11 +13,11 @@ The front/three-quarter carry, walking contact, early and late mounting, landing
 | Suite | Mac — Apple M1 Pro / Metal | Omarchy — RTX 3080 / OpenGLCore |
 | --- | --- | --- |
 | Keyboard, mouse, Xbox/PlayStation synthetic input, UI and camera | [45 passed](mac-controls/result.txt) | [45 passed](omarchy-controls/result.txt) |
-| Walking, planted feet, carry, mount, flight and dismount | [17 passed](mac-walk/result.txt) | [17 passed during reel capture](reel/result.txt) |
+| Walking, planted feet, carry, mount, flight and dismount | [17 passed](mac-walk/result.txt) | [17 passed through the installed launcher](omarchy-installed-walk/result.txt) |
 | Six-court delivery route, bakery interactions and persistence | [25 passed](mac-flight/result.txt) | [25 passed](omarchy-flight/result.txt) |
 | Airborne action, contact, cloth and smear regression | Not repeated on this platform | [10 passed; 762 sampled frames](omarchy-motion/result.txt) |
 
-All final native captures above rendered at **1280 × 720**, with Unity 6000.3.20f1. Early Omarchy review windows were tiled to 1223 × 1390; the final runs floated and resized only their own QA windows. Separate [core simulation checks passed all 26 assertions](core-result.txt), including reduced walking fatigue without slowing the clock. Both exports completed with shader-error guards enabled. Mac code-signature validation and ZIP integrity validation also passed.
+All final native captures above rendered at **1280 × 720**, with Unity 6000.3.20f1. Early Omarchy review windows were tiled to 1223 × 1390; the final runs floated and resized only their own QA windows. Separate [core simulation checks passed all 26 assertions](core-result.txt), including reduced walking fatigue without slowing the clock. Both exports completed with shader-error guards enabled. Mac code-signature validation and ZIP integrity validation also passed. The final Omarchy walking suite ran through the installed `kiki-delivery` launcher after all 276 release file hashes were verified and `current` switched to `20260929-49ba433`.
 
 The full route averaged **17.74 ms/frame on Mac** and **16.87 ms/frame on Omarchy**. These runs include screenshots, menus and development-player overhead and are not controlled benchmarks. Walking and controls tests use fixed capture timing and provide no performance measurement.
 

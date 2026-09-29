@@ -1,4 +1,28 @@
-# Desktop installations — 2026-09-28
+# Desktop installations — 2026-09-29
+
+The Mac and Omarchy installations now contain the walking, broom-carry and controls release **`20260929-49ba433`**, built from source commit `49ba433a4e87e7a482784ee309da0df0f4af7b32` with Unity 6000.3.20f1. The older environment-only installation record is retained below.
+
+## Mac — current release
+
+- Launch the existing desktop shortcut: `~/Desktop/Kiki’s Delivery Service (Prototype).app`.
+- Its target is `~/kikis-delivery-desktop/Builds/mac/Kiki’s Delivery Service.app`, a universal Intel/Apple Silicon development player.
+- The rebuilt app passed `codesign --verify --deep --strict` and native **45-control, 17-walking and 25-delivery-route checks**, all at 1280 × 720 on Apple M1 Pro / Metal. [Results](verification/walking-controls/README.md).
+- `Builds/mac/Kiki-Delivery-Mac.zip` was regenerated (138 MiB) and passed ZIP integrity validation. The prior archive remains at `Builds/mac/previous/Kiki-Delivery-20260928-Mac.zip` for rollback. [Release metadata and archive SHA-256](verification/walking-controls/mac-release.json).
+- The app remains a local development build, not a notarized public distribution.
+
+## Omarchy — current release
+
+- Open **Kiki’s Delivery Service** in the application launcher, or run `~/.local/bin/kiki-delivery`.
+- `~/Games/KikiDelivery/current` now resolves to `releases/20260929-49ba433`.
+- All **276 release files** matched their SHA-256 manifest before the symlink was switched atomically. Executable/UnityPlayer dependencies resolved and the desktop entry validated. [Release metadata](verification/walking-controls/omarchy-release.json), [file hashes](verification/walking-controls/omarchy-file-hashes.json).
+- The native candidate passed **45 control checks, 25 route checks and 10 airborne-motion checks** at 1280 × 720 on NVIDIA RTX 3080 / OpenGLCore. The walking reel passed 17 checks with the same character implementation; the installed launcher additionally passed all **17 final walking checks**, exiting 0. [Installed-launcher result](verification/walking-controls/omarchy-installed-walk/result.txt). [Verification](verification/walking-controls/README.md).
+- The previous `releases/20260928-b093c2f` remains available for rollback. The application-menu icon and command still resolve through `current`.
+
+Player saves live outside the releases and were preserved. Native QA starts fresh temporary simulations and never reads or writes those saves or control preferences. Synthetic input tests do not establish physical-controller compatibility or human flight feel.
+
+---
+
+# Previous environment release — 2026-09-28
 
 Both computers have the environment-art revision `b093c2f9221abe7b2ce53e6964c7ddfeca3e5d96`, exported with Unity 6000.3.20f1. Installation work continued into 2026-09-29 UTC (2026-09-28 local time).
 
