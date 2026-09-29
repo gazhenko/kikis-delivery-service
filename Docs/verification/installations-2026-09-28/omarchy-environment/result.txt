@@ -1,0 +1,7 @@
+PASS Twelve native environment views captured; all scene shaders supported
+Renderer: NVIDIA GeForce RTX 3080/PCIe/SSE2 / OpenGLCore
+Resolution: 1896 x 1030
+Mean frame time during viewpoint captures (not a benchmark): 23.13 ms
+Peak recorded draw calls: 6598
+Peak recorded triangles: 1294778
+Fixed camera captures for visual inspection; not a traversal or input test.

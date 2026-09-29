@@ -30,6 +30,12 @@ open 'Builds/mac/Kiki’s Delivery Service.app'
 
 At home, pick a delivery and choose Fly. Follow the highlighted minimap destination, then use E for an assisted landing and again to deliver. Tab opens the bakery when home and settings while away. Settings includes Save & quit.
 
+## Play on Omarchy
+
+Choose **Kiki’s Delivery Service** in the application launcher, or run `kiki-delivery`. The native Linux installation lives at `~/Games/KikiDelivery/current`, with versioned releases alongside it. It does not require Unity Editor or a Unity sign-in. The Mac desktop shortcut and this Linux installation contain the same environment-art revision, `b093c2f`. See [installation checks and locations](Docs/INSTALLATIONS.md).
+
+`bash Tools/build-linux-on-vm.sh` exports a fresh Linux development player using the licensed VM, rejects shader compiler errors, and copies it into `Builds/linux/`. It does not deploy that export or change the Mac installation.
+
 ## Open and build
 
 1. Use Unity **6000.3.20f1**, revision `c9ba695d4f07`, with Mac Mono or Windows Mono support as appropriate.
@@ -70,7 +76,7 @@ blender --background --threads 4 --python Tools/build_art.py
 
 The core project does not need Unity. Blender generation rebuilds the two editable sources and FBX exports, then produces seven preview PNGs in `Docs/previews/`. Append `-- --character-only` to rebuild only Kiki/Jiji, or `-- --world-only` to rebuild the environment, its layout data and two previews while preserving the character. Run from this project directory. Do not regenerate source art over an artist's manual `.blend` edits without preserving those edits first.
 
-A development player accepts `--koriko-flight-check`. It creates synthetic keyboard and gamepad events to visit all six courts with the real movement code and camera, checks bakery interactions and visible shoe contact, captures native screenshots, and writes `flight-check/result.txt` under Unity's persistent data directory. It exits nonzero on a failed check and never loads or writes the player's save. This runner has passed on the Mac; it complements a human/controller playtest. The latest results and captures are in `Docs/verification/environment-pass/flight/`; earlier runs remain in their verification folders.
+A development player accepts `--koriko-flight-check`. It creates synthetic keyboard and gamepad events to visit all six courts with the real movement code and camera, checks bakery interactions and visible shoe contact, captures native screenshots, and writes `flight-check/result.txt` under Unity's persistent data directory. It exits nonzero on a failed check and never loads or writes the player's save. This runner has passed on the Mac and the installed Omarchy/Linux player; it complements a human/controller playtest. Mac results and captures are in `Docs/verification/environment-pass/flight/`; the Linux installation result is in `Docs/verification/installations-2026-09-28/omarchy-flight/`.
 
 Use `--koriko-environment-check` for twelve native street, rooftop, garden, harbor and day/night viewpoints. It writes `environment-check/` without loading or writing player saves. These captures support visual review and are not a route benchmark.
 
