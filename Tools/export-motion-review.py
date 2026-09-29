@@ -12,6 +12,7 @@ import subprocess
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('source',type=Path)
 parser.add_argument('destination',type=Path)
+parser.add_argument('--name',default='Kiki-motion-reel.mp4',help='Combined movie filename')
 args=parser.parse_args()
 source=args.source.expanduser().resolve();destination=args.destination.resolve()
 destination.mkdir(parents=True,exist_ok=True)
@@ -35,9 +36,9 @@ for table in sorted(source.glob('*.csv')):
     stills=destination/name;stills.mkdir(exist_ok=True)
     for i in sorted(chosen):shutil.copy2(frames/f'frame_{i:05}.png',stills/f'frame_{i:05}.png')
     print(name,len(rows),'drawings',f'{len(rows)/24:.2f}s')
-# All four clips have identical dimensions, codec and frame rate.
+# All clips have identical dimensions, codec and frame rate.
 manifest=destination/'clips.ffconcat'
 manifest.write_text('ffconcat version 1.0\n'+''.join(f"file '{movie.name}'\n" for movie in movies))
-subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-safe','1','-f','concat','-i',str(manifest),'-c','copy','-movflags','+faststart',str(destination/'Kiki-motion-reel.mp4')],check=True)
+subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-safe','1','-f','concat','-i',str(manifest),'-c','copy','-movflags','+faststart',str(destination/args.name)],check=True)
 manifest.unlink()
 shutil.copy2(source/'result.txt',destination/'result.txt')

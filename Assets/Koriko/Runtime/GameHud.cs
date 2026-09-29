@@ -58,7 +58,7 @@ namespace Koriko
             notice=Label(noticeCard,"",new Vector2(12,-5),new Vector2(396,40),18);notice.alignment=TextAnchor.MiddleCenter;
             var controlCard=Panel("Flight controls",hud,Vector2.zero,new Vector2(328,18),new Vector2(934,46));
             controlCard.anchorMax=new Vector2(1,0);controlCard.offsetMin=new Vector2(328,18);controlCard.offsetMax=new Vector2(-18,64);
-            controls=Label(controlCard,"",new Vector2(12,-5),new Vector2(910,36),15);controls.alignment=TextAnchor.MiddleCenter;
+            controls=Label(controlCard,"",new Vector2(12,-5),new Vector2(910,36),15);controls.alignment=TextAnchor.MiddleCenter;controls.resizeTextForBestFit=true;controls.resizeTextMinSize=11;controls.resizeTextMaxSize=15;
             controls.rectTransform.anchorMax=new Vector2(1,1);controls.rectTransform.offsetMin=new Vector2(12,-41);controls.rectTransform.offsetMax=new Vector2(-12,-5);
             flightHud.SetActive(false);
             ShowTitle();
@@ -99,7 +99,7 @@ namespace Koriko
             b.onClick.AddListener(()=>action());return b;
         }
         void Focus(Button button){if(button&&EventSystem.current)EventSystem.current.SetSelectedGameObject(button.gameObject);}
-        public void ClosePanel(){if(panel)Destroy(panel.gameObject);panel=null;rows=null;bakeryStatus=null;activeScroll=null;lastSelection=null;if(EventSystem.current)EventSystem.current.SetSelectedGameObject(null);}
+        public void ClosePanel(){if(panel){if(App&&App.Input)App.Input.RequireLiftRelease();Destroy(panel.gameObject);}panel=null;rows=null;bakeryStatus=null;activeScroll=null;lastSelection=null;if(EventSystem.current)EventSystem.current.SetSelectedGameObject(null);}
 
         void ShowTitle()
         {
@@ -122,7 +122,7 @@ namespace Koriko
             panel.anchorMin=Vector2.zero;panel.anchorMax=new Vector2(0,1);
             panel.offsetMin=new Vector2(18,129);panel.offsetMax=new Vector2(622,-151);
             Label(panel,"Osono’s bakery",new Vector2(20,-13),new Vector2(365,37),27,true);
-            Button(panel,"Fly",new Vector2(494,-14),new Vector2(88,34),ClosePanel);
+            Button(panel,"Go outside",new Vector2(469,-14),new Vector2(113,34),ClosePanel);
             string[] tabs={"Deliveries","Pantry","Kitchen","Broom"};
             for(int i=0;i<4;i++){int index=i;var button=Button(panel,tabs[i],new Vector2(18+i*145,-62),new Vector2(136,38),()=>{tab=index;BuildBakery();});if(i==tab)button.image.color=new Color(.84f,.72f,.52f);}
             var viewport=Rect("Scroll",panel,new Vector2(0,1),new Vector2(0,1),new Vector2(15,-112),new Vector2(574,349));
@@ -193,13 +193,37 @@ namespace Koriko
         public void ToggleOptions()
         {
             if(PanelOpen){ClosePanel();return;}
-            panel=Panel("Flight settings",root,new Vector2(.5f,.5f),Vector2.zero,new Vector2(550,466));
-            Label(panel,"Flight settings",new Vector2(25,-22),new Vector2(500,40),30,true);
-            Label(panel,"WASD / left stick: fly\nSpace / A: rise       Ctrl / B: descend\nShift / right trigger: boost\nE / X: land, deliver, visit the bakery\nRight mouse drag / right stick: look around\nTab / Y: bakery or settings",new Vector2(25,-78),new Vector2(500,166),21);
-            Button(panel,"Cozy",new Vector2(25,-265),new Vector2(238,44),()=>{App.Rules.SetDifficulty(Difficulty.Cozy);ClosePanel();});
-            Button(panel,"Challenging",new Vector2(279,-265),new Vector2(246,44),()=>{App.Rules.SetDifficulty(Difficulty.Challenging);ClosePanel();});
-            Focus(Button(panel,"Back to flying",new Vector2(25,-333),new Vector2(500,44),ClosePanel));
-            Button(panel,"Save & quit",new Vector2(25,-395),new Vector2(500,44),()=>{App.Save();Application.Quit();});
+            panel=Panel("Flight settings",root,new Vector2(.5f,.5f),Vector2.zero,new Vector2(590,500));
+            Label(panel,"Flight settings",new Vector2(25,-22),new Vector2(540,40),30,true);
+            var input=App.Input;
+            string bindings=input.Controller
+                ?$"Left stick: walk / fly · Right stick: look\n{input.South} or {input.Rise}: take off / rise · {input.Descend}: descend\n{input.BoostButton}: boost · {input.BrakeButton}: brake / hover\nL3: cruise · R3: recenter camera\n{input.West}: land / deliver · {input.North}: menu"
+                :"WASD: walk / fly · Mouse: look\nSpace: take off / rise · Ctrl or C: descend\nShift: boost · Q: brake / hover\nF: cruise · R: recenter camera\nE: land / deliver · Tab / Escape: menu";
+            Label(panel,bindings,new Vector2(25,-78),new Vector2(540,148),20);
+            Button(panel,"Controls & camera",new Vector2(25,-240),new Vector2(540,43),()=>ShowControls());
+            Button(panel,"Cozy",new Vector2(25,-298),new Vector2(260,43),()=>{App.Rules.SetDifficulty(Difficulty.Cozy);ClosePanel();});
+            Button(panel,"Challenging",new Vector2(305,-298),new Vector2(260,43),()=>{App.Rules.SetDifficulty(Difficulty.Challenging);ClosePanel();});
+            Focus(Button(panel,"Back outside",new Vector2(25,-365),new Vector2(540,44),ClosePanel));
+            Button(panel,"Save & quit",new Vector2(25,-430),new Vector2(540,44),()=>{App.Save();Application.Quit();});
+        }
+        public void ShowControls(string selected="Mouse sensitivity")
+        {
+            ClosePanel();panel=Panel("Controls and camera",root,new Vector2(.5f,.5f),Vector2.zero,new Vector2(640,625));
+            Icon(panel,1,new Vector2(25,-21),40);Label(panel,"Controls & camera",new Vector2(82,-23),new Vector2(525,40),29,true);
+            Label(panel,"Walk, mount and land with the same controls.\nLanding assist works on clear streets as well as delivery courts.",new Vector2(25,-83),new Vector2(590,60),18);
+            var input=App.Input;
+            Action<string,string,int,Action> option=(id,value,row,change)=>
+            {
+                var button=Button(panel,id+"  ·  "+value,new Vector2(25,-157-row*57),new Vector2(590,44),()=>{change();input.SavePreferences();ShowControls(id);});
+                button.name=id;if(selected==id)Focus(button);
+            };
+            option("Mouse sensitivity",$"{input.MouseSensitivity*100:0}%",0,()=>input.MouseSensitivity=input.MouseSensitivity>=1.5f?.75f:input.MouseSensitivity+.25f);
+            option("Stick sensitivity",$"{input.ControllerSensitivity*100:0}%",1,()=>input.ControllerSensitivity=input.ControllerSensitivity>=1.5f?.75f:input.ControllerSensitivity+.25f);
+            option("Stick dead zone",$"{input.Deadzone*100:0}%",2,()=>input.Deadzone=input.Deadzone>=.20f?.10f:input.Deadzone+.05f);
+            option("Invert vertical look",input.InvertLookY?"On":"Off",3,()=>input.InvertLookY=!input.InvertLookY);
+            option("Mouse look",input.AlwaysMouseLook?"Free look":"Hold right button",4,()=>input.AlwaysMouseLook=!input.AlwaysMouseLook);
+            option("Camera follow",input.FollowSpeed<.1f?"Off":input.FollowSpeed>1?"Quick":"Gentle",5,()=>input.FollowSpeed=input.FollowSpeed>1?0:input.FollowSpeed+.8f);
+            Button(panel,"Back to settings",new Vector2(25,-550),new Vector2(590,44),()=>{ClosePanel();ToggleOptions();});
         }
         void Update()
         {
@@ -216,9 +240,12 @@ namespace Koriko
             parcelCard.gameObject.SetActive(p!=null&&!PanelOpen);
             jobText.text=p==null?"":Catalog.FindDestination(p.destination).Name+$"\n{Mathf.CeilToInt((float)(p.deadline-r.State.elapsed))}s · {r.State.position.HorizontalDistance(Catalog.FindDestination(p.destination).Landing):0} m";
             noticeCard.anchoredPosition=new Vector2(0,p==null?-18:-100);
-            prompt.text=PanelOpen?"":r.CanDeliver?(App.Input.Controller?"X  ·  Deliver parcel":"E  ·  Deliver parcel"):r.AtHome?(App.Input.Controller?"X  ·  Visit Osono":"E  ·  Visit Osono"):App.Motor.Approaching?"Settling into the courtyard…":"";
+            prompt.text=PanelOpen?"":r.CanDeliver?(App.Input.Controller?App.Input.West+"  ·  Deliver parcel":"E  ·  Deliver parcel"):r.AtHome?(App.Input.Controller?App.Input.West+"  ·  Visit Osono":"E  ·  Visit Osono"):App.Motor.Approaching?"Settling into the courtyard…":"";
             promptCard.gameObject.SetActive(prompt.text.Length>0);
-            controls.text=App.Input.Controller?"Left stick fly  ·  A / B rise & descend  ·  RT boost  ·  X land / deliver  ·  Y menu":"WASD fly  ·  Space / Ctrl rise & descend  ·  Shift boost  ·  E land / deliver  ·  Right mouse look  ·  Tab menu";
+            var input=App.Input;
+            controls.text=App.Motor.OnFoot
+                ?(input.Controller?$"Left stick walk  ·  {input.South} / {input.Rise} take off  ·  {input.West} deliver / visit  ·  Right stick look  ·  {input.North} menu":"WASD walk  ·  Space take off  ·  E deliver / visit  ·  Mouse look  ·  Tab menu")
+                :(input.Controller?$"LS fly  ·  {input.Rise}/{input.Descend} rise & descend  ·  {input.BoostButton} boost  ·  {input.BrakeButton} brake\nL3 cruise{(App.Motor.Cruising?" ON":"")}  ·  R3 recenter  ·  {input.West} land / deliver  ·  {input.North} menu":$"WASD fly  ·  Space/C rise & descend  ·  Shift boost  ·  Q brake\nF cruise{(App.Motor.Cruising?" ON":"")}  ·  R recenter  ·  E land / deliver  ·  Tab menu");
             if(noticeId!=r.NoticeRevision){noticeId=r.NoticeRevision;noticeUntil=Time.unscaledTime+6;notice.text=r.Notice;}
             noticeCard.gameObject.SetActive(!PanelOpen&&Time.unscaledTime<noticeUntil&&!string.IsNullOrEmpty(notice.text));
             if(bakeryStatus)bakeryStatus.text=r.Cooking?$"Cooking… {Mathf.CeilToInt((float)r.State.cookingRemaining)}s":"The clock keeps moving while you plan.";

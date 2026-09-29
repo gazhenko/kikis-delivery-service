@@ -10,11 +10,11 @@ Timed jobs, ingredient shopping, recipes, broom upgrades, crows, cozy/challengin
 
 ## Current status
 
-The Unity VM is licensed, the project compiles, and a universal Mac development build runs on Apple M1 Pro / Metal. The latest environment pass adds joined narrow street façades, varied roofs, a rebuilt clock tower, painted surface materials, connected service yards, cultivated gardens, a greenhouse, orchard undergrowth and working-quay detail. Madame's raised garden has a real stair approach. The minimap uses the same 87 building/landmark footprints and 32 paths exported with the world.
+The Unity VM is licensed, and native development builds run on Mac / Metal and Omarchy / OpenGLCore. Kiki now walks on foot, carrying her broom upright at her side with its bristles down, and mounts naturally on takeoff. Planted footsteps, overlapping dress/bow/hair motion, a relaxed free arm and Jiji’s shoulder-to-broom transition extend the film-referenced cel character.
 
-The final environment build passed **25 delivery-route checks across all six landing courts** at 1920 × 1080 and native environment/HUD reviews at 1920 × 1080 and 1280 × 720. The route averaged **17.95 ms per frame (about 56 fps)** on M1 Pro / Metal, including captures and menus, not a controlled benchmark. See the [native screenshots, visual revisions and test record](Docs/verification/environment-pass/README.md).
+The controls pass adds free mouse look, optional hold-RMB look, cruise, braking, recentering, bumper altitude controls, analog walking, street landing and configurable camera sensitivity/dead zone/inversion. Xbox and PlayStation prompts follow the active device. Menu confirmation cannot accidentally become takeoff. Detailed façade surfaces also keep the orbit camera out of shop awnings and roofs.
 
-Kiki's film-referenced cel model and motion are preserved: expressive takeoff, boost, banking, braking and landing, overlapping bow/hair/cloth/leg/bag/Jiji movement, fitted gaze and brief mesh smears. The previous **10 motion checks**, **six character checks**, [31.75-second native motion reel](Docs/verification/motion-pass/reel/Kiki-motion-reel.mp4) and independent 25-check core simulation result remain baseline evidence; those separate suites were not rerun for this environment-only change.
+The environment retains joined narrow street façades, varied roofs, the clock tower, painted materials, connected service yards, cultivated gardens, orchard undergrowth and working-quay detail. The minimap uses the same 87 building/landmark footprints and 32 paths exported with the world. See [the walking/controls implementation and reference study](Docs/WALKING_CONTROLS.md), [native test record and walking reel](Docs/verification/walking-controls/README.md), and [earlier environment verification](Docs/verification/environment-pass/README.md).
 
 More bespoke secondary architecture and boats, animated background town life, ambient sound, release profiling and a physical-controller playtest remain work for the desktop rebuild. Art and flight performance are original project work; no production-film meshes or animation clips are bundled.
 
@@ -28,11 +28,11 @@ Open `Builds/mac/Kiki’s Delivery Service.app`. On a fresh game, choose Cozy or
 open 'Builds/mac/Kiki’s Delivery Service.app'
 ```
 
-At home, pick a delivery and choose Fly. Follow the highlighted minimap destination, then use E for an assisted landing and again to deliver. Tab opens the bakery when home and settings while away. Settings includes Save & quit.
+At home, pick a delivery and choose Go outside. Walk with WASD or the left stick; Space, A/Cross or RB/R1 mounts and rises. Landing automatically returns to walking. Follow the highlighted minimap destination, then use E for an assisted landing and again to deliver. Tab opens the bakery when home and settings while away. Settings includes Save & quit.
 
 ## Play on Omarchy
 
-Choose **Kiki’s Delivery Service** in the application launcher, or run `kiki-delivery`. The native Linux installation lives at `~/Games/KikiDelivery/current`, with versioned releases alongside it. It does not require Unity Editor or a Unity sign-in. The Mac desktop shortcut and this Linux installation contain the same environment-art revision, `b093c2f`. See [installation checks and locations](Docs/INSTALLATIONS.md).
+Choose **Kiki’s Delivery Service** in the application launcher, or run `kiki-delivery`. The native Linux installation lives at `~/Games/KikiDelivery/current`, with versioned releases alongside it. It does not require Unity Editor or a Unity sign-in. The Mac desktop shortcut and Linux launcher use the current walking/controls release. See [installation checks and locations](Docs/INSTALLATIONS.md).
 
 `bash Tools/build-linux-on-vm.sh` exports a fresh Linux development player using the licensed VM, rejects shader compiler errors, and copies it into `Builds/linux/`. It does not deploy that export or change the Mac installation.
 
@@ -57,15 +57,19 @@ Batch build example, after activation:
 
 | Action | Keyboard / mouse | Controller |
 | --- | --- | --- |
-| Fly | WASD | Left stick |
-| Rise / descend | Space / Ctrl or C | A / B |
-| Boost | Shift | Right trigger |
-| Look | Hold right mouse and drag | Right stick |
-| Land / deliver / bakery | E | X |
-| Bakery or flight settings | Tab | Y |
-| Close / settings | Escape | Start |
+| Walk / fly | WASD | Left stick |
+| Take off / rise | Space | A / Cross or RB / R1 |
+| Descend | Ctrl or C | LB / L1 |
+| Boost | Hold Shift | Hold RT / R2 |
+| Brake / hover | Hold Q | Hold LT / L2 |
+| Cruise toggle | F | L3 |
+| Recenter | R | R3 |
+| Look | Mouse; optional hold-RMB | Right stick |
+| Land / deliver / bakery | E | X / Square |
+| Bakery or settings | Tab | Y / Triangle |
+| Close / settings | Escape | Start / Options |
 
-Within roughly 14 m of a delivery court and 18 m of its height, interact starts a gentle assisted approach. Steering, climbing or boosting cancels it. Deliveries require a slow, grounded landing. Controller labels use the Xbox convention.
+Interact near a delivery court or above a clear street starts an assisted landing. Interact again, steer, climb or brake to cancel it. Deliveries require a slow, grounded landing. In menus, use the mouse, keyboard navigation/Enter, or controller D-pad/A/Cross; B/Circle goes back. Open **Controls & camera** in settings for sensitivity, inversion, dead-zone, mouse-look and camera-follow options.
 
 ## Source and checks
 
@@ -76,7 +80,9 @@ blender --background --threads 4 --python Tools/build_art.py
 
 The core project does not need Unity. Blender generation rebuilds the two editable sources and FBX exports, then produces seven preview PNGs in `Docs/previews/`. Append `-- --character-only` to rebuild only Kiki/Jiji, or `-- --world-only` to rebuild the environment, its layout data and two previews while preserving the character. Run from this project directory. Do not regenerate source art over an artist's manual `.blend` edits without preserving those edits first.
 
-A development player accepts `--koriko-flight-check`. It creates synthetic keyboard and gamepad events to visit all six courts with the real movement code and camera, checks bakery interactions and visible shoe contact, captures native screenshots, and writes `flight-check/result.txt` under Unity's persistent data directory. It exits nonzero on a failed check and never loads or writes the player's save. This runner has passed on the Mac and the installed Omarchy/Linux player; it complements a human/controller playtest. Mac results and captures are in `Docs/verification/environment-pass/flight/`; the Linux installation result is in `Docs/verification/installations-2026-09-28/omarchy-flight/`.
+A development player accepts `--koriko-flight-check`. It creates synthetic keyboard and gamepad events to visit all six courts with the real movement code and camera, checks bakery interactions and visible shoe contact, captures native screenshots, and writes `flight-check/result.txt` under Unity's persistent data directory. It exits nonzero on a failed check and never loads or writes the player's save. This runner has passed on the Mac and the installed Omarchy/Linux player; it complements a human/controller playtest. The latest results are in `Docs/verification/walking-controls/`; earlier results remain in their dated verification folders.
+
+Use `--koriko-walk-check` for on-foot movement, foot and hand contact, broom carry and keyboard/controller mounting and landing. Add `--koriko-record-walk` for every drawing. Use `--koriko-controls-check` for the native keyboard/mouse/Xbox/PlayStation input matrix. These runs isolate player saves and control preferences. Synthetic devices do not replace a physical-controller compatibility or ergonomic playtest.
 
 Use `--koriko-environment-check` for twelve native street, rooftop, garden, harbor and day/night viewpoints. It writes `environment-check/` without loading or writing player saves. These captures support visual review and are not a route benchmark.
 

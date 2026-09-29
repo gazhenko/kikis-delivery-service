@@ -216,6 +216,7 @@ namespace Koriko.Core
             if (!AtHome || moving)
             {
                 double fatigue = moving ? (cozy ? .52 : .8) : (cozy ? .065 : .095);
+                if (moving && Grounded) fatigue *= .30;
                 if (boosting && !Has(Advantage.FreeBoost)) fatigue *= 2;
                 if (Has(Advantage.Awake)) fatigue *= .6;
                 if (IsNight) fatigue *= 1.18;

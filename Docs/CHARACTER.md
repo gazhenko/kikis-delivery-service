@@ -1,5 +1,7 @@
 # Kiki character study
 
+The subsequent [walking and controls pass](WALKING_CONTROLS.md) adds on-foot acting, the upright side carry, planted footsteps and transitions between walking and flight. Its [native walking reel and verification](verification/walking-controls/README.md) extend the historical results below.
+
 The September 27 character revision uses the film itself as the design reference. The previous model's long lower face, pointed block fringe, spherical sleeves and rigid standing flight pose were the main likeness problems. This revision rebuilds the model, facial surfaces and articulation together while retaining the cel renderer.
 
 ## Reference views

@@ -1,5 +1,7 @@
 # Kiki flight performance
 
+The subsequent [walking and controls pass](WALKING_CONTROLS.md) adds on-foot acting, the upright side carry, planted footsteps and transitions between walking and flight. Its [native walking reel and verification](verification/walking-controls/README.md) extend the historical results below.
+
 The previous animation held the entire rig at 12 Hz and derived almost every pose from speed and one shared sine clock. That gave the character a rigid, coordinated movement even though the materials looked drawn. This pass separates acting, balance, secondary movement and the brief drawings that bridge fast actions.
 
 ## Performance

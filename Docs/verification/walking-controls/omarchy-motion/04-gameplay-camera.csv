@@ -1,0 +1,191 @@
+frame,seconds,action,beat,speed,grounded,bodyPitch,bodyBank,gaze,bow,smear,gripError,soleError
+0,0.0000,Cruise,Hover / breathe,2.736,False,6.720,-4.363,18.809,13.165,0.000,0.00000,Infinity
+1,0.0417,Cruise,Bank / follow through,5.000,False,9.165,-11.743,28.066,25.581,0.000,0.00000,Infinity
+2,0.0833,Cruise,Bank / follow through,6.874,False,11.672,-17.349,30.883,28.202,0.000,0.00001,Infinity
+3,0.1250,Cruise,Bank / follow through,8.427,False,13.638,-20.476,31.686,23.990,0.000,0.00000,Infinity
+4,0.1667,Cruise,Bank / follow through,9.714,False,14.937,-21.150,31.912,18.007,0.000,0.00001,Infinity
+5,0.2083,Cruise,Bank / follow through,10.782,False,15.672,-19.194,26.503,11.633,0.000,0.00001,Infinity
+6,0.2500,Cruise,Bank / follow through,11.668,False,16.010,-15.512,19.633,6.088,0.000,0.00001,Infinity
+7,0.2917,Cruise,Bank / follow through,12.404,False,16.098,-11.478,13.773,2.672,0.000,0.00000,Infinity
+8,0.3333,Cruise,Bank / follow through,13.015,False,16.043,-8.000,9.345,1.519,0.000,0.00000,Infinity
+9,0.3750,Cruise,Cruise / wind,13.523,False,15.913,-5.398,6.154,1.932,0.000,0.00001,Infinity
+10,0.4167,Cruise,Cruise / wind,13.945,False,15.750,-3.613,3.912,3.093,0.000,0.00001,Infinity
+11,0.4583,Cruise,Cruise / wind,14.295,False,15.578,-2.437,2.365,4.397,0.000,0.00001,Infinity
+12,0.5000,Cruise,Cruise / wind,14.585,False,15.409,-1.661,1.319,5.429,0.000,0.00001,Infinity
+13,0.5417,Cruise,Cruise / wind,14.826,False,15.250,-1.133,0.627,5.871,0.000,0.00001,Infinity
+14,0.5833,Cruise,Cruise / wind,15.026,False,15.106,-0.760,0.182,5.500,0.000,0.00000,Infinity
+15,0.6250,Cruise,Cruise / wind,15.193,False,14.978,-0.491,-0.091,4.255,0.000,0.00001,Infinity
+16,0.6667,Cruise,Cruise / wind,15.331,False,14.865,-0.297,-0.247,2.281,0.000,0.00001,Infinity
+17,0.7083,Cruise,Cruise / wind,15.445,False,14.767,-0.161,-0.326,-0.100,0.000,0.00000,Infinity
+18,0.7500,Cruise,Cruise / wind,15.540,False,14.683,-0.069,-0.355,-2.458,0.000,0.00000,Infinity
+19,0.7917,Cruise,Cruise / wind,15.618,False,14.611,-0.010,-0.352,-4.359,0.000,0.00000,Infinity
+20,0.8333,Cruise,Cruise / wind,15.684,False,14.549,0.025,-0.331,-5.451,0.000,0.00000,Infinity
+21,0.8750,Cruise,Cruise / wind,15.738,False,14.497,0.044,-0.300,-5.531,0.000,0.00001,Infinity
+22,0.9167,Cruise,Cruise / wind,15.783,False,14.454,0.053,-0.265,-4.582,0.000,0.00000,Infinity
+23,0.9583,Cruise,Cruise / wind,15.820,False,14.417,0.055,-0.229,-2.781,0.000,0.00000,Infinity
+24,1.0000,Cruise,Cruise / wind,15.851,False,14.386,0.053,-0.195,-0.460,0.000,0.00000,Infinity
+25,1.0417,Cruise,Cruise / wind,15.876,False,14.360,0.049,-0.164,1.949,0.000,0.00000,Infinity
+26,1.0833,Boost,Boost / tuck,17.675,False,17.622,0.045,-0.136,4.048,0.000,0.00000,Infinity
+27,1.1250,Boost,Boost / tuck,19.167,False,22.139,0.041,-0.111,5.523,1.000,0.00001,Infinity
+28,1.1667,Boost,Boost / tuck,20.404,False,25.612,0.037,-0.089,6.098,0.550,0.00001,Infinity
+29,1.2083,Boost,Boost / tuck,21.429,False,27.730,0.032,-0.070,5.569,0.000,0.00001,Infinity
+30,1.2500,Boost,Boost / tuck,22.279,False,28.838,0.027,-0.055,3.906,0.000,0.00000,Infinity
+31,1.2917,Boost,Boost / tuck,22.983,False,29.337,0.023,-0.043,1.334,0.000,0.00001,Infinity
+32,1.3333,Boost,Boost / tuck,23.568,False,29.512,0.018,-0.034,-1.679,0.000,0.00001,Infinity
+33,1.3750,Boost,Boost / tuck,24.052,False,29.525,0.015,-0.026,-4.531,0.000,0.00001,Infinity
+34,1.4167,Boost,Boost / tuck,24.453,False,29.460,0.012,-0.020,-6.628,0.000,0.00001,Infinity
+35,1.4583,Boost,Boost / tuck,24.786,False,29.360,0.009,-0.015,-7.522,0.000,0.00000,Infinity
+36,1.5000,Boost,Boost / tuck,25.062,False,29.245,0.007,-0.012,-7.002,0.000,0.00000,Infinity
+37,1.5417,Boost,Boost / tuck,25.291,False,29.127,0.006,-0.009,-5.136,0.000,0.00001,Infinity
+38,1.5833,Boost,Boost / tuck,25.480,False,29.013,0.004,-0.007,-2.260,0.000,0.00000,Infinity
+39,1.6250,Boost,Boost / tuck,25.638,False,28.906,0.003,-0.005,1.091,0.000,0.00001,Infinity
+40,1.6667,Boost,Boost / tuck,25.768,False,28.810,0.003,-0.004,4.286,0.000,0.00001,Infinity
+41,1.7083,Boost,Boost / tuck,25.876,False,28.724,0.002,-0.003,6.714,0.000,0.00000,Infinity
+42,1.7500,Boost,Boost / tuck,25.966,False,28.649,0.001,-0.002,7.910,0.000,0.00001,Infinity
+43,1.7917,Boost,Boost / tuck,26.040,False,28.581,0.001,-0.001,7.637,0.000,0.00000,Infinity
+44,1.8333,Boost,Cruise / wind,26.101,False,28.517,0.001,-0.001,5.937,0.000,0.00001,Infinity
+45,1.8750,Boost,Cruise / wind,26.152,False,28.455,0.001,-0.001,3.123,0.000,0.00000,Infinity
+46,1.9167,Boost,Cruise / wind,26.195,False,28.395,0.000,-0.001,-0.279,0.000,0.00000,Infinity
+47,1.9583,Boost,Cruise / wind,26.230,False,28.340,0.000,0.000,-3.635,0.000,0.00000,Infinity
+48,2.0000,Boost,Cruise / wind,26.259,False,28.290,0.000,0.000,-6.318,0.000,0.00000,Infinity
+49,2.0417,Boost,Cruise / wind,26.283,False,28.245,0.000,0.000,-7.833,0.000,0.00001,Infinity
+50,2.0833,Turn right,Cruise / wind,23.802,False,24.575,-0.702,18.809,-6.852,0.000,0.00001,Infinity
+51,2.1250,Turn right,Brake / catch balance,21.890,False,19.442,-2.189,28.066,-3.482,0.000,0.00000,Infinity
+52,2.1667,Turn right,Brake / catch balance,20.431,False,15.019,-3.911,30.883,0.813,1.000,0.00000,Infinity
+53,2.2083,Turn right,Brake / catch balance,19.330,False,11.146,-5.368,31.686,4.811,0.550,0.00001,Infinity
+54,2.2500,Turn right,Brake / catch balance,18.504,False,7.608,-6.323,31.912,7.977,0.000,0.00000,Infinity
+55,2.2917,Turn right,Brake / catch balance,17.888,False,4.957,-6.763,30.492,10.155,0.000,0.00000,Infinity
+56,2.3333,Turn right,Brake / catch balance,17.429,False,3.616,-6.791,27.876,11.249,0.000,0.00000,Infinity
+57,2.3750,Turn right,Brake / catch balance,17.088,False,3.354,-6.540,24.909,11.165,0.000,0.00000,Infinity
+58,2.4167,Turn right,Brake / catch balance,16.833,False,3.733,-6.124,21.979,9.912,0.000,0.00000,Infinity
+59,2.4583,Turn right,Brake / catch balance,16.642,False,4.435,-5.623,19.228,7.687,0.000,0.00000,Infinity
+60,2.5000,Turn right,Brake / catch balance,16.499,False,5.281,-5.089,16.709,4.859,0.000,0.00000,Infinity
+61,2.5417,Turn right,Brake / catch balance,16.390,False,6.191,-4.554,14.438,1.894,0.000,0.00000,Infinity
+62,2.5833,Turn right,Brake / catch balance,16.307,False,7.128,-4.037,12.415,-0.736,0.000,0.00000,Infinity
+63,2.6250,Turn right,Brake / catch balance,16.243,False,8.073,-3.549,10.631,-2.629,0.000,0.00000,Infinity
+64,2.6667,Turn right,Brake / catch balance,16.194,False,9.011,-3.098,9.070,-3.518,0.000,0.00000,Infinity
+65,2.7083,Turn right,Brake / catch balance,16.155,False,9.925,-2.687,7.714,-3.312,0.000,0.00001,Infinity
+66,2.7500,Turn right,Brake / catch balance,16.125,False,10.799,-2.317,6.542,-2.109,0.000,0.00000,Infinity
+67,2.7917,Turn right,Brake / catch balance,16.101,False,11.613,-1.990,5.534,-0.182,0.000,0.00000,Infinity
+68,2.8333,Turn right,Brake / catch balance,16.082,False,12.347,-1.701,4.671,2.068,0.000,0.00000,Infinity
+69,2.8750,Turn right,Brake / catch balance,16.067,False,12.980,-1.449,3.935,4.185,0.000,0.00000,Infinity
+70,2.9167,Turn right,Brake / catch balance,16.055,False,13.491,-1.231,3.310,5.746,0.000,0.00001,Infinity
+71,2.9583,Turn right,Brake / catch balance,16.045,False,13.859,-1.043,2.779,6.431,0.000,0.00000,Infinity
+72,3.0000,Bank left,Cruise / wind,11.573,False,12.602,0.366,-17.699,3.859,0.000,0.00000,Infinity
+73,3.0417,Bank left,Brake / catch balance,8.372,False,9.732,3.802,-27.736,-2.860,0.000,0.00001,Infinity
+74,3.0833,Bank left,Brake / catch balance,6.606,False,6.284,9.195,-30.790,-12.379,1.000,0.00000,Infinity
+75,3.1250,Bank left,Brake / catch balance,6.319,False,3.117,15.574,-31.660,-21.976,0.550,0.00000,Infinity
+76,3.1667,Bank left,Brake / catch balance,7.027,False,0.857,20.398,-31.904,-26.916,0.000,0.00001,Infinity
+77,3.2083,Bank left,Brake / catch balance,8.112,False,0.054,22.726,-31.973,-27.075,0.000,0.00001,Infinity
+78,3.2500,Bank left,Brake / catch balance,9.237,False,0.693,22.905,-31.992,-25.009,0.000,0.00001,Infinity
+79,3.2917,Bank left,Brake / catch balance,10.275,False,2.145,21.315,-31.998,-21.817,0.000,0.00001,Infinity
+80,3.3333,Bank left,Brake / catch balance,11.187,False,3.791,18.619,-31.999,-17.971,0.000,0.00000,Infinity
+81,3.3750,Bank left,Brake / catch balance,11.971,False,5.305,15.569,-31.074,-13.887,0.000,0.00001,Infinity
+82,3.4167,Bank left,Brake / catch balance,12.636,False,6.600,12.688,-27.087,-9.832,0.000,0.00000,Infinity
+83,3.4583,Bank left,Brake / catch balance,13.197,False,7.699,10.221,-22.367,-6.022,0.000,0.00000,Infinity
+84,3.5000,Bank left,Brake / catch balance,13.667,False,8.662,8.214,-18.118,-2.724,0.000,0.00001,Infinity
+85,3.5417,Bank left,Brake / catch balance,14.060,False,9.536,6.611,-14.581,-0.248,0.000,0.00000,Infinity
+86,3.5833,Bank left,Brake / catch balance,14.387,False,10.353,5.333,-11.712,1.155,0.000,0.00001,Infinity
+87,3.6250,Bank left,Brake / catch balance,14.661,False,11.126,4.307,-9.407,1.392,0.000,0.00000,Infinity
+88,3.6667,Bank left,Brake / catch balance,14.888,False,11.854,3.476,-7.561,0.575,0.000,0.00000,Infinity
+89,3.7083,Bank left,Brake / catch balance,15.077,False,12.527,2.802,-6.083,-1.003,0.000,0.00000,Infinity
+90,3.7500,Bank left,Brake / catch balance,15.234,False,13.132,2.256,-4.900,-2.920,0.000,0.00000,Infinity
+91,3.7917,Bank left,Brake / catch balance,15.364,False,13.649,1.815,-3.953,-4.714,0.000,0.00000,Infinity
+92,3.8333,Bank left,Brake / catch balance,15.473,False,14.059,1.459,-3.193,-5.959,0.000,0.00000,Infinity
+93,3.8750,Bank left,Brake / catch balance,15.563,False,14.338,1.174,-2.583,-6.350,0.000,0.00000,Infinity
+94,3.9167,Brake,Cruise / wind,11.626,False,12.994,0.926,-1.024,-5.595,0.000,0.00000,Infinity
+95,3.9583,Brake,Brake / catch balance,8.684,False,10.056,0.701,-0.304,-3.796,0.000,0.00000,Infinity
+96,4.0000,Brake,Brake / catch balance,6.487,False,6.346,0.510,-0.086,-1.531,1.000,0.00000,Infinity
+97,4.0417,Brake,Brake / catch balance,4.846,False,2.246,0.360,-0.024,0.542,0.550,0.00001,Infinity
+98,4.0833,Brake,Brake / catch balance,3.620,False,-1.782,0.250,-0.007,2.010,0.000,0.00000,Infinity
+99,4.1250,Brake,Brake / catch balance,2.704,False,-4.829,0.174,-0.002,2.764,0.000,0.00000,Infinity
+100,4.1667,Brake,Brake / catch balance,2.020,False,-6.393,0.108,-0.001,2.879,0.000,0.00000,Infinity
+101,4.2083,Brake,Brake / catch balance,1.509,False,-6.752,0.009,0.000,2.496,0.000,0.00000,Infinity
+102,4.2500,Brake,Brake / catch balance,1.127,False,-6.406,-0.145,0.000,1.760,0.000,0.00000,Infinity
+103,4.2917,Brake,Brake / catch balance,0.842,False,-5.714,-0.340,0.000,0.820,0.000,0.00001,Infinity
+104,4.3333,Brake,Brake / catch balance,0.629,False,-4.868,-0.547,0.000,-0.173,0.000,0.00001,Infinity
+105,4.3750,Brake,Brake / catch balance,0.470,False,-3.955,-0.742,0.000,-1.065,0.000,0.00000,Infinity
+106,4.4167,Brake,Brake / catch balance,0.351,False,-3.012,-0.909,0.000,-1.725,0.000,0.00001,Infinity
+107,4.4583,Brake,Brake / catch balance,0.262,False,-2.058,-1.044,0.000,-2.058,0.000,0.00000,Infinity
+108,4.5000,Brake,Brake / catch balance,0.196,False,-1.110,-1.152,0.000,-2.022,0.000,0.00001,Infinity
+109,4.5417,Brake,Brake / catch balance,0.146,False,-0.186,-1.236,0.000,-1.633,0.000,0.00000,Infinity
+110,4.5833,Brake,Brake / catch balance,0.109,False,0.697,-1.304,0.000,-0.965,0.000,0.00000,Infinity
+111,4.6250,Brake,Brake / catch balance,0.082,False,1.519,-1.357,0.000,-0.140,0.000,0.00000,Infinity
+112,4.6667,Brake,Brake / catch balance,0.061,False,2.261,-1.398,0.000,0.697,0.000,0.00000,Infinity
+113,4.7083,Brake,Brake / catch balance,0.046,False,2.902,-1.427,0.000,1.396,0.000,0.00000,Infinity
+114,4.7500,Brake,Brake / catch balance,0.034,False,3.422,-1.445,0.000,1.835,0.000,0.00000,Infinity
+115,4.7917,Brake,Brake / catch balance,0.025,False,3.801,-1.451,0.000,1.934,0.000,0.00000,Infinity
+116,4.8333,Brake,Hover / breathe,0.000,False,4.018,-1.446,0.000,1.677,0.000,0.00000,Infinity
+117,4.8750,Brake,Hover / breathe,0.000,False,4.124,-1.429,0.000,1.112,0.000,0.00001,Infinity
+118,4.9167,Climb,Hover / breathe,0.000,False,4.179,-1.401,0.000,0.344,0.000,0.00000,Infinity
+119,4.9583,Climb,Hover / breathe,0.000,False,4.218,-1.362,0.000,-0.485,0.000,0.00001,Infinity
+120,5.0000,Climb,Hover / breathe,0.000,False,4.256,-1.311,0.000,-1.224,0.000,0.00001,Infinity
+121,5.0417,Climb,Hover / breathe,0.000,False,4.296,-1.250,0.000,-1.736,0.000,0.00001,Infinity
+122,5.0833,Climb,Hover / breathe,0.000,False,4.341,-1.178,0.000,-1.928,0.000,0.00000,Infinity
+123,5.1250,Climb,Hover / breathe,0.000,False,4.389,-1.096,0.000,-1.764,0.000,0.00000,Infinity
+124,5.1667,Climb,Hover / breathe,0.000,False,4.441,-1.005,0.000,-1.274,0.000,0.00000,Infinity
+125,5.2083,Climb,Hover / breathe,0.000,False,4.497,-0.906,0.000,-0.549,0.000,0.00000,Infinity
+126,5.2500,Climb,Hover / breathe,0.000,False,4.556,-0.799,0.000,0.277,0.000,0.00000,Infinity
+127,5.2917,Climb,Hover / breathe,0.000,False,4.618,-0.685,0.000,1.053,0.000,0.00001,Infinity
+128,5.3333,Climb,Hover / breathe,0.000,False,4.683,-0.566,0.000,1.633,0.000,0.00000,Infinity
+129,5.3750,Climb,Hover / breathe,0.000,False,4.750,-0.442,0.000,1.912,0.000,0.00000,Infinity
+130,5.4167,Climb,Hover / breathe,0.000,False,4.818,-0.315,0.000,1.837,0.000,0.00000,Infinity
+131,5.4583,Climb,Hover / breathe,0.000,False,4.888,-0.186,0.000,1.423,0.000,0.00000,Infinity
+132,5.5000,Climb,Hover / breathe,0.000,False,4.959,-0.055,0.000,0.745,0.000,0.00001,Infinity
+133,5.5417,Climb,Hover / breathe,0.000,False,5.029,0.075,0.000,-0.070,0.000,0.00000,Infinity
+134,5.5833,Climb,Hover / breathe,0.000,False,5.099,0.204,0.000,-0.872,0.000,0.00001,Infinity
+135,5.6250,Climb,Hover / breathe,0.000,False,5.168,0.331,0.000,-1.513,0.000,0.00000,Infinity
+136,5.6667,Climb,Hover / breathe,0.000,False,5.234,0.454,0.000,-1.875,0.000,0.00000,Infinity
+137,5.7083,Climb,Hover / breathe,0.000,False,5.299,0.572,0.000,-1.889,0.000,0.00001,Infinity
+138,5.7500,Climb,Hover / breathe,0.000,False,5.360,0.685,0.000,-1.555,0.000,0.00000,Infinity
+139,5.7917,Climb,Hover / breathe,0.000,False,5.418,0.791,0.000,-0.933,0.000,0.00001,Infinity
+140,5.8333,Climb,Hover / breathe,0.000,False,5.472,0.890,0.000,-0.139,0.000,0.00000,Infinity
+141,5.8750,Climb,Hover / breathe,0.000,False,5.521,0.980,0.000,0.681,0.000,0.00001,Infinity
+142,5.9167,Climb,Hover / breathe,0.000,False,5.566,1.062,0.000,1.375,0.000,0.00000,Infinity
+143,5.9583,Climb,Hover / breathe,0.000,False,5.606,1.134,0.000,1.815,0.000,0.00000,Infinity
+144,6.0000,Climb,Hover / breathe,0.000,False,5.640,1.197,0.000,1.919,0.000,0.00001,Infinity
+145,6.0417,Climb,Hover / breathe,0.000,False,5.669,1.249,0.000,1.669,0.000,0.00000,Infinity
+146,6.0833,Climb,Hover / breathe,0.000,False,5.693,1.291,0.000,1.110,0.000,0.00000,Infinity
+147,6.1250,Hover,Hover / breathe,0.000,False,5.711,1.322,0.000,0.345,0.000,0.00000,Infinity
+148,6.1667,Hover,Hover / breathe,0.000,False,5.723,1.343,0.000,-0.483,0.000,0.00000,Infinity
+149,6.2083,Hover,Hover / breathe,0.000,False,5.730,1.354,0.000,-1.221,0.000,0.00000,Infinity
+150,6.2500,Hover,Hover / breathe,0.000,False,5.731,1.355,0.000,-1.735,0.000,0.00000,Infinity
+151,6.2917,Hover,Hover / breathe,0.000,False,5.727,1.346,0.000,-1.927,0.000,0.00000,Infinity
+152,6.3333,Hover,Hover / breathe,0.000,False,5.718,1.327,0.000,-1.763,0.000,0.00000,Infinity
+153,6.3750,Hover,Hover / breathe,0.000,False,5.704,1.300,0.000,-1.273,0.000,0.00000,Infinity
+154,6.4167,Hover,Hover / breathe,0.000,False,5.686,1.265,0.000,-0.548,0.000,0.00000,Infinity
+155,6.4583,Hover,Hover / breathe,0.000,False,5.664,1.223,0.000,0.278,0.000,0.00001,Infinity
+156,6.5000,Hover,Hover / breathe,0.000,False,5.638,1.173,0.000,1.053,0.000,0.00001,Infinity
+157,6.5417,Hover,Hover / breathe,0.000,False,5.609,1.118,0.000,1.634,0.000,0.00000,Infinity
+158,6.5833,Hover,Hover / breathe,0.000,False,5.576,1.057,0.000,1.912,0.000,0.00000,Infinity
+159,6.6250,Hover,Hover / breathe,0.000,False,5.542,0.992,0.000,1.837,0.000,0.00000,Infinity
+160,6.6667,Hover,Hover / breathe,0.000,False,5.505,0.924,0.000,1.422,0.000,0.00000,Infinity
+161,6.7083,Hover,Hover / breathe,0.000,False,5.467,0.852,0.000,0.745,0.000,0.00001,Infinity
+162,6.7500,Hover,Hover / breathe,0.000,False,5.428,0.779,0.000,-0.070,0.000,0.00000,Infinity
+163,6.7917,Hover,Hover / breathe,0.000,False,5.387,0.704,0.000,-0.873,0.000,0.00000,Infinity
+164,6.8333,Hover,Hover / breathe,0.000,False,5.347,0.629,0.000,-1.514,0.000,0.00000,Infinity
+165,6.8750,Hover,Hover / breathe,0.000,False,5.306,0.554,0.000,-1.875,0.000,0.00000,Infinity
+166,6.9167,Hover,Hover / breathe,0.000,False,5.266,0.479,0.000,-1.889,0.000,0.00000,Infinity
+167,6.9583,Hover,Hover / breathe,0.000,False,5.226,0.406,0.000,-1.554,0.000,0.00000,Infinity
+168,7.0000,Hover,Hover / breathe,0.000,False,5.187,0.334,0.000,-0.932,0.000,0.00000,Infinity
+169,7.0417,Hover,Hover / breathe,0.000,False,5.150,0.264,0.000,-0.138,0.000,0.00000,Infinity
+170,7.0833,Hover,Hover / breathe,0.000,False,5.113,0.197,0.000,0.682,0.000,0.00000,Infinity
+171,7.1250,Hover,Hover / breathe,0.000,False,5.078,0.132,0.000,1.376,0.000,0.00001,Infinity
+172,7.1667,Hover,Hover / breathe,0.000,False,5.044,0.070,0.000,1.815,0.000,0.00000,Infinity
+173,7.2083,Hover,Hover / breathe,0.000,False,5.012,0.011,0.000,1.919,0.000,0.00000,Infinity
+174,7.2500,Hover,Hover / breathe,0.000,False,4.981,-0.045,0.000,1.668,0.000,0.00000,Infinity
+175,7.2917,Hover,Hover / breathe,0.000,False,4.952,-0.099,0.000,1.109,0.000,0.00001,Infinity
+176,7.3333,Hover,Hover / breathe,0.000,False,4.924,-0.149,0.000,0.345,0.000,0.00001,Infinity
+177,7.3750,Hover,Hover / breathe,0.000,False,4.898,-0.197,0.000,-0.483,0.000,0.00000,Infinity
+178,7.4167,Hover,Hover / breathe,0.000,False,4.873,-0.243,0.000,-1.222,0.000,0.00000,Infinity
+179,7.4583,Hover,Hover / breathe,0.000,False,4.849,-0.286,0.000,-1.735,0.000,0.00000,Infinity
+180,7.5000,Hover,Hover / breathe,0.000,False,4.827,-0.328,0.000,-1.927,0.000,0.00000,Infinity
+181,7.5417,Hover,Hover / breathe,0.000,False,4.805,-0.367,0.000,-1.763,0.000,0.00000,Infinity
+182,7.5833,Hover,Hover / breathe,0.000,False,4.784,-0.406,0.000,-1.273,0.000,0.00000,Infinity
+183,7.6250,Hover,Hover / breathe,0.000,False,4.764,-0.443,0.000,-0.548,0.000,0.00001,Infinity
+184,7.6667,Hover,Hover / breathe,0.000,False,4.744,-0.480,0.000,0.279,0.000,0.00001,Infinity
+185,7.7083,Hover,Hover / breathe,0.000,False,4.724,-0.516,0.000,1.054,0.000,0.00000,Infinity
+186,7.7500,Hover,Hover / breathe,0.000,False,4.705,-0.551,0.000,1.634,0.000,0.00000,Infinity
+187,7.7917,Hover,Hover / breathe,0.000,False,4.685,-0.587,0.000,1.912,0.000,0.00000,Infinity
+188,7.8333,Hover,Hover / breathe,0.000,False,4.666,-0.622,0.000,1.837,0.000,0.00001,Infinity
+189,7.8750,Hover,Hover / breathe,0.000,False,4.647,-0.657,0.000,1.422,0.000,0.00000,Infinity

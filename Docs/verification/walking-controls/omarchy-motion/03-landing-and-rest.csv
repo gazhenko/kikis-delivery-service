@@ -1,0 +1,160 @@
+frame,seconds,action,beat,speed,grounded,bodyPitch,bodyBank,gaze,bow,smear,gripError,soleError
+0,0.0000,Hover,Hover / breathe,0.000,False,5.177,0.311,0.000,1.813,0.000,0.00000,Infinity
+1,0.0417,Hover,Hover / breathe,0.000,False,5.127,0.220,0.000,1.920,0.000,0.00000,Infinity
+2,0.0833,Hover,Hover / breathe,0.000,False,5.079,0.131,0.000,1.672,0.000,0.00001,Infinity
+3,0.1250,Hover,Hover / breathe,0.000,False,5.033,0.045,0.000,1.115,0.000,0.00000,Infinity
+4,0.1667,Hover,Hover / breathe,0.000,False,4.988,-0.037,0.000,0.352,0.000,0.00001,Infinity
+5,0.2083,Hover,Hover / breathe,0.000,False,4.946,-0.115,0.000,-0.476,0.000,0.00000,Infinity
+6,0.2500,Hover,Hover / breathe,0.000,False,4.905,-0.188,0.000,-1.217,0.000,0.00000,Infinity
+7,0.2917,Hover,Hover / breathe,0.000,False,4.868,-0.258,0.000,-1.732,0.000,0.00000,Infinity
+8,0.3333,Hover,Hover / breathe,0.000,False,4.832,-0.322,0.000,-1.927,0.000,0.00000,Infinity
+9,0.3750,Hover,Hover / breathe,0.000,False,4.800,-0.382,0.000,-1.766,0.000,0.00000,Infinity
+10,0.4167,Hover,Hover / breathe,0.000,False,4.770,-0.436,0.000,-1.278,0.000,0.00000,Infinity
+11,0.4583,Hover,Hover / breathe,0.000,False,4.742,-0.486,0.000,-0.554,0.000,0.00000,Infinity
+12,0.5000,Descend / touch down,Hover / breathe,0.000,False,4.717,-0.532,0.000,0.272,0.000,0.00001,Infinity
+13,0.5417,Descend / touch down,Hover / breathe,0.000,False,4.694,-0.573,0.000,1.048,0.000,0.00000,Infinity
+14,0.5833,Descend / touch down,Hover / breathe,0.000,False,4.674,-0.610,0.000,1.630,0.000,0.00000,Infinity
+15,0.6250,Descend / touch down,Hover / breathe,0.000,False,4.656,-0.643,0.000,1.911,0.000,0.00000,Infinity
+16,0.6667,Descend / touch down,Hover / breathe,0.000,False,4.639,-0.672,0.000,1.839,0.000,0.00000,Infinity
+17,0.7083,Descend / touch down,Hover / breathe,0.000,False,4.625,-0.698,0.000,1.427,0.000,0.00000,Infinity
+18,0.7500,Descend / touch down,Hover / breathe,0.000,False,4.612,-0.722,0.000,0.751,0.000,0.00000,Infinity
+19,0.7917,Descend / touch down,Hover / breathe,0.000,False,4.600,-0.742,0.000,-0.064,0.000,0.00000,Infinity
+20,0.8333,Descend / touch down,Hover / breathe,0.000,False,4.590,-0.761,0.000,-0.867,0.000,0.00001,Infinity
+21,0.8750,Descend / touch down,Hover / breathe,0.000,False,4.581,-0.778,0.000,-1.510,0.000,0.00000,Infinity
+22,0.9167,Descend / touch down,Hover / breathe,0.000,False,4.572,-0.793,0.000,-1.873,0.000,0.00000,Infinity
+23,0.9583,Descend / touch down,Hover / breathe,0.000,False,4.565,-0.806,0.000,-1.890,0.000,0.00000,Infinity
+24,1.0000,Descend / touch down,Hover / breathe,0.000,False,4.558,-0.819,0.000,-1.558,0.000,0.00000,Infinity
+25,1.0417,Descend / touch down,Hover / breathe,0.000,False,4.551,-0.831,0.000,-0.938,0.000,0.00000,Infinity
+26,1.0833,Descend / touch down,Hover / breathe,0.000,False,4.545,-0.842,0.000,-0.144,0.000,0.00000,Infinity
+27,1.1250,Descend / touch down,Hover / breathe,0.000,False,4.539,-0.852,0.000,0.676,0.000,0.00000,Infinity
+28,1.1667,Descend / touch down,Hover / breathe,0.000,False,4.534,-0.862,0.000,1.371,0.000,0.00000,Infinity
+29,1.2083,Descend / touch down,Hover / breathe,0.000,False,4.529,-0.871,0.000,1.813,0.000,0.00000,Infinity
+30,1.2500,Descend / touch down,Hover / breathe,0.000,False,4.525,-0.879,0.000,1.920,0.000,0.00000,Infinity
+31,1.2917,Descend / touch down,Hover / breathe,0.000,False,4.521,-0.886,0.000,1.672,0.000,0.00000,Infinity
+32,1.3333,Descend / touch down,Hover / breathe,0.000,False,4.518,-0.891,0.000,1.114,0.000,0.00001,Infinity
+33,1.3750,Descend / touch down,Hover / breathe,0.000,False,4.516,-0.895,0.000,0.351,0.000,0.00001,Infinity
+34,1.4167,Descend / touch down,Hover / breathe,0.000,False,4.515,-0.897,0.000,-0.477,0.000,0.00000,Infinity
+35,1.4583,Descend / touch down,Hover / breathe,0.000,False,4.514,-0.897,0.000,-1.217,0.000,0.00000,Infinity
+36,1.5000,Descend / touch down,Dismount / settle,0.000,True,4.329,-0.895,0.000,-1.626,0.000,0.00001,0.00000
+37,1.5417,Descend / touch down,Dismount / settle,0.000,True,2.331,-0.889,0.000,-1.580,0.000,0.00000,0.00000
+38,1.5833,Descend / touch down,Dismount / settle,0.000,True,-2.068,-0.880,0.000,-1.176,0.000,0.00001,0.00000
+39,1.6250,Descend / touch down,Dismount / settle,0.000,True,-6.164,-0.867,0.000,-0.625,0.000,0.00001,0.00000
+40,1.6667,Descend / touch down,Dismount / settle,0.000,True,-8.416,-0.850,0.000,-0.127,0.000,0.00001,0.00000
+41,1.7083,Descend / touch down,Dismount / settle,0.000,True,-8.979,-0.828,0.000,0.186,0.000,0.00000,0.00000
+42,1.7500,Descend / touch down,Dismount / settle,0.000,True,-8.431,-0.801,0.000,0.261,0.000,0.00001,0.00000
+43,1.7917,Descend / touch down,Dismount / settle,0.000,True,-7.139,-0.768,0.000,0.123,0.000,0.00001,0.00000
+44,1.8333,Descend / touch down,Dismount / settle,0.000,True,-5.081,-0.730,0.000,-0.028,0.000,0.00000,0.00000
+45,1.8750,Descend / touch down,Dismount / settle,0.000,True,-2.539,-0.686,0.000,-0.067,0.000,0.00001,0.00000
+46,1.9167,Descend / touch down,Dismount / settle,0.000,True,-0.163,-0.636,0.000,-0.030,0.000,0.00000,0.00000
+47,1.9583,Descend / touch down,Dismount / settle,0.000,True,1.486,-0.580,0.000,0.008,0.000,0.00001,0.00001
+48,2.0000,Descend / touch down,Dismount / settle,0.000,True,2.281,-0.517,0.000,0.017,0.000,0.00001,0.00000
+49,2.0417,Descend / touch down,Dismount / settle,0.000,True,2.456,-0.449,0.000,0.007,0.000,0.00001,0.00000
+50,2.0833,Descend / touch down,Dismount / settle,0.000,True,2.294,-0.374,0.000,-0.002,0.000,0.00000,0.00000
+51,2.1250,Descend / touch down,Dismount / settle,0.000,True,1.982,-0.294,0.000,-0.004,0.000,0.00001,0.00000
+52,2.1667,Descend / touch down,Dismount / settle,0.000,True,1.618,-0.208,0.000,-0.002,0.000,0.00000,0.00000
+53,2.2083,Descend / touch down,Rest / broom at side,0.000,True,1.252,-0.118,0.000,0.001,0.000,0.00000,0.00000
+54,2.2500,Descend / touch down,Rest / broom at side,0.000,True,0.910,-0.023,0.000,0.001,0.000,0.00000,0.00000
+55,2.2917,Descend / touch down,Rest / broom at side,0.000,True,0.617,0.076,0.000,0.000,0.000,0.00000,0.00000
+56,2.3333,Descend / touch down,Rest / broom at side,0.000,True,0.394,0.178,0.000,0.000,0.000,0.00000,0.00000
+57,2.3750,Descend / touch down,Rest / broom at side,0.000,True,0.267,0.282,0.000,0.000,0.000,0.00000,0.00000
+58,2.4167,Descend / touch down,Rest / broom at side,0.000,True,0.232,0.388,0.000,0.000,0.000,0.00001,0.00000
+59,2.4583,Descend / touch down,Rest / broom at side,0.000,True,0.256,0.494,0.000,0.000,0.000,0.00000,0.00000
+60,2.5000,Descend / touch down,Rest / broom at side,0.000,True,0.307,0.600,0.000,0.000,0.000,0.00000,0.00000
+61,2.5417,Descend / touch down,Rest / broom at side,0.000,True,0.366,0.705,0.000,0.000,0.000,0.00001,0.00000
+62,2.5833,Descend / touch down,Rest / broom at side,0.000,True,0.425,0.807,0.000,0.000,0.000,0.00000,0.00000
+63,2.6250,Descend / touch down,Rest / broom at side,0.000,True,0.480,0.906,0.000,0.000,0.000,0.00001,0.00000
+64,2.6667,Descend / touch down,Rest / broom at side,0.000,True,0.533,1.001,0.000,0.000,0.000,0.00001,0.00000
+65,2.7083,Descend / touch down,Rest / broom at side,0.000,True,0.582,1.090,0.000,0.000,0.000,0.00000,0.00000
+66,2.7500,Descend / touch down,Rest / broom at side,0.000,True,0.627,1.173,0.000,0.000,0.000,0.00001,0.00000
+67,2.7917,Descend / touch down,Rest / broom at side,0.000,True,0.668,1.249,0.000,0.000,0.000,0.00001,0.00000
+68,2.8333,Descend / touch down,Rest / broom at side,0.000,True,0.705,1.317,0.000,0.000,0.000,0.00000,0.00000
+69,2.8750,Descend / touch down,Rest / broom at side,0.000,True,0.738,1.375,0.000,0.000,0.000,0.00001,0.00000
+70,2.9167,Absorb / recover / look around,Rest / broom at side,0.000,True,0.765,1.424,0.000,0.000,0.000,0.00001,0.00000
+71,2.9583,Absorb / recover / look around,Rest / broom at side,0.000,True,0.787,1.463,0.000,0.000,0.000,0.00001,0.00000
+72,3.0000,Absorb / recover / look around,Rest / broom at side,0.000,True,0.803,1.491,0.000,0.000,0.000,0.00000,0.00000
+73,3.0417,Absorb / recover / look around,Rest / broom at side,0.000,True,0.813,1.508,0.000,0.000,0.000,0.00001,0.00000
+74,3.0833,Absorb / recover / look around,Rest / broom at side,0.000,True,0.816,1.514,0.000,0.000,0.000,0.00001,0.00000
+75,3.1250,Absorb / recover / look around,Rest / broom at side,0.000,True,0.814,1.507,0.000,0.000,0.000,0.00001,0.00000
+76,3.1667,Absorb / recover / look around,Rest / broom at side,0.000,True,0.805,1.489,0.000,0.000,0.000,0.00001,0.00000
+77,3.2083,Absorb / recover / look around,Rest / broom at side,0.000,True,0.790,1.459,0.000,0.000,0.000,0.00000,0.00000
+78,3.2500,Absorb / recover / look around,Rest / broom at side,0.000,True,0.768,1.418,0.000,0.000,0.000,0.00000,0.00001
+79,3.2917,Absorb / recover / look around,Rest / broom at side,0.000,True,0.741,1.365,0.000,0.000,0.000,0.00001,0.00000
+80,3.3333,Absorb / recover / look around,Rest / broom at side,0.000,True,0.708,1.301,0.000,0.000,0.000,0.00001,0.00000
+81,3.3750,Absorb / recover / look around,Rest / broom at side,0.000,True,0.669,1.228,0.000,0.000,0.000,0.00000,0.00000
+82,3.4167,Absorb / recover / look around,Rest / broom at side,0.000,True,0.624,1.144,0.000,0.000,0.000,0.00000,0.00000
+83,3.4583,Absorb / recover / look around,Rest / broom at side,0.000,True,0.575,1.052,0.000,0.000,0.000,0.00000,0.00000
+84,3.5000,Absorb / recover / look around,Rest / broom at side,0.000,True,0.522,0.952,0.000,0.000,0.000,0.00000,0.00000
+85,3.5417,Absorb / recover / look around,Rest / broom at side,0.000,True,0.465,0.844,0.000,0.000,0.000,0.00000,0.00000
+86,3.5833,Absorb / recover / look around,Rest / broom at side,0.000,True,0.404,0.731,0.000,0.000,0.000,0.00001,0.00000
+87,3.6250,Absorb / recover / look around,Rest / broom at side,0.000,True,0.341,0.613,0.000,0.000,0.000,0.00001,0.00000
+88,3.6667,Absorb / recover / look around,Rest / broom at side,0.000,True,0.275,0.490,0.000,0.000,0.000,0.00001,0.00000
+89,3.7083,Absorb / recover / look around,Rest / broom at side,0.000,True,0.208,0.365,0.000,0.000,0.000,0.00000,0.00000
+90,3.7500,Absorb / recover / look around,Rest / broom at side,0.000,True,0.140,0.239,0.000,0.000,0.000,0.00000,0.00000
+91,3.7917,Absorb / recover / look around,Rest / broom at side,0.000,True,0.071,0.112,0.000,0.000,0.000,0.00001,0.00000
+92,3.8333,Absorb / recover / look around,Rest / broom at side,0.000,True,0.003,-0.015,0.000,0.000,0.000,0.00001,0.00000
+93,3.8750,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.064,-0.139,0.000,0.000,0.000,0.00000,0.00000
+94,3.9167,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.130,-0.261,0.000,0.000,0.000,0.00000,0.00000
+95,3.9583,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.194,-0.378,0.000,0.000,0.000,0.00001,0.00000
+96,4.0000,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.255,-0.491,0.000,0.000,0.000,0.00001,0.00000
+97,4.0417,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.313,-0.598,0.000,0.000,0.000,0.00001,0.00000
+98,4.0833,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.368,-0.698,0.000,0.000,0.000,0.00000,0.00000
+99,4.1250,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.419,-0.791,0.000,0.000,0.000,0.00000,0.00000
+100,4.1667,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.465,-0.876,0.000,0.000,0.000,0.00001,0.00000
+101,4.2083,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.507,-0.952,0.000,0.000,0.000,0.00000,0.00000
+102,4.2500,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.544,-1.020,0.000,0.000,0.000,0.00001,0.00000
+103,4.2917,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.577,-1.078,0.000,0.000,0.000,0.00001,0.00000
+104,4.3333,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.604,-1.127,0.000,0.000,0.000,0.00001,0.00000
+105,4.3750,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.626,-1.167,0.000,0.000,0.000,0.00001,0.00000
+106,4.4167,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.643,-1.197,0.000,0.000,0.000,0.00001,0.00000
+107,4.4583,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.656,-1.218,0.000,0.000,0.000,0.00001,0.00000
+108,4.5000,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.663,-1.230,0.000,0.000,0.000,0.00000,0.00000
+109,4.5417,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.666,-1.234,0.000,0.000,0.000,0.00000,0.00000
+110,4.5833,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.664,-1.229,0.000,0.000,0.000,0.00001,0.00000
+111,4.6250,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.658,-1.216,0.000,0.000,0.000,0.00000,0.00000
+112,4.6667,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.647,-1.196,0.000,0.000,0.000,0.00001,0.00000
+113,4.7083,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.634,-1.169,0.000,0.000,0.000,0.00001,0.00000
+114,4.7500,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.617,-1.137,0.000,0.000,0.000,0.00000,0.00000
+115,4.7917,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.597,-1.099,0.000,0.000,0.000,0.00000,0.00000
+116,4.8333,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.574,-1.056,0.000,0.000,0.000,0.00000,0.00000
+117,4.8750,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.550,-1.009,0.000,0.000,0.000,0.00000,0.00000
+118,4.9167,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.523,-0.959,0.000,0.000,0.000,0.00000,0.00000
+119,4.9583,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.495,-0.907,0.000,0.000,0.000,0.00000,0.00000
+120,5.0000,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.466,-0.852,0.000,0.000,0.000,0.00000,0.00000
+121,5.0417,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.435,-0.796,0.000,0.000,0.000,0.00000,0.00000
+122,5.0833,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.405,-0.739,0.000,0.000,0.000,0.00000,0.00000
+123,5.1250,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.374,-0.682,0.000,0.000,0.000,0.00001,0.00000
+124,5.1667,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.343,-0.625,0.000,0.000,0.000,0.00001,0.00000
+125,5.2083,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.313,-0.568,0.000,0.000,0.000,0.00001,0.00000
+126,5.2500,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.282,-0.512,0.000,0.000,0.000,0.00000,0.00000
+127,5.2917,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.253,-0.457,0.000,0.000,0.000,0.00000,0.00000
+128,5.3333,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.224,-0.404,0.000,0.000,0.000,0.00000,0.00000
+129,5.3750,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.195,-0.352,0.000,0.000,0.000,0.00000,0.00000
+130,5.4167,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.168,-0.301,0.000,0.000,0.000,0.00001,0.00000
+131,5.4583,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.141,-0.251,0.000,0.000,0.000,0.00000,0.00000
+132,5.5000,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.115,-0.203,0.000,0.000,0.000,0.00000,0.00000
+133,5.5417,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.089,-0.156,0.000,0.000,0.000,0.00000,0.00000
+134,5.5833,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.064,-0.110,0.000,0.000,0.000,0.00000,0.00000
+135,5.6250,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.040,-0.065,0.000,0.000,0.000,0.00001,0.00000
+136,5.6667,Absorb / recover / look around,Rest / broom at side,0.000,True,-0.015,-0.021,0.000,0.000,0.000,0.00000,0.00000
+137,5.7083,Absorb / recover / look around,Rest / broom at side,0.000,True,0.009,0.023,0.000,0.000,0.000,0.00000,0.00000
+138,5.7500,Absorb / recover / look around,Rest / broom at side,0.000,True,0.033,0.067,0.000,0.000,0.000,0.00000,0.00000
+139,5.7917,Absorb / recover / look around,Rest / broom at side,0.000,True,0.057,0.112,0.000,0.000,0.000,0.00000,0.00000
+140,5.8333,Absorb / recover / look around,Rest / broom at side,0.000,True,0.081,0.156,0.000,0.000,0.000,0.00001,0.00000
+141,5.8750,Absorb / recover / look around,Rest / broom at side,0.000,True,0.105,0.201,0.000,0.000,0.000,0.00000,0.00000
+142,5.9167,Absorb / recover / look around,Rest / broom at side,0.000,True,0.130,0.248,0.000,0.000,0.000,0.00001,0.00000
+143,5.9583,Absorb / recover / look around,Rest / broom at side,0.000,True,0.156,0.295,0.000,0.000,0.000,0.00000,0.00000
+144,6.0000,Absorb / recover / look around,Rest / broom at side,0.000,True,0.182,0.343,-0.064,0.000,0.000,0.00001,0.00000
+145,6.0417,Absorb / recover / look around,Rest / broom at side,0.000,True,0.209,0.392,-0.463,0.000,0.000,0.00000,0.00000
+146,6.0833,Absorb / recover / look around,Rest / broom at side,0.000,True,0.236,0.443,-1.311,0.000,0.000,0.00000,0.00000
+147,6.1250,Absorb / recover / look around,Rest / broom at side,0.000,True,0.264,0.495,-2.590,0.000,0.000,0.00000,0.00000
+148,6.1667,Absorb / recover / look around,Rest / broom at side,0.000,True,0.293,0.548,-4.239,0.000,0.000,0.00000,0.00000
+149,6.2083,Absorb / recover / look around,Rest / broom at side,0.000,True,0.322,0.602,-6.186,0.000,0.000,0.00001,0.00000
+150,6.2500,Absorb / recover / look around,Rest / broom at side,0.000,True,0.351,0.656,-8.353,0.000,0.000,0.00001,0.00000
+151,6.2917,Absorb / recover / look around,Rest / broom at side,0.000,True,0.380,0.711,-10.660,0.000,0.000,0.00000,0.00000
+152,6.3333,Absorb / recover / look around,Rest / broom at side,0.000,True,0.410,0.765,-13.029,0.000,0.000,0.00001,0.00000
+153,6.3750,Absorb / recover / look around,Rest / broom at side,0.000,True,0.439,0.820,-15.380,0.000,0.000,0.00001,0.00000
+154,6.4167,Absorb / recover / look around,Rest / broom at side,0.000,True,0.468,0.873,-17.636,0.000,0.000,0.00001,0.00000
+155,6.4583,Absorb / recover / look around,Rest / broom at side,0.000,True,0.496,0.924,-19.717,0.000,0.000,0.00001,0.00000
+156,6.5000,Absorb / recover / look around,Rest / broom at side,0.000,True,0.523,0.974,-21.543,0.000,0.000,0.00001,0.00000
+157,6.5417,Absorb / recover / look around,Rest / broom at side,0.000,True,0.548,1.020,-23.036,0.000,0.000,0.00000,0.00000
+158,6.5833,Absorb / recover / look around,Rest / broom at side,0.000,True,0.572,1.064,-24.117,0.000,0.000,0.00000,0.00000

@@ -89,6 +89,15 @@ namespace Koriko.Editor
                     // as the walking surface so feet cannot disappear into it.
                     if(new[]{"Streets__Paint_8","Streets__Paint_7","Landscape__Paint_7","Airship__Paint_6"}.Contains(mesh.name))
                     {mesh.gameObject.AddComponent<MeshCollider>().sharedMesh=mesh.sharedMesh;colliders++;}
+                    // Flight uses simple building volumes. The camera also
+                    // needs the visible awnings, overhanging roofs and cornices
+                    // so its orbit cannot sit inside decorative architecture.
+                    if(mesh.name.StartsWith("Street_",StringComparison.Ordinal))
+                    {
+                        var cameraShell=new GameObject("Camera facade surface");
+                        cameraShell.transform.SetParent(mesh.transform,false);cameraShell.layer=10;
+                        cameraShell.AddComponent<MeshCollider>().sharedMesh=mesh.sharedMesh;
+                    }
                     GameObjectUtility.SetStaticEditorFlags(mesh.gameObject,StaticEditorFlags.BatchingStatic|StaticEditorFlags.OccluderStatic|StaticEditorFlags.OccludeeStatic);
                     // Broad painted floors receive building/tree shadows. Casting them back
                     // onto their own near-coplanar triangles exposes a distracting seam grid.
@@ -105,7 +114,7 @@ namespace Koriko.Editor
             var orbit=new GameObject("Camera orbit target").transform;orbit.position=new Vector3(-113,1.6f,9);orbit.rotation=Quaternion.Euler(12,85,0);
             var follow=new GameObject("Kiki follow camera").AddComponent<CinemachineCamera>();follow.Follow=orbit;follow.Lens.FieldOfView=52;follow.Lens.NearClipPlane=.1f;follow.Lens.FarClipPlane=800;
             var body=follow.gameObject.AddComponent<CinemachineThirdPersonFollow>();body.CameraDistance=7.5f;body.ShoulderOffset=new Vector3(.55f,.3f,0);body.VerticalArmLength=.45f;body.CameraSide=.65f;body.Damping=new Vector3(.12f,.22f,.15f);
-            body.AvoidObstacles=new CinemachineThirdPersonFollow.ObstacleSettings{Enabled=true,CollisionFilter=1<<8,IgnoreTag="Player",CameraRadius=.27f,DampingIntoCollision=.08f,DampingFromCollision=.5f};
+            body.AvoidObstacles=new CinemachineThirdPersonFollow.ObstacleSettings{Enabled=true,CollisionFilter=(1<<8)|(1<<10),IgnoreTag="Player",CameraRadius=.27f,DampingIntoCollision=.08f,DampingFromCollision=.5f};
             var player=new GameObject("Kiki");player.tag="Player";player.layer=9;player.transform.position=new Vector3(-113,.18f,9);
             var controller=player.AddComponent<CharacterController>();controller.radius=.42f;controller.height=2.1f;controller.center=new Vector3(0,1.1f,0);controller.stepOffset=.25f;controller.skinWidth=.045f;
             var motor=player.AddComponent<FlightMotor>();motor.CameraOrbit=orbit;
@@ -115,11 +124,11 @@ namespace Koriko.Editor
             AlignAnchors(rider.transform,new[]{"RiderAnchor_Origin","RiderAnchor_Right","RiderAnchor_Up","RiderAnchor_Forward"},new[]{Vector3.zero,Vector3.right,Vector3.up,Vector3.forward});
             rider.transform.SetParent(visual,false);
             var riderNodes=rider.GetComponentsInChildren<Transform>();
-            foreach(string part in new[]{"LeftForearm","RightForearm","LeftHand","RightHand","LeftGrip","RightGrip","LeftKnee","RightKnee","LeftEyePivot","RightEyePivot","Left sole","Right sole","LeftBowLoop","RightBowLoop","JijiHead","JijiTail","LeftJijiEar","RightJijiEar","LeftBrow","RightBrow"})
+            foreach(string part in new[]{"LeftForearm","RightForearm","LeftHand","RightHand","LeftGrip","RightGrip","CarryGrip","BroomGroundTip","LeftKnee","RightKnee","LeftEyePivot","RightEyePivot","Left sole","Right sole","LeftBowLoop","RightBowLoop","JijiHead","JijiTail","LeftJijiEar","RightJijiEar","LeftBrow","RightBrow"})
                 if(!riderNodes.Any(t=>t.name==part))throw new InvalidOperationException("Character articulation is missing: "+part);
             if(!rider.GetComponentsInChildren<SkinnedMeshRenderer>().Any(r=>Enumerable.Range(0,r.sharedMesh.blendShapeCount).Any(i=>r.sharedMesh.GetBlendShapeName(i).EndsWith("Flight cloth"))))
                 throw new InvalidOperationException("Character flight cloth shape did not survive FBX import.");
-            foreach(string shape in new[]{"Hair stream","Hair left","Hair right","Hem left","Hem right","Gaze left","Gaze right"})
+            foreach(string shape in new[]{"Hair stream","Hair left","Hair right","Hem left","Hem right","Walk left","Walk right","Left hand relaxed","Gaze left","Gaze right"})
                 if(!rider.GetComponentsInChildren<SkinnedMeshRenderer>().Any(r=>Enumerable.Range(0,r.sharedMesh.blendShapeCount).Any(i=>r.sharedMesh.GetBlendShapeName(i).EndsWith(shape))))
                     throw new InvalidOperationException("Character secondary animation shape did not import: "+shape);
             var characterMaterials=MakeCharacterMaterials();
@@ -152,7 +161,7 @@ namespace Koriko.Editor
         {var asset=AssetDatabase.LoadAssetAtPath<T>(path);if(!asset){asset=ScriptableObject.CreateInstance<T>();AssetDatabase.CreateAsset(asset,path);}return asset;}
         static void ConfigureInputAndLayers()
         {
-            var tags=new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);var layers=tags.FindProperty("layers");layers.GetArrayElementAtIndex(8).stringValue="World";layers.GetArrayElementAtIndex(9).stringValue="Rider";tags.ApplyModifiedPropertiesWithoutUndo();
+            var tags=new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);var layers=tags.FindProperty("layers");layers.GetArrayElementAtIndex(8).stringValue="World";layers.GetArrayElementAtIndex(9).stringValue="Rider";layers.GetArrayElementAtIndex(10).stringValue="Camera surface";tags.ApplyModifiedPropertiesWithoutUndo();
             var settings=new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/ProjectSettings.asset")[0]);var input=settings.FindProperty("activeInputHandler");if(input!=null){input.intValue=1;settings.ApplyModifiedPropertiesWithoutUndo();}
         }
         static Dictionary<string,Material> MakeMaterials()

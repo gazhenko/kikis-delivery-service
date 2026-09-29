@@ -50,7 +50,7 @@ namespace Koriko
         {
             float elapsed=Time.deltaTime;
             float dt=Mathf.Min(elapsed,.1f);
-            Input.Read();
+            Input.Read(Hud.PanelOpen||!InGame);
             if(Lighting)Lighting.Refresh(Rules,InGame);
             SleepFade=Mathf.MoveTowards(SleepFade,0,Time.unscaledDeltaTime*.7f);
             if(!InGame)return;
@@ -77,6 +77,7 @@ namespace Koriko
         }
         public void Interact()
         {
+            if(Motor.Approaching){Motor.CancelApproach();Rules.Say("Landing cancelled. Hovering.");return;}
             Rules.Observe(Motor.Frame);
             if(Rules.CanDeliver){Rules.Deliver();Hud.RefreshPanel();Save();return;}
             if(Rules.AtHome){Hud.ShowBakery();return;}
@@ -84,7 +85,8 @@ namespace Koriko
             foreach(var destination in Catalog.Destinations)
                 if(Rules.State.position.HorizontalDistance(destination.Landing)<Rules.State.position.HorizontalDistance(nearest.Landing))nearest=destination;
             if(Motor.BeginApproach(nearest))Rules.Say("Easing into "+nearest.Name+". Steer or climb to cancel.");
-            else Rules.Say("Approach the delivery court, then press E or X to land.");
+            else if(Motor.LandHere())Rules.Say("Coming down to the street. Steer or brake to cancel.");
+            else Rules.Say(Motor.OnFoot?"Walk closer to the delivery court. Space or A takes off.":"Approach the delivery court, then press E or X to land.");
         }
         public void Sleep()
         {

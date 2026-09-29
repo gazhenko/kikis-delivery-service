@@ -350,6 +350,16 @@ def build_character(api):
                 v.co.x+=side*.032*w
                 v.co.z+=(.035*edge+.015)*w
                 v.co.y+=.020*w
+        # Standing cloth follows alternating steps, without folding into the
+        # riding seat. The painted folds and outline use these same drawings.
+        for side,name in [(-1,'Walk left'),(1,'Walk right')]:
+            key=obj.shape_key_add(name=name)
+            for source,v in zip(obj.data.vertices,key.data):
+                w=max(0,min(1,(1.35-source.co.z)/.615))**2
+                edge=max(0,min(1,.5+side*source.co.x/.64))
+                v.co.x+=side*.046*w
+                v.co.y-=.078*w*edge
+                v.co.z+=.026*w*edge
     flight_cloth(dress)
     for side in (-1,1):
         fold=line('Dress fold',[(side*.209,1.38,.123),(side*.213,1.19,.150),(side*.248,1.04,.155)],.0035,'DressShade',body)
@@ -358,6 +368,19 @@ def build_character(api):
     # Limbs have articulated elbows and knees. Grip targets live on the broom,
     # allowing the runtime to solve the arms while the torso leans independently.
     broom=empty('Broom',(0,1.0,-.15),root)
+    attach(empty('CarryGrip',(.051,.993,-.65)),broom)
+    attach(empty('BroomGroundTip',(0,.91,-1.86)),broom)
+    def relaxed_hand(obj,centers,side,segments,steps):
+        obj.shape_key_add(name='Basis')
+        key=obj.shape_key_add(name='Left hand relaxed')
+        direction=Vector((-side*.65,-.64,.25)).normalized()
+        count=(len(centers)-1)*steps+1
+        for j in range(count):
+            t=j/(count-1)*(len(centers)-1)
+            old=Vector([catmull([p[k] for p in centers],t) for k in range(3)])
+            new=Vector(centers[0])+direction*(j/(count-1)*.080)
+            delta=Vector(xyz(new-old))
+            for k in range(segments):key.data[j*segments+k].co+=delta
     for side in (-1,1):
         label='Left' if side<0 else 'Right'
         shoulder=(side*.247,1.602,.017)
@@ -376,7 +399,9 @@ def build_character(api):
         part(label+' palm',(wrist[0],wrist[1]-.013,wrist[2]),(.045,.039,.048),'Skin',hand)
         for i in range(4):
             z=wrist[2]-.034+i*.021
-            tube(label+' curled finger',[(side*.064,1.070,z),(side*.027,1.080,z+.001),(side*.006,1.049,z+.004),(side*.026,1.024,z+.004)],[(.012,.012),(.013,.013),(.011,.012),(.008,.009)],'Skin',hand,segments=10,steps=4)
+            centers=[(side*.064,1.070,z),(side*.027,1.080,z+.001),(side*.006,1.049,z+.004),(side*.026,1.024,z+.004)]
+            finger=tube(label+' curled finger',centers,[(.012,.012),(.013,.013),(.011,.012),(.008,.009)],'Skin',hand,segments=10,steps=4)
+            if side<0:relaxed_hand(finger,centers,side,10,4)
         tube(label+' thumb',[(side*.079,1.063,wrist[2]-.036),(side*.068,1.043,wrist[2]-.065),(side*.033,1.051,wrist[2]-.055)],[(.016,.017),(.017,.016),(.010,.012)],'Skin',hand,segments=12,steps=5)
         hip=(side*.145,1.015,-.075);knee=(side*.185,.595,.055);ankle=(side*.192,.139,.025)
         leg=attach(empty(label+'Leg',hip),body)

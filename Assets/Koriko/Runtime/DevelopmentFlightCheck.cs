@@ -21,7 +21,7 @@ namespace Koriko
         public static bool ArtOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-art-check")>=0;
         public static bool CharacterOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-character-check")>=0;
         public static bool EnvironmentOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-environment-check")>=0;
-        public static bool Requested => Debug.isDebugBuild&&(ArtOnly||CharacterOnly||EnvironmentOnly||DevelopmentMotionCheck.Requested||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
+        public static bool Requested => Debug.isDebugBuild&&(ArtOnly||CharacterOnly||EnvironmentOnly||DevelopmentControlsCheck.Requested||DevelopmentWalkCheck.Requested||DevelopmentMotionCheck.Requested||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
         GameApp app;
         Keyboard keyboard;
         Gamepad gamepad;
@@ -36,7 +36,7 @@ namespace Koriko
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Install()
         {
-            if(Requested&&!DevelopmentMotionCheck.Requested)new GameObject("Development flight check").AddComponent<DevelopmentFlightCheck>();
+            if(Requested&&!DevelopmentMotionCheck.Requested&&!DevelopmentWalkCheck.Requested&&!DevelopmentControlsCheck.Requested)new GameObject("Development flight check").AddComponent<DevelopmentFlightCheck>();
         }
         IEnumerator Start()
         {
@@ -110,7 +110,7 @@ namespace Koriko
             yield return CharacterShot("04-rear",new Vector3(-3.2f,1.9f,-5),new Vector3(0,1.30f,-.1f),33,camera);
             yield return CharacterShot("05-portrait",new Vector3(1.35f,2.14f,3),new Vector3(0,2.08f,.03f),24,camera);
             var rider=app.Motor.Visual.GetComponentInChildren<RiderPerformance>();
-            Check(rider&&rider.GripError<.02f,"Rest pose keeps both hands on the broom (within 2 cm)");if(failed)yield break;
+            Check(rider&&rider.GripError<.02f,"Standing carry keeps the holding hand on the broom (within 2 cm)");if(failed)yield break;
             Check(rider.HasFlightCloth,"Imported flight cloth shape is available");if(failed)yield break;
             app.enabled=true;Keys(Key.Space);
             float ceiling=app.Motor.transform.position.y+25;
@@ -282,11 +282,15 @@ namespace Koriko
                 Check(app.Rules.Level(Upgrade.Bristles)==1,"Broom purchase applies through controller UI");
             }
             app.Hud.ClosePanel();
+            // Closing a menu deliberately blocks a held submit button from
+            // becoming takeoff. Observe a neutral frame before a fresh press.
+            InputSystem.QueueStateEvent(gamepad,new GamepadState());yield return null;yield return null;
             float startHeight=app.Motor.transform.position.y;
             float until=Time.realtimeSinceStartup+.6f;
             while(Time.realtimeSinceStartup<until){InputSystem.QueueStateEvent(gamepad,new GamepadState().WithButton(GamepadButton.South));yield return null;}
             InputSystem.QueueStateEvent(gamepad,new GamepadState());yield return null;
             Check(app.Motor.transform.position.y>startHeight+1,"Controller rise input reaches the flight motor");
+            if(failed)yield break;
             InputSystem.RemoveDevice(gamepad);gamepad=null;
         }
         IEnumerator PressUi(string name,string row=null)

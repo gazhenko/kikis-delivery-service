@@ -138,7 +138,7 @@ namespace Koriko
             EndClip();if(error!=null){failed=true;checks.Add("FAIL "+error);}
             if(keyboard!=null){InputSystem.QueueStateEvent(keyboard,new KeyboardState());if(addedKeyboard)InputSystem.RemoveDevice(keyboard);}
             Time.captureFramerate=0;
-            checks.Add("Native Metal/Unity captures: "+SystemInfo.graphicsDeviceName+" at "+Screen.width+" x "+Screen.height);
+            checks.Add("Native Unity captures: "+SystemInfo.graphicsDeviceName+" / "+SystemInfo.graphicsDeviceType+" at "+Screen.width+" x "+Screen.height);
             checks.Add("Fixed 24 Hz simulation capture for animation review, using synthetic keyboard input. This is not a frame-rate benchmark or a physical controller test.");
             File.WriteAllLines(Path.Combine(output,"result.txt"),checks);Debug.Log("KORIKO_MOTION_CHECK "+(failed?"FAILED":"PASSED"));Application.Quit(failed?1:0);
         }

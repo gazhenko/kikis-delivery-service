@@ -71,6 +71,11 @@ static class Program
             Equal(r.State.pantry[1],milk-1); True(!r.Sleep()); r.Advance(3,Home()); True(!r.Cooking); Equal(r.State.energy,65d); True(r.Has(Advantage.Awake));
             r.Advance(100,Home()); True(!r.Has(Advantage.Awake));
         });
+        Check("walking conserves energy while delivery time continues", () => {
+            var walk=Ready(); var fly=Ready(); var pos=new Point(30,.1,0);
+            walk.Advance(10,new FlightFrame(pos,2,true)); fly.Advance(10,new FlightFrame(pos,2,false));
+            Near(100-walk.State.energy,(100-fly.State.energy)*.30); Equal(walk.State.elapsed,fly.State.elapsed);
+        });
         Check("coffee reduces flight fatigue by forty percent", () => {
             var a=Ready(); var b=Ready(); b.State.buffs.Add(new Buff{kind=Advantage.Awake,expires=100});
             var f=new FlightFrame(new Point(30,15,0),10,false);

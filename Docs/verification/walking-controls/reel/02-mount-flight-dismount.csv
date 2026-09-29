@@ -1,0 +1,229 @@
+frame,seconds,action,beat,speed,grounded,mounted,walk,flight,gripError,soleError,footSlide,broomClearance,smear
+0,0.0000,Carry at rest,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+1,0.0417,Carry at rest,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+2,0.0833,Carry at rest,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+3,0.1250,Carry at rest,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+4,0.1667,Carry at rest,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+5,0.2083,Carry at rest,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+6,0.2500,Carry at rest,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+7,0.2917,Carry at rest,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+8,0.3333,Carry at rest,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+9,0.3750,Carry at rest,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+10,0.4167,Carry at rest,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+11,0.4583,Carry at rest,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+12,0.5000,Mount / push off,Mount / reach,0.000,False,True,0.000,0.000,0.00000,Infinity,0.00000,Infinity,0.000
+13,0.5417,Mount / push off,Mount / reach,0.000,False,True,0.000,0.000,0.00001,Infinity,0.00000,Infinity,0.000
+14,0.5833,Mount / push off,Mount / reach,0.000,False,True,0.000,0.000,0.00001,Infinity,0.00000,Infinity,0.000
+15,0.6250,Mount / push off,Mount / reach,0.000,False,True,0.000,0.011,0.00001,Infinity,0.00000,Infinity,0.000
+16,0.6667,Mount / push off,Mount / reach,0.000,False,True,0.000,0.051,0.00001,Infinity,0.00000,Infinity,0.000
+17,0.7083,Mount / push off,Mount / reach,0.000,False,True,0.000,0.115,0.00001,Infinity,0.00000,Infinity,0.000
+18,0.7500,Mount / push off,Mount / reach,0.000,False,True,0.000,0.198,0.00001,Infinity,0.00000,Infinity,0.000
+19,0.7917,Mount / push off,Mount / reach,0.000,False,True,0.000,0.296,0.00001,Infinity,0.00000,Infinity,0.000
+20,0.8333,Mount / push off,Mount / reach,0.000,False,True,0.000,0.402,0.00001,Infinity,0.00000,Infinity,0.000
+21,0.8750,Mount / push off,Mount / reach,0.000,False,True,0.000,0.513,0.00001,Infinity,0.00000,Infinity,0.000
+22,0.9167,Mount / push off,Mount / reach,0.000,False,True,0.000,0.624,0.00000,Infinity,0.00000,Infinity,0.000
+23,0.9583,Mount / push off,Mount / reach,0.000,False,True,0.000,0.729,0.00001,Infinity,0.00000,Infinity,0.000
+24,1.0000,Mount / push off,Mount / reach,0.000,False,True,0.000,0.823,0.00001,Infinity,0.00000,Infinity,0.000
+25,1.0417,Mount / push off,Mount / reach,0.000,False,True,0.000,0.902,0.00001,Infinity,0.00000,Infinity,0.000
+26,1.0833,Mount / push off,Mount / reach,0.000,False,True,0.000,0.961,0.00001,Infinity,0.00000,Infinity,0.000
+27,1.1250,Mount / push off,Mount / reach,0.000,False,True,0.000,0.994,0.00001,Infinity,0.00000,Infinity,0.000
+28,1.1667,Mount / push off,Mount / reach,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+29,1.2083,Mount / push off,Mount / reach,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+30,1.2500,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+31,1.2917,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+32,1.3333,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+33,1.3750,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+34,1.4167,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+35,1.4583,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+36,1.5000,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+37,1.5417,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+38,1.5833,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+39,1.6250,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+40,1.6667,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+41,1.7083,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+42,1.7500,Mount / push off,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+43,1.7917,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+44,1.8333,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+45,1.8750,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+46,1.9167,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+47,1.9583,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+48,2.0000,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+49,2.0417,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+50,2.0833,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+51,2.1250,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+52,2.1667,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+53,2.2083,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+54,2.2500,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+55,2.2917,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+56,2.3333,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+57,2.3750,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+58,2.4167,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+59,2.4583,Hover / seated Jiji,Hover / breathe,0.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+60,2.5000,Accelerate,Hover / breathe,2.736,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+61,2.5417,Accelerate,Bank / follow through,5.002,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+62,2.5833,Accelerate,Bank / follow through,6.881,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+63,2.6250,Accelerate,Bank / follow through,8.438,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+64,2.6667,Accelerate,Bank / follow through,9.729,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+65,2.7083,Accelerate,Bank / follow through,10.800,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+66,2.7500,Accelerate,Bank / follow through,11.687,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+67,2.7917,Accelerate,Cruise / wind,12.423,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+68,2.8333,Accelerate,Cruise / wind,13.034,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+69,2.8750,Accelerate,Cruise / wind,13.540,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+70,2.9167,Accelerate,Cruise / wind,13.960,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+71,2.9583,Boost,Boost / tuck,16.087,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+72,3.0000,Boost,Boost / tuck,17.850,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,1.000
+73,3.0417,Boost,Boost / tuck,19.311,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.550
+74,3.0833,Boost,Boost / tuck,20.523,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+75,3.1250,Boost,Boost / tuck,21.528,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+76,3.1667,Boost,Boost / tuck,22.361,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+77,3.2083,Boost,Boost / tuck,23.051,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+78,3.2500,Brake,Boost / tuck,17.220,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+79,3.2917,Brake,Boost / tuck,12.864,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+80,3.3333,Brake,Boost / tuck,9.609,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+81,3.3750,Brake,Boost / tuck,7.178,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+82,3.4167,Brake,Boost / tuck,5.362,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+83,3.4583,Brake,Boost / tuck,4.006,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+84,3.5000,Brake,Boost / tuck,2.992,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+85,3.5417,Brake,Boost / tuck,2.235,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+86,3.5833,Brake,Boost / tuck,1.670,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+87,3.6250,Brake,Boost / tuck,1.247,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+88,3.6667,Brake,Boost / tuck,0.932,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+89,3.7083,Brake,Brake / catch balance,0.696,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+90,3.7500,Brake,Brake / catch balance,0.520,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+91,3.7917,Approach / step off / plant broom,Brake / catch balance,1.130,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+92,3.8333,Approach / step off / plant broom,Brake / catch balance,2.362,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+93,3.8750,Approach / step off / plant broom,Brake / catch balance,3.282,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+94,3.9167,Approach / step off / plant broom,Brake / catch balance,3.970,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+95,3.9583,Approach / step off / plant broom,Brake / catch balance,4.483,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+96,4.0000,Approach / step off / plant broom,Brake / catch balance,4.867,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+97,4.0417,Approach / step off / plant broom,Brake / catch balance,5.154,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+98,4.0833,Approach / step off / plant broom,Brake / catch balance,5.368,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+99,4.1250,Approach / step off / plant broom,Brake / catch balance,5.528,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+100,4.1667,Approach / step off / plant broom,Bank / follow through,5.647,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+101,4.2083,Approach / step off / plant broom,Cruise / wind,5.736,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+102,4.2500,Approach / step off / plant broom,Cruise / wind,5.803,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+103,4.2917,Approach / step off / plant broom,Cruise / wind,5.853,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+104,4.3333,Approach / step off / plant broom,Cruise / wind,5.890,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+105,4.3750,Approach / step off / plant broom,Cruise / wind,5.918,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+106,4.4167,Approach / step off / plant broom,Cruise / wind,5.939,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+107,4.4583,Approach / step off / plant broom,Cruise / wind,5.954,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+108,4.5000,Approach / step off / plant broom,Cruise / wind,5.966,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+109,4.5417,Approach / step off / plant broom,Cruise / wind,5.974,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+110,4.5833,Approach / step off / plant broom,Cruise / wind,5.981,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+111,4.6250,Approach / step off / plant broom,Cruise / wind,5.986,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+112,4.6667,Approach / step off / plant broom,Cruise / wind,5.989,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+113,4.7083,Approach / step off / plant broom,Cruise / wind,5.992,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+114,4.7500,Approach / step off / plant broom,Cruise / wind,5.994,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+115,4.7917,Approach / step off / plant broom,Cruise / wind,5.996,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+116,4.8333,Approach / step off / plant broom,Cruise / wind,5.997,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+117,4.8750,Approach / step off / plant broom,Cruise / wind,5.998,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+118,4.9167,Approach / step off / plant broom,Cruise / wind,5.998,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+119,4.9583,Approach / step off / plant broom,Cruise / wind,5.999,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+120,5.0000,Approach / step off / plant broom,Cruise / wind,5.999,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+121,5.0417,Approach / step off / plant broom,Cruise / wind,5.999,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+122,5.0833,Approach / step off / plant broom,Cruise / wind,5.999,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+123,5.1250,Approach / step off / plant broom,Cruise / wind,6.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+124,5.1667,Approach / step off / plant broom,Cruise / wind,6.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+125,5.2083,Approach / step off / plant broom,Cruise / wind,6.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+126,5.2500,Approach / step off / plant broom,Cruise / wind,6.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+127,5.2917,Approach / step off / plant broom,Cruise / wind,6.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+128,5.3333,Approach / step off / plant broom,Cruise / wind,6.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+129,5.3750,Approach / step off / plant broom,Cruise / wind,6.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+130,5.4167,Approach / step off / plant broom,Cruise / wind,6.000,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+131,5.4583,Approach / step off / plant broom,Cruise / wind,6.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+132,5.5000,Approach / step off / plant broom,Cruise / wind,6.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+133,5.5417,Approach / step off / plant broom,Cruise / wind,6.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+134,5.5833,Approach / step off / plant broom,Cruise / wind,6.000,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+135,5.6250,Approach / step off / plant broom,Cruise / wind,5.971,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+136,5.6667,Approach / step off / plant broom,Cruise / wind,5.823,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+137,5.7083,Approach / step off / plant broom,Cruise / wind,5.590,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+138,5.7500,Approach / step off / plant broom,Cruise / wind,5.298,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+139,5.7917,Approach / step off / plant broom,Cruise / wind,4.969,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+140,5.8333,Approach / step off / plant broom,Cruise / wind,4.618,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+141,5.8750,Approach / step off / plant broom,Cruise / wind,4.258,False,True,0.000,1.000,0.00001,Infinity,0.00000,Infinity,0.000
+142,5.9167,Approach / step off / plant broom,Cruise / wind,3.900,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+143,5.9583,Approach / step off / plant broom,Cruise / wind,3.550,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+144,6.0000,Approach / step off / plant broom,Hover / breathe,3.213,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+145,6.0417,Approach / step off / plant broom,Hover / breathe,2.894,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+146,6.0833,Approach / step off / plant broom,Hover / breathe,2.595,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+147,6.1250,Approach / step off / plant broom,Hover / breathe,2.317,False,True,0.000,1.000,0.00000,Infinity,0.00000,Infinity,0.000
+148,6.1667,Approach / step off / plant broom,Dismount / settle,1.868,True,False,0.208,0.875,0.00001,0.00000,0.00000,Infinity,0.000
+149,6.2083,Approach / step off / plant broom,Dismount / settle,1.043,True,False,0.417,0.750,0.00001,0.00000,0.00000,Infinity,0.000
+150,6.2500,Approach / step off / plant broom,Dismount / settle,0.582,True,False,0.277,0.625,0.00001,0.00000,0.00000,Infinity,0.000
+151,6.2917,Approach / step off / plant broom,Dismount / settle,0.325,True,False,0.155,0.500,0.00001,0.00000,0.00000,Infinity,0.000
+152,6.3333,Approach / step off / plant broom,Dismount / settle,0.181,True,False,0.086,0.375,0.00001,0.00000,0.00000,Infinity,0.000
+153,6.3750,Approach / step off / plant broom,Dismount / settle,0.101,True,False,0.048,0.250,0.00001,0.00000,0.00000,Infinity,0.000
+154,6.4167,Approach / step off / plant broom,Dismount / settle,0.056,True,False,0.000,0.125,0.00000,0.00000,0.00000,Infinity,0.000
+155,6.4583,Approach / step off / plant broom,Dismount / settle,0.031,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+156,6.5000,Approach / step off / plant broom,Dismount / settle,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+157,6.5417,Approach / step off / plant broom,Dismount / settle,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+158,6.5833,Approach / step off / plant broom,Dismount / settle,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+159,6.6250,Approach / step off / plant broom,Dismount / settle,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+160,6.6667,Approach / step off / plant broom,Dismount / settle,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00001,0.01400,0.000
+161,6.7083,Approach / step off / plant broom,Dismount / settle,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+162,6.7500,Approach / step off / plant broom,Dismount / settle,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00001,0.01400,0.000
+163,6.7917,Approach / step off / plant broom,Dismount / settle,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+164,6.8333,Approach / step off / plant broom,Dismount / settle,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+165,6.8750,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+166,6.9167,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+167,6.9583,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+168,7.0000,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+169,7.0417,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+170,7.0833,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+171,7.1250,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+172,7.1667,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+173,7.2083,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+174,7.2500,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+175,7.2917,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+176,7.3333,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+177,7.3750,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+178,7.4167,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+179,7.4583,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+180,7.5000,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+181,7.5417,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00001,0.01400,0.000
+182,7.5833,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00001,0.01400,0.000
+183,7.6250,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+184,7.6667,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+185,7.7083,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+186,7.7500,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+187,7.7917,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00001,0.00001,0.01400,0.000
+188,7.8333,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+189,7.8750,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+190,7.9167,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+191,7.9583,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+192,8.0000,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+193,8.0417,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+194,8.0833,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+195,8.1250,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+196,8.1667,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+197,8.2083,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+198,8.2500,Approach / step off / plant broom,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+199,8.2917,Walk after touchdown,Walk / carry broom,0.928,True,False,0.208,0.000,0.00000,0.00000,0.00000,0.03448,0.000
+200,8.3333,Walk after touchdown,Walk / carry broom,1.446,True,False,0.417,0.000,0.00000,0.00000,0.00000,0.05142,0.000
+201,8.3750,Walk after touchdown,Walk / carry broom,1.735,True,False,0.625,0.000,0.00000,0.00000,0.00000,0.06278,0.000
+202,8.4167,Walk after touchdown,Walk / carry broom,1.896,True,False,0.833,0.000,0.00001,0.00000,0.00001,0.07112,0.000
+203,8.4583,Walk after touchdown,Walk / carry broom,1.986,True,False,0.946,0.000,0.00001,0.00000,0.00000,0.07548,0.000
+204,8.5000,Walk after touchdown,Walk / carry broom,2.037,True,False,0.970,0.000,0.00000,0.00000,0.00000,0.08076,0.000
+205,8.5417,Walk after touchdown,Walk / carry broom,2.065,True,False,0.983,0.000,0.00000,0.00000,0.00000,0.09133,0.000
+206,8.5833,Walk after touchdown,Walk / carry broom,2.080,True,False,0.991,0.000,0.00000,0.00000,0.00000,0.10349,0.000
+207,8.6250,Walk after touchdown,Walk / carry broom,2.089,True,False,0.995,0.000,0.00001,0.00000,0.00000,0.11240,0.000
+208,8.6667,Walk after touchdown,Walk / carry broom,2.094,True,False,0.997,0.000,0.00000,0.00000,0.00000,0.11442,0.000
+209,8.7083,Walk after touchdown,Walk / carry broom,2.096,True,False,0.998,0.000,0.00001,0.00000,0.00001,0.10878,0.000
+210,8.7500,Walk after touchdown,Walk / carry broom,2.098,True,False,0.999,0.000,0.00001,0.00000,0.00001,0.09798,0.000
+211,8.7917,Walk after touchdown,Walk / carry broom,2.099,True,False,0.999,0.000,0.00000,0.00000,0.00000,0.08668,0.000
+212,8.8333,Walk after touchdown,Walk / carry broom,2.099,True,False,1.000,0.000,0.00000,0.00000,0.00001,0.07977,0.000
+213,8.8750,Walk after touchdown,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.08020,0.000
+214,8.9167,Walk after touchdown,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.08782,0.000
+215,8.9583,Walk after touchdown,Walk / carry broom,2.100,True,False,1.000,0.000,0.00000,0.00000,0.00000,0.09937,0.000
+216,9.0000,Settle,Walk / carry broom,1.172,True,False,0.792,0.000,0.00000,0.00000,0.00000,0.08707,0.000
+217,9.0417,Settle,Walk / carry broom,0.654,True,False,0.583,0.000,0.00000,0.00001,0.00001,0.06994,0.000
+218,9.0833,Settle,Walk / carry broom,0.365,True,False,0.375,0.000,0.00000,0.00000,0.00001,0.05066,0.000
+219,9.1250,Settle,Walk / carry broom,0.204,True,False,0.167,0.000,0.00000,0.00000,0.00000,0.03046,0.000
+220,9.1667,Settle,Rest / broom at side,0.114,True,False,0.054,0.000,0.00000,0.00000,0.00000,0.01937,0.000
+221,9.2083,Settle,Rest / broom at side,0.063,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+222,9.2500,Settle,Rest / broom at side,0.035,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+223,9.2917,Settle,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+224,9.3333,Settle,Rest / broom at side,0.000,True,False,0.000,0.000,0.00000,0.00000,0.00000,0.01400,0.000
+225,9.3750,Settle,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+226,9.4167,Settle,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
+227,9.4583,Settle,Rest / broom at side,0.000,True,False,0.000,0.000,0.00001,0.00000,0.00000,0.01400,0.000
