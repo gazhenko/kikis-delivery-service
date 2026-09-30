@@ -136,15 +136,6 @@ namespace Koriko.Editor
                     throw new InvalidOperationException("Character secondary animation shape did not import: "+shape);
             var characterMaterials=MakeCharacterMaterials();
             ApplyMaterials(rider,characterMaterials);AddCharacterInk(rider);
-            // Seen from behind on Kiki's shoulder, an ink-black Jiji merged with her hair into one mass.
-            // His body, head, ears, paws and tail take his own cool paint; pupils and mouth stay ink.
-            foreach(var r in rider.GetComponentsInChildren<Renderer>())
-            {
-                if(!r.name.StartsWith("Jiji",StringComparison.Ordinal)||r.name.StartsWith("Jiji pupil",StringComparison.Ordinal)||r.name.StartsWith("Jiji mouth",StringComparison.Ordinal))continue;
-                var painted=r.sharedMaterials;
-                for(int i=0;i<painted.Length;i++)if(painted[i]==characterMaterials["Ink"])painted[i]=characterMaterials["Jiji"];
-                r.sharedMaterials=painted;
-            }
             foreach(var t in rider.GetComponentsInChildren<Transform>())t.gameObject.layer=9;
             rider.AddComponent<RiderPerformance>().Motor=motor;
             var props=rider.AddComponent<RiderProps>();
@@ -180,7 +171,7 @@ namespace Koriko.Editor
             props.App=app;props.Life=life;props.Paper=characterMaterials["Parcel"];props.String=characterMaterials["ParcelString"];
             props.FragilePaper=characterMaterials["FragilePaper"];props.FragileRibbon=characterMaterials["Bow"];props.Crate=characterMaterials["Crate"];props.Strap=characterMaterials["CrateStrap"];
             props.Canvas=characterMaterials["Canvas"];props.Rope=characterMaterials["Rope"];props.Brass=characterMaterials["Gold"];props.LanternGlass=characterMaterials["LanternGlass"];
-            props.Outline=Material("CharacterOutline",Shader.Find("Koriko/Ink"));props.LanternHalo=lanternLight;
+            props.Outline=Material("CharacterOutline_Satchel",Shader.Find("Koriko/Ink"));props.LanternHalo=lanternLight;
             var director=appObject.AddComponent<CameraDirector>();director.App=app;director.Follow=follow;director.Title=title;director.Body=body;director.Brain=brain;
             // Save the fog into the scene. With automatic fog stripping, a scene without fog
             // strips every fog variant from the player and the runtime fog never renders.
@@ -269,37 +260,43 @@ namespace Koriko.Editor
         {
             var shader=Shader.Find("Koriko/CharacterCel");if(!shader)throw new InvalidOperationException("Character cel shader did not import.");
             var result=new Dictionary<string,Material>();
+            // Film palette, studied from the official trailer: auburn hair, a dark purple smock,
+            // pale cream skin with pink blush, an orange-tan satchel, red bow and flats, black Jiji.
             var characterPaint=new Dictionary<string,Color>(colors){
-                ["Skin"]=new Color(.98f,.81f,.67f),["Hair"]=new Color(.145f,.105f,.12f),
-                ["Dress"]=new Color(.19f,.195f,.30f),["Bow"]=new Color(.80f,.065f,.145f),
-                ["BowShade"]=new Color(.53f,.045f,.11f),["Ink"]=new Color(.075f,.09f,.12f),
-                ["Eye"]=new Color(.075f,.065f,.08f),["White"]=new Color(.98f,.97f,.90f),
-                ["Shoe"]=new Color(.65f,.24f,.17f),["Blush"]=new Color(.965f,.715f,.64f),
-                ["HairShade"]=new Color(.085f,.067f,.088f),["DressShade"]=new Color(.13f,.14f,.23f),
-                ["Lip"]=new Color(.49f,.235f,.245f),["Sole"]=new Color(.19f,.18f,.21f),
-                ["Satchel"]=new Color(.84f,.36f,.29f),
+                ["Skin"]=new Color(.99f,.89f,.81f),["SkinShade"]=new Color(.91f,.74f,.69f),["Hair"]=new Color(.32f,.17f,.13f),
+                ["Dress"]=new Color(.23f,.19f,.31f),["Bow"]=new Color(.86f,.08f,.12f),
+                ["BowShade"]=new Color(.58f,.04f,.09f),["Ink"]=new Color(.06f,.045f,.055f),
+                ["Eye"]=new Color(.06f,.045f,.055f),["Iris"]=new Color(.25f,.13f,.10f),["White"]=new Color(.99f,.98f,.94f),
+                ["Shoe"]=new Color(.66f,.20f,.14f),["Blush"]=new Color(.98f,.68f,.70f),
+                ["HairShade"]=new Color(.14f,.07f,.06f),["DressShade"]=new Color(.12f,.10f,.18f),
+                ["Lip"]=new Color(.55f,.28f,.26f),["Sole"]=new Color(.19f,.15f,.15f),
+                ["Satchel"]=new Color(.94f,.62f,.36f),
                 // Carried freight and the broom lantern.
                 ["Parcel"]=new Color(.80f,.63f,.42f),["ParcelString"]=new Color(.62f,.13f,.13f),["FragilePaper"]=new Color(.95f,.92f,.84f),
                 ["Crate"]=new Color(.62f,.45f,.27f),["CrateStrap"]=new Color(.26f,.20f,.15f),["Canvas"]=new Color(.85f,.79f,.63f),
                 ["Rope"]=new Color(.63f,.53f,.37f),["LanternGlass"]=new Color(1,.90f,.62f),
-                // Jiji is a blue-black cat, not another patch of Kiki's warm near-black hair.
-                ["Jiji"]=new Color(.10f,.105f,.15f)
+                // Jiji is black with a cool sheen, distinct from Kiki's warm auburn hair.
+                ["Jiji"]=new Color(.10f,.105f,.15f),["JijiInner"]=new Color(.44f,.33f,.46f)
             };
+            // One hard shadow tone per paint, chosen like a cel painter's shadow colour.
+            var shadows=new Dictionary<string,Color>{
+                ["Skin"]=new Color(.91f,.74f,.69f),["Hair"]=new Color(.15f,.08f,.07f),["Dress"]=new Color(.13f,.11f,.20f),
+                ["Bow"]=new Color(.60f,.04f,.08f),["Satchel"]=new Color(.80f,.45f,.27f),["Shoe"]=new Color(.42f,.10f,.08f),
+                ["Jiji"]=new Color(.045f,.048f,.07f),["Sole"]=new Color(.12f,.09f,.09f)
+            };
+            // Painted marks and shadow shapes stay a single flat colour in every light.
+            var flat=new HashSet<string>{"SkinShade","Eye","Iris","White","Blush","Lip","HairShade","DressShade","BowShade","Ink","JijiInner"};
             foreach(var entry in characterPaint.Concat(Enumerable.Range(0,16).Select(i=>new KeyValuePair<string,Color>("Paint_"+i,palette[i]))))
             {
                 Color lit=entry.Value;
-                Color shadow=Color.Lerp(lit,new Color(.23f,.23f,.38f),.35f)*.76f;
-                if(entry.Key=="Skin")shadow=new Color(.81f,.62f,.53f);
-                if(entry.Key=="Hair")shadow=new Color(.068f,.060f,.083f);
-                if(entry.Key=="Dress")shadow=new Color(.115f,.13f,.21f);
-                if(entry.Key=="Bow")shadow=new Color(.56f,.047f,.11f);
-                if(entry.Key=="Eye"||entry.Key=="Blush"||entry.Key=="Lip")shadow=lit;
-                if(entry.Key=="Jiji")shadow=new Color(.045f,.048f,.07f);
+                Color shadow=shadows.TryGetValue(entry.Key,out var chosen)?chosen:flat.Contains(entry.Key)?lit:Color.Lerp(lit,new Color(.23f,.23f,.38f),.35f)*.76f;
                 var m=Material("Cel_"+entry.Key,shader);m.SetColor("_Color",lit);m.SetColor("_ShadowTint",shadow);
                 m.SetColor("_LightTint",Color.Lerp(lit,new Color(.88f,.84f,.77f),.20f));
                 m.SetFloat("_Softness",.005f);m.SetFloat("_Face",entry.Key=="Skin"?.85f:0);
-                m.SetFloat("_Rim",entry.Key=="Jiji"?.6f:0);
-                if(entry.Key=="Jiji")m.SetColor("_LightTint",new Color(.30f,.33f,.46f));
+                // Jiji keeps only a thin cool sheen on the lit edge of his form, as drawn in the film.
+                m.SetFloat("_Rim",entry.Key=="Jiji"?.35f:0);
+                if(entry.Key=="Jiji")m.SetColor("_LightTint",new Color(.24f,.26f,.37f));
+                m.SetFloat("_Detached",0);
                 m.SetFloat("_Cloth",entry.Key=="Dress"||entry.Key=="DressShade"?1:0);
                 result.Add(entry.Key,m);
             }
@@ -324,26 +321,43 @@ namespace Koriko.Editor
                 renderer.sharedMaterials=replacements;renderer.shadowCastingMode=ShadowCastingMode.On;renderer.receiveShadows=true;
             }
         }
+        // Coloured trace lines, as in the film's cels: reddish-brown around skin, deep plum
+        // around the smock, near-black around hair and Jiji, warm brown around the broom.
+        static readonly Dictionary<string,Color> inkColors=new Dictionary<string,Color>{
+            ["Skin"]=new Color(.42f,.21f,.17f),["SkinShade"]=new Color(.42f,.21f,.17f),["Hair"]=new Color(.10f,.045f,.04f),
+            ["Dress"]=new Color(.075f,.05f,.10f),["Bow"]=new Color(.34f,.02f,.05f),["Satchel"]=new Color(.44f,.21f,.10f),
+            ["Shoe"]=new Color(.26f,.06f,.04f),["Jiji"]=new Color(.02f,.02f,.035f),["Paint_15"]=new Color(.42f,.28f,.09f),["Paint_6"]=new Color(.20f,.12f,.07f)
+        };
         static void AddCharacterInk(GameObject root)
         {
-            var material=Material("CharacterOutline",Shader.Find("Koriko/Ink"));
-            material.SetFloat("_Thickness",1.15f);material.SetColor("_Color",new Color(.105f,.08f,.13f));
-            material.SetFloat("_Cloth",0);
-            var clothMaterial=Material("CharacterClothOutline",Shader.Find("Koriko/Ink"));
-            clothMaterial.CopyPropertiesFromMaterial(material);clothMaterial.SetFloat("_Cloth",1);
-            bool Draw(string name)=>new[]{"Dress","Face","Bob hair","Jiji body","Jiji head","Left calf","Right calf","Left sleeve","Right sleeve","Left forearm","Right forearm","Left shoe","Right shoe","Satchel body"}.Contains(name)||name.StartsWith("Bow loop",StringComparison.Ordinal);
+            var shader=Shader.Find("Koriko/Ink");
+            var inks=new Dictionary<string,Material>();
+            Material Ink(string paint)
+            {
+                string key=inkColors.ContainsKey(paint)?paint:"Default";bool cloth=paint=="Dress";
+                string name=key=="Default"?"CharacterOutline":"CharacterOutline_"+key;
+                if(inks.TryGetValue(name,out var existing))return existing;
+                var m=Material(name,shader);m.SetFloat("_Thickness",2.7f);m.SetFloat("_Cloth",cloth?1:0);
+                m.SetColor("_Color",inkColors.TryGetValue(key,out var c)?c:new Color(.10f,.07f,.10f));
+                inks.Add(name,m);return m;
+            }
+            // Every shape carries a line, as a drawn cel does. Painted marks are lines themselves,
+            // and joint spheres inside a limb would draw rings, so they are left out.
+            string[] skip={"Eye white","Brown iris","Pupil","glint","blush","eyelid","lash","lid mark","eyebrow","smile","mouth","Nose mark","Ear inner line","Hair part line","Fringe shadow","gathered fold","Dress fold","Satchel button","Broom straw","drawn straw","Broom binding","Jiji eye","Jiji pupil","Jiji nose","Jiji mouth","Jiji inner ear","Jiji muzzle","sole","kneecap","elbow","upper arm","thigh","RiderAnchor"};
+            bool Draw(Renderer r)=>r.sharedMaterials.Length>0&&!skip.Any(k=>r.name.IndexOf(k,StringComparison.OrdinalIgnoreCase)>=0);
+            string Paint(Renderer r)=>r.sharedMaterials[0]?r.sharedMaterials[0].name.Replace("Cel_",""):"";
             foreach(var filter in root.GetComponentsInChildren<MeshFilter>().ToArray())
             {
-                if(!Draw(filter.name))continue;
+                var source=filter.GetComponent<MeshRenderer>();if(!source||!Draw(source))continue;
                 var outline=new GameObject("Ink edge");outline.transform.SetParent(filter.transform,false);outline.AddComponent<MeshFilter>().sharedMesh=filter.sharedMesh;
-                var r=outline.AddComponent<MeshRenderer>();r.sharedMaterial=material;r.shadowCastingMode=ShadowCastingMode.Off;
+                var r=outline.AddComponent<MeshRenderer>();r.sharedMaterial=Ink(Paint(source));r.shadowCastingMode=ShadowCastingMode.Off;
             }
             foreach(var source in root.GetComponentsInChildren<SkinnedMeshRenderer>().ToArray())
             {
-                if(!Draw(source.name))continue;
+                if(!Draw(source))continue;
                 var outline=new GameObject("Ink edge");outline.transform.SetParent(source.transform,false);
                 var r=outline.AddComponent<SkinnedMeshRenderer>();r.sharedMesh=source.sharedMesh;r.bones=source.bones;r.rootBone=source.rootBone;r.localBounds=source.localBounds;
-                r.sharedMaterial=source.name=="Dress"?clothMaterial:material;r.shadowCastingMode=ShadowCastingMode.Off;
+                r.sharedMaterial=Ink(Paint(source));r.shadowCastingMode=ShadowCastingMode.Off;
             }
         }
         static void NormalizeWorld(Transform root)

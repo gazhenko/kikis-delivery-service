@@ -22,8 +22,11 @@ Shader "Koriko/Ink"
                 V v;float3 world=RiderWorldPosition(a.p.xyz,_Cloth);v.p=TransformWorldToHClip(world);
                 float3 normal=TransformWorldToViewDir(TransformObjectToWorldNormal(a.n),true);
                 float2 direction=normal.xy/max(length(normal.xy),.0001);
-                // Perspective independent width; authored alpha tapers selected contours.
-                v.p.xy+=direction*(2.0/_ScreenParams.xy)*_Thickness*a.color.a*v.p.w;
+                // Width is set in 1080p pixels and scales with the window, like a line drawn on
+                // the cel; it thins with distance so a far rider is not outlined too heavily.
+                // Authored vertex alpha still tapers selected contours.
+                float scale=_ScreenParams.y/1080.0*lerp(1.0,.55,saturate((v.p.w-5.0)/25.0));
+                v.p.xy+=direction*(2.0/_ScreenParams.xy)*_Thickness*scale*a.color.a*v.p.w;
                 v.fog=ComputeFogFactor(v.p.z);return v;
             }
             half4 Frag(V v):SV_Target{return half4(MixFog(_Color.rgb,v.fog),1);}

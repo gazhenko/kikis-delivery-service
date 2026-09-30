@@ -43,8 +43,8 @@ Material:
     - _Wind: 0
     m_Colors:
     - _AtlasRect: {r: 0, g: 0, b: 1, a: 1}
-    - _Color: {r: 0.84, g: 0.36, b: 0.29, a: 1}
-    - _LightTint: {r: 0.848, g: 0.456, b: 0.38599998, a: 1}
-    - _ShadowTint: {r: 0.47614, g: 0.23902, b: 0.24434, a: 0.76}
+    - _Color: {r: 0.94, g: 0.62, b: 0.36, a: 1}
+    - _LightTint: {r: 0.928, g: 0.664, b: 0.442, a: 1}
+    - _ShadowTint: {r: 0.8, g: 0.45, b: 0.27, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Cel_Blush
+  m_Name: Cel_Iris
   m_Shader: {fileID: 4800000, guid: 3cbb54ed52b01dbffa10a93a8ab78beb, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -43,8 +43,8 @@ Material:
     - _Wind: 0
     m_Colors:
     - _AtlasRect: {r: 0, g: 0, b: 1, a: 1}
-    - _Color: {r: 0.98, g: 0.68, b: 0.7, a: 1}
-    - _LightTint: {r: 0.96000004, g: 0.712, b: 0.714, a: 1}
-    - _ShadowTint: {r: 0.98, g: 0.68, b: 0.7, a: 1}
+    - _Color: {r: 0.25, g: 0.13, b: 0.1, a: 1}
+    - _LightTint: {r: 0.376, g: 0.27199998, b: 0.234, a: 1}
+    - _ShadowTint: {r: 0.25, g: 0.13, b: 0.1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

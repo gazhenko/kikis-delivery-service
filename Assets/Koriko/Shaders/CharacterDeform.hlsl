@@ -6,6 +6,7 @@ float4x4 _KorikoRiderWorldToPose;
 float4x4 _KorikoRiderPoseToWorld;
 float4 _KorikoRiderSmear;
 float4 _KorikoRiderLeftHip, _KorikoRiderLeftKnee, _KorikoRiderRightHip, _KorikoRiderRightKnee;
+float4 _KorikoRiderLeftAnkle, _KorikoRiderRightAnkle;
 float3 ClothOutsideLeg(float3 world,float4 hip,float4 knee)
 {
     float3 axis=knee.xyz-hip.xyz;
@@ -22,6 +23,9 @@ float3 RiderWorldPosition(float3 positionOS,float cloth)
     {
         world=ClothOutsideLeg(world,_KorikoRiderLeftHip,_KorikoRiderLeftKnee);
         world=ClothOutsideLeg(world,_KorikoRiderRightHip,_KorikoRiderRightKnee);
+        // The film's smock reaches below the knee, so the shins keep it clear too.
+        world=ClothOutsideLeg(world,float4(_KorikoRiderLeftKnee.xyz,_KorikoRiderLeftHip.w),_KorikoRiderLeftAnkle);
+        world=ClothOutsideLeg(world,float4(_KorikoRiderRightKnee.xyz,_KorikoRiderRightHip.w),_KorikoRiderRightAnkle);
     }
     if(dot(abs(_KorikoRiderSmear),float4(1,1,1,1))<.0001)return world;
     float3 p=mul(_KorikoRiderWorldToPose,float4(world,1)).xyz;
@@ -29,7 +33,7 @@ float3 RiderWorldPosition(float3 positionOS,float cloth)
         smoothstep(.24,.65,abs(p.x))*.55+smoothstep(.6,1.7,abs(p.z))*.8+
         (1-smoothstep(.35,1.1,p.y))*.55);
     // Keep the facial drawing registered even in an extreme turnaround.
-    float face=smoothstep(1.69,1.83,p.y)*(1-smoothstep(2.19,2.32,p.y))*smoothstep(-.04,.15,p.z);
+    float face=smoothstep(1.68,1.80,p.y)*(1-smoothstep(2.12,2.24,p.y))*smoothstep(-.04,.15,p.z);
     float mask=(.12+tips*.88)*(1-face*.96);
     float3 sweep=float3((p.z+.15)*_KorikoRiderSmear.w,0,-p.x*_KorikoRiderSmear.w);
     p+=(_KorikoRiderSmear.xyz+sweep)*mask;

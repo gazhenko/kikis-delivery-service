@@ -52,12 +52,13 @@ namespace Koriko
             if(cat&&carriedBroom)
             {
                 catBroomPoint=carriedBroom.InverseTransformPoint(cat.position);catBroomFrame=Quaternion.Inverse(carriedBroom.rotation)*cat.rotation;
-                catShoulderPoint=Node("Body").InverseTransformPoint(Motor.Visual.TransformPoint(new Vector3(-.38f,1.52f,-.10f)));
+                catShoulderPoint=Node("Body").InverseTransformPoint(Motor.Visual.TransformPoint(new Vector3(-.29f,1.61f,-.06f)));
                 catShoulderFrame=Quaternion.Inverse(Node("Body").rotation)*cat.rotation;
                 // An upright carried broom must not turn Jiji upside down.
                 cat.SetParent(Motor.Visual,true);
             }
-            freeHandPoint=Node("Body").InverseTransformPoint(Motor.Visual.TransformPoint(new Vector3(-.53f,1.045f,.10f)));
+            // The free hand rests on the front of the satchel, as Kiki's does in the film.
+            freeHandPoint=Node("Body").InverseTransformPoint(Motor.Visual.TransformPoint(new Vector3(-.41f,1.00f,.115f)));
             var left=Node("LeftHand");
             if(left)leftFreeHandFrame=Quaternion.Inverse(Motor.Visual.rotation)*Quaternion.FromToRotation(Motor.Visual.TransformDirection(new Vector3(.65f,-.64f,.25f)),Vector3.down)*left.rotation;
         }
@@ -82,7 +83,8 @@ namespace Koriko
             Pose("Broom",new Vector3(Mathf.Lerp(-87+stepSway*2,angle,mount),carry*3,Mathf.Lerp(-5+stepSway*1.5f,bodyBank*.28f,mount)));
             // First sweep the broom beside the hip, then bring the seat under
             // Kiki. The arc avoids pulling a vertical shaft through her torso.
-            float side=.62f*(1-Ease((flight-.34f)/.66f));
+            // Held close at her side, so the carrying elbow stays bent rather than locked out.
+            float side=.46f*(1-Ease((flight-.34f)/.66f));
             Offset("Broom",new Vector3(side,carry*.72f+hover*.6f,carry*.23f+Mathf.Sin(mount*Mathf.PI)*.15f));
             BroomTipClearance=float.PositiveInfinity;
             if(Motor.Grounded&&flight<.025f&&Physics.Raycast(broomTip.position+Vector3.up*.7f,Vector3.down,out var floor,1.8f,1<<8,QueryTriggerInteraction.Ignore))
@@ -112,12 +114,14 @@ namespace Koriko
                 float wave=Accent(Mathf.Max(0,deliverAge-.78f),.22f,1.10f)*(1-flight);
                 float waveSwing=Mathf.Sin(Mathf.Max(0,deliverAge-.86f)*11f)*wave;
                 Vector3 reach=new Vector3(.16f*give-.10f*wave+waveSwing*.09f,.40f*give+.86f*wave,.44f*give+.10f*wave);
-                // Walking swing: more forward than back, with the elbow kept soft. A symmetric
-                // swing at full reach locked the arm straight behind her in the rear view.
-                float swing=stepSway>0?stepSway*.13f:stepSway*.07f;
-                Vector3 walking=new Vector3(.03f*walkWeight,.035f*walkWeight+.03f*Mathf.Max(0,stepSway)-.012f*Mathf.Abs(stepSway),swing);
+                // The free (left) arm opposes the left leg: back when the left heel strikes
+                // (phase 0), forward when the right heel strikes (phase .5). More forward than
+                // back, with the elbow kept soft, so it never locks straight behind her.
+                float opposed=-Mathf.Cos(walkPhase*Mathf.PI*2)*walkWeight;
+                float swing=opposed>0?opposed*.13f:opposed*.07f;
+                Vector3 walking=new Vector3(.03f*walkWeight,.035f*walkWeight+.03f*Mathf.Max(0,opposed)-.012f*Mathf.Abs(opposed),swing);
                 Vector3 free=body.TransformPoint(freeHandPoint)+Motor.Visual.TransformDirection(walking+reach);
-                Quaternion freeRotation=Motor.Visual.rotation*Quaternion.Euler(stepSway*6-give*35-wave*40,0,-3-waveSwing*20)*leftFreeHandFrame;
+                Quaternion freeRotation=Motor.Visual.rotation*Quaternion.Euler(opposed*6-give*35-wave*40,0,-3-waveSwing*20)*leftFreeHandFrame;
                 SolveArm(arms[0],Vector3.Lerp(free,arms[0].Grip.position,leftGrab),Quaternion.Slerp(freeRotation,arms[0].Grip.rotation*arms[0].WristFrame,leftGrab),leftGrab>.99f);
             }
             Shape("Left hand relaxed",1-leftGrab);

@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Cel_Blush
-  m_Shader: {fileID: 4800000, guid: 3cbb54ed52b01dbffa10a93a8ab78beb, type: 3}
+  m_Name: CharacterOutline_Bow
+  m_Shader: {fileID: 4800000, guid: 452c33664a39b467d8e45335a66ecc9c, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -22,29 +22,12 @@ Material:
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs:
-    - _BaseMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+    m_TexEnvs: []
     m_Ints: []
     m_Floats:
     - _Cloth: 0
-    - _Detached: 0
-    - _Emission: 0
-    - _Face: 0
-    - _NormalFlatten: 0
-    - _PaintScale: 1
-    - _Rim: 0
-    - _ShadowStrength: 0
-    - _Softness: 0.005
-    - _TextureWeight: 0
-    - _VertexPaint: 0
-    - _Wind: 0
+    - _Thickness: 2.7
     m_Colors:
-    - _AtlasRect: {r: 0, g: 0, b: 1, a: 1}
-    - _Color: {r: 0.98, g: 0.68, b: 0.7, a: 1}
-    - _LightTint: {r: 0.96000004, g: 0.712, b: 0.714, a: 1}
-    - _ShadowTint: {r: 0.98, g: 0.68, b: 0.7, a: 1}
+    - _Color: {r: 0.34, g: 0.02, b: 0.05, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

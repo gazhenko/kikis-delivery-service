@@ -16,14 +16,14 @@ def build_character(api):
     api['CHUNK'] = 'Kiki'
 
     palette = {
-        'Skin': (.98, .81, .67), 'Hair': (.145, .105, .12),
-        'Dress': (.19, .195, .30), 'Bow': (.80, .065, .145),
-        'BowShade': (.53, .045, .11), 'Ink': (.075, .09, .12),
-        'Eye': (.075, .065, .08), 'White': (.98, .97, .90),
-        'Shoe': (.65, .24, .17), 'Blush': (.965, .715, .64),
-        'HairShade': (.085, .067, .088), 'DressShade': (.13, .14, .23),
-        'Lip': (.49, .235, .245), 'Sole': (.19, .18, .21),
-        'Satchel': (.84, .36, .29),
+        'Skin': (.99, .89, .81), 'SkinShade': (.91, .74, .69), 'Hair': (.32, .17, .13),
+        'Dress': (.23, .19, .31), 'Bow': (.86, .08, .12),
+        'BowShade': (.58, .04, .09), 'Ink': (.06, .045, .055),
+        'Eye': (.06, .045, .055), 'Iris': (.17, .085, .065), 'White': (.99, .98, .94),
+        'Shoe': (.66, .20, .14), 'Blush': (.98, .68, .70),
+        'HairShade': (.14, .07, .06), 'DressShade': (.12, .10, .18),
+        'Lip': (.55, .28, .26), 'Sole': (.19, .15, .15),
+        'Satchel': (.94, .62, .36), 'Jiji': (.10, .105, .15), 'JijiInner': (.44, .33, .46),
     }
     for name, color in palette.items():
         if name not in materials:
@@ -67,6 +67,22 @@ def build_character(api):
 
     def part(name, pos, size, material, parent):
         return attach(ellipsoid(name, pos, size, material, segments=24, rings=16), parent)
+
+    def soft_box(name, pos, size, material, parent, power=.35):
+        # A superellipsoid: soft leather and cloth shapes with flat faces and rounded edges.
+        rings, segments = 14, 28
+        f = lambda c: math.copysign(abs(c)**power, c)
+        vertices, faces = [], []
+        for j in range(rings+1):
+            v = -math.pi/2+math.pi*j/rings
+            for i in range(segments):
+                u = -math.pi+math.tau*i/segments
+                vertices.append((pos[0]+size[0]*f(math.cos(v))*f(math.cos(u)), pos[1]+size[1]*f(math.sin(v)), pos[2]+size[2]*f(math.cos(v))*f(math.sin(u))))
+        for j in range(rings):
+            for i in range(segments):
+                a=j*segments+i; b=j*segments+(i+1)%segments
+                faces.append((a, b, b+segments, a+segments))
+        return attach(smooth(mesh(name, vertices, faces, material)), parent)
 
     def line(name, points, width, material, parent):
         return attach(stroke(name, points, width, material), parent)
@@ -131,7 +147,7 @@ def build_character(api):
     def face_front(x,y):
         rx, front, back = interpolate(face_rows,y)
         z=front * max(0,1-(x/max(.002,rx))**2)**.41
-        nose=.045*math.exp(-(x/.028)**2-((y-1.932)/.027)**2)
+        nose=.030*math.exp(-(x/.028)**2-((y-1.932)/.027)**2)
         bridge=.015*math.exp(-(x/.026)**2-((y-1.981)/.048)**2)
         return z+nose+bridge
 
@@ -153,7 +169,7 @@ def build_character(api):
     face.data.normals_split_custom_set_from_vertices([
         Vector((v.co.x*.55, v.co.y, (v.co.z-2.01)*.45)).normalized() for v in face.data.vertices
     ])
-    tube('Neck',[(0,1.60,-.018),(0,1.72,-.017),(0,1.81,.003)],[(.103,.092),(.077,.075),(.086,.084)],'Skin',body)
+    tube('Neck',[(0,1.60,-.018),(0,1.72,-.017),(0,1.81,.003)],[(.103,.092),(.077,.075),(.086,.084)],'SkinShade',body)
 
     def patch(name,cx,cy,rx,ry,material,parent,offset=.003,angle=0):
         """Thin painted feature fitted to the face: no protruding eyeball beads."""
@@ -174,7 +190,7 @@ def build_character(api):
         for polygon in obj.data.polygons:
             if polygon.normal.y>0: polygon.flip()
         obj=attach(origin(obj,(cx,cy,face_front(cx,cy))),parent)
-        if name in ('Brown iris','Pupil','Eye glint'):
+        if name in ('Brown iris','Pupil','Eye glint','Lower glint'):
             obj.shape_key_add(name='Basis')
             for side,label in [(-1,'Gaze left'),(1,'Gaze right')]:
                 key=obj.shape_key_add(name=label)
@@ -187,25 +203,30 @@ def build_character(api):
 
     for side in (-1,1):
         label='Left' if side<0 else 'Right'
-        eye_x=side*.100; eye_y=2.010
+        eye_x=side*.102; eye_y=2.004
         eye=attach(empty(label+'EyePivot',(eye_x,eye_y,face_front(eye_x,eye_y))),head)
-        patch('Eye white',eye_x,eye_y,.040,.047,'White',eye)
-        patch('Brown iris',eye_x-side*.002,eye_y+.001,.020,.0355,'Eye',eye,.005)
-        patch('Pupil',eye_x-side*.002,eye_y+.002,.012,.028,'Ink',eye,.006)
-        patch('Eye glint',eye_x-.007,eye_y+.018,.0055,.0075,'White',eye,.008)
+        patch('Eye white',eye_x,eye_y,.037,.048,'White',eye)
+        patch('Brown iris',eye_x-side*.003,eye_y+.002,.030,.045,'Iris',eye,.005)
+        patch('Pupil',eye_x-side*.003,eye_y+.004,.017,.032,'Eye',eye,.006)
+        patch('Eye glint',eye_x-.010,eye_y+.019,.0085,.0105,'White',eye,.008)
+        patch('Lower glint',eye_x+.010,eye_y-.019,.0042,.0050,'White',eye,.008)
         lid=[]
-        for i in range(13):
-            a=math.pi*i/12
-            x=eye_x+.041*math.cos(a);y=eye_y+.048*math.sin(a)
-            lid.append((x,y,face_front(x,y)+.005))
-        line('Upper eyelid',lid,.0038,'Ink',eye)
+        for i in range(15):
+            # Inner corner low, arching over the iris, ending in a heavier outer corner.
+            t=i/14;a=math.pi*(1-t) if side<0 else math.pi*t
+            x=eye_x+.041*math.cos(a);y=eye_y+.050*math.sin(a)**.85-.006*(1-math.sin(a))
+            lid.append((x,y,face_front(x,y)+.006))
+        line('Upper eyelid',lid,.0058,'Ink',eye)
+        outer=eye_x+side*.036
+        line('Upper lash flick',[(outer-side*.012,eye_y+.030,face_front(outer-side*.012,eye_y+.030)+.006),(outer,eye_y+.020,face_front(outer,eye_y+.020)+.006),(outer+side*.010,eye_y+.008,face_front(outer+side*.010,eye_y+.008)+.006)],.0068,'Ink',eye)
+        line('Lower lid mark',[(eye_x+side*.006,eye_y-.047,face_front(eye_x+side*.006,eye_y-.047)+.005),(eye_x+side*.024,eye_y-.040,face_front(eye_x+side*.024,eye_y-.040)+.005)],.0026,'Lip',eye)
         brow=[]
         for i in range(9):
-            t=i/8;x=eye_x-.047+t*.094;y=2.085+.011*math.sin(math.pi*t)-side*(t-.5)*.010
+            t=i/8;x=eye_x-side*.030+side*t*.064;y=2.098+.008*math.sin(math.pi*t)
             brow.append((x,y,face_front(x,y)+.004))
-        brow_pivot=attach(empty(label+'Brow',(eye_x,2.090,face_front(eye_x,2.09))),head)
-        line(label+' eyebrow',brow,.0038,'Hair',brow_pivot)
-        patch('Cheek blush',side*.176,1.946,.025,.0095,'Blush',head,.003)
+        brow_pivot=attach(empty(label+'Brow',(eye_x,2.098,face_front(eye_x,2.098))),head)
+        line(label+' eyebrow',brow,.0030,'HairShade',brow_pivot)
+        patch('Cheek blush',side*.168,1.942,.034,.016,'Blush',head,.003)
         ear=part(label+' ear',(side*.264,1.971,.022),(.044,.072,.027),'Skin',head)
         line('Ear inner line',[(side*.277,2.003,.046),(side*.291,2.015,.043),(side*.288,1.978,.048)],.0028,'Lip',head)
     line('Nose mark',[(.011,1.922,face_front(.011,1.922)+.004),(.018,1.921,face_front(.018,1.921)+.004)],.0025,'Lip',head)
@@ -230,7 +251,9 @@ def build_character(api):
                 a0,y0=hairline[k];a1,y1=hairline[k+1]
                 f=(angle-a0)/(a1-a0)
                 edge=y0+(y1-y0)*(f if y1>y0 else f**.7)
-            if abs(angle)>1.8:edge+=.008*math.sin(a*19)
+            if abs(angle)>1.8:
+                tri=1-abs(2*((a*17/math.tau)%1)-1)
+                edge+=.008*math.sin(a*19)-.034*tri**3*min(1,(abs(angle)-1.8)/.4)
             y=2.33+(edge-2.33)*t
             rx,rz=interpolate(hair_rows,y)
             tip=.009*math.sin(a*19)*max(0,(t-.83)/.17) if abs(angle)>1.8 else 0
@@ -241,6 +264,7 @@ def build_character(api):
         for i in range(n):
             a=j*n+i;b=j*n+(i+1)%n;faces.append((a,b,b+n,a+n))
     hair=attach(smooth(mesh('Bob hair',vertices,faces,'Hair')),head)
+
 
     # Sparse swept part lines follow the same surface as the bob. The fringe is
     # the continuous edge of the cap, avoiding stacked slabs and exposed scalp.
@@ -303,23 +327,27 @@ def build_character(api):
             a=rings*n+i;b=rings*n+(i+1)%n;faces.append((a,b,b+layer,a+layer))
         attach(smooth(mesh('Bow loop '+str(side),vertices,faces,'Bow')),loop)
         line('Bow gathered fold',[(side*.048,2.346,.004),(side*.116,2.369,.030),(side*.222,2.408,.044)],.0035,'BowShade',loop)
+    bow.scale*=.80
 
     # Loose smock: broad continuous shoulders, no fitted waist or spherical cuffs.
-    dress_rows=[(.735,.32,.264,-.025),(.77,.365,.272,-.027),(.93,.331,.248,-.023),(1.13,.286,.225,-.015),(1.36,.269,.198,.0),(1.52,.318,.174,.004),(1.61,.309,.154,.003),(1.67,.206,.124,.0),(1.685,.112,.096,.0)]
+    dress_rows=[(.50,.300,.262,-.020),(.53,.318,.272,-.022),(.70,.307,.260,-.022),(.93,.290,.242,-.020),(1.13,.274,.224,-.014),(1.36,.257,.198,.0),(1.50,.270,.178,.004),(1.58,.266,.162,.003),(1.655,.192,.124,.0),(1.685,.112,.096,.0)]
     vertices,faces=[],[];n=64;levels=49
     for j in range(levels):
         y=dress_rows[0][0]+(dress_rows[-1][0]-dress_rows[0][0])*j/(levels-1)
         rx,rz,cz=interpolate(dress_rows,y)
         for i in range(n):
             a=math.tau*i/n
-            fold=.008*math.sin(a*7+.4)*(1-(y-.735)/1.0)
-            hem=.018*math.sin(a*3+.5)*max(0,1-(y-.735)/.17)
+            fold=.008*math.sin(a*7+.4)*(1-(y-.50)/1.2)
+            hem=.018*math.sin(a*3+.5)*max(0,1-(y-.50)/.17)
             vertices.append(((rx+fold)*math.cos(a),y+hem,cz+(rz+fold)*math.sin(a)))
     for j in range(levels-1):
         for i in range(n):
             a=j*n+i;b=j*n+(i+1)%n;faces.append((a,b,b+n,a+n))
     dress=attach(smooth(mesh('Dress',vertices,faces,'Dress')),body)
-    solid=dress.modifiers.new('Cloth thickness','SOLIDIFY');solid.thickness=.012;solid.offset=-1
+    # The inside of the smock is painted in its flat shadow colour, as a cel painter fills a
+    # skirt's interior; seen under the hem in flight it reads as drawn shade, not a hollow tube.
+    dress.data.materials.append(materials['DressShade'])
+    solid=dress.modifiers.new('Cloth thickness','SOLIDIFY');solid.thickness=.012;solid.offset=-1;solid.material_offset=1
     bpy.context.view_layer.objects.active=dress
     bpy.ops.object.modifier_apply(modifier=solid.name)
     def flight_cloth(obj):
@@ -327,14 +355,26 @@ def build_character(api):
         # away from the cloth when the hem moves over the seated thighs.
         obj.shape_key_add(name='Basis')
         flight=obj.shape_key_add(name='Flight cloth')
+        def fold(y,z,weight):
+            angle=math.radians(-64)*weight
+            dy=y-1.015;dz=(z+.075)*(1-.20*weight)
+            return 1.015+dy*math.cos(angle)-dz*math.sin(angle),-.075+dy*math.sin(angle)+dz*math.cos(angle)+.165*weight
+        knee_line=.64
         for v in flight.data:
             z,y=-v.co.y,v.co.z
             weight=max(0,min(1,(1.35-y)/.615))
             weight=weight*weight*(3-2*weight)
-            angle=math.radians(-73)*weight
-            dy=y-1.015;dz=(z+.075)*(1-.20*weight)
-            v.co.z=1.015+dy*math.cos(angle)-dz*math.sin(angle)
-            v.co.y=-(-.075+dy*math.sin(angle)+dz*math.cos(angle)+.165*weight)
+            # Seated astride, the front of the smock lies over the thighs while the back
+            # hangs down behind her over the broom, closing the view under the hem.
+            back=max(0,min(1,(-.02-z)/.16));back=back*back*(3-2*back)
+            lap=weight*(1-.78*back)
+            if y>=knee_line:
+                fy,fz=fold(y,z,lap)
+            else:
+                # Below the knees the hem hangs down again and trails a little behind.
+                ky,kz=fold(knee_line,z,1-.78*back);drop=knee_line-y
+                fy,fz=ky-drop*.72,kz-drop*.62*(1-back)-.12*weight*(z+.075)
+            v.co.z=fy;v.co.y=-fz
             v.co.x*=1+.12*weight
             # A little ease around the knees lets the limbs trail the body
             # without breaking through the side of the moving smock.
@@ -361,14 +401,18 @@ def build_character(api):
                 v.co.y-=.078*w*edge
                 v.co.z+=.026*w*edge
     flight_cloth(dress)
-    for side in (-1,1):
-        fold=line('Dress fold',[(side*.209,1.38,.123),(side*.213,1.19,.150),(side*.248,1.04,.155)],.0035,'DressShade',body)
+    def on_dress(a,y,out=.006):
+        rx,rz,cz=interpolate(dress_rows,y)
+        return ((rx+out)*math.cos(a),y,cz+(rz+out)*math.sin(a))
+    for a,top,bottom in [(1.10,1.02,.56),(2.02,.98,.58),(.42,1.28,.78),(2.72,1.28,.80),(-1.45,.92,.56)]:
+        points=[on_dress(a+.10*t*t*(1 if a<1.57 else -1),top+(bottom-top)*t) for t in (0,.35,.7,1)]
+        fold=line('Dress fold',points,.0038,'DressShade',body)
         flight_cloth(fold)
 
     # Limbs have articulated elbows and knees. Grip targets live on the broom,
     # allowing the runtime to solve the arms while the torso leans independently.
     broom=empty('Broom',(0,1.0,-.15),root)
-    attach(empty('CarryGrip',(.051,.993,-.65)),broom)
+    attach(empty('CarryGrip',(.051,.993,-.74)),broom)
     attach(empty('BroomGroundTip',(0,.91,-1.86)),broom)
     def relaxed_hand(obj,centers,side,segments,steps):
         obj.shape_key_add(name='Basis')
@@ -385,15 +429,15 @@ def build_character(api):
         label='Left' if side<0 else 'Right'
         shoulder=(side*.247,1.602,.017)
         elbow=(side*.353,1.278,.140)
-        wrist=(side*.051,1.072,.46+(side+1)*.055)
+        wrist=(side*.046,1.074,.55+(side+1)*.045)
         arm=attach(empty(label+'Arm',shoulder),body)
         forearm=attach(empty(label+'Forearm',elbow),arm)
         hand=attach(empty(label+'Hand',wrist),forearm)
         attach(empty(label+'Grip',wrist),broom)
-        sleeve_centers=[(side*.105,1.530,.012),(side*.258,1.525,.032),(side*.337,1.416,.103),(side*.35,1.295,.142)]
-        sleeve=tube(label+' sleeve',sleeve_centers,[(.091,.116),(.121,.132),(.115,.125),(.104,.113)],'Dress',arm,caps='start')
+        sleeve_centers=[(side*.080,1.545,.010),(side*.250,1.535,.030),(side*.337,1.416,.103),(side*.356,1.262,.158)]
+        sleeve=tube(label+' sleeve',sleeve_centers,[(.100,.122),(.128,.138),(.108,.117),(.112,.119)],'Dress',arm,caps='start')
         modifier=sleeve.modifiers.new('Cuff thickness','SOLIDIFY');modifier.thickness=.012;modifier.offset=-1
-        tube(label+' upper arm',[shoulder,(side*.310,1.45,.09),elbow],[(.030,.030),(.061,.058),(.054,.052)],'Skin',arm)
+        tube(label+' upper arm',[shoulder,(side*.310,1.45,.09),elbow],[(.030,.030),(.061,.058),(.054,.052)],'Dress',arm)
         part(label+' elbow',elbow,(.057,.057,.057),'Skin',forearm)
         tube(label+' forearm',[elbow,(side*.251,1.203,.267),(side*.12,1.107,.41),wrist],[(.055,.052),(.059,.052),(.038,.037),(.034,.033)],'Skin',forearm)
         part(label+' palm',(wrist[0],wrist[1]-.013,wrist[2]),(.045,.039,.048),'Skin',hand)
@@ -420,9 +464,9 @@ def build_character(api):
 
     # A small salmon shoulder bag is part of the film's delivery silhouette.
     bag=attach(empty('Satchel',(-.333,1.00,-.035)),body)
-    part('Satchel body',(-.351,1.010,-.031),(.165,.189,.110),'Satchel',bag)
-    flap=part('Satchel flap',(-.367,1.079,.047),(.149,.109,.045),'Satchel',bag)
-    part('Satchel button',(-.369,1.020,.090),(.017,.017,.006),'BowShade',bag)
+    soft_box('Satchel body',(-.358,.992,-.034),(.180,.150,.070),'Satchel',bag,.42)
+    soft_box('Satchel flap',(-.366,1.045,.036),(.184,.104,.020),'Satchel',bag,.30)
+    part('Satchel button',(-.368,.968,.058),(.016,.016,.006),'HairShade',bag)
     for side,points in enumerate([
         [( .175,1.648,.079),(.102,1.538,.172),(-.11,1.29,.219),(-.295,1.082,.080)],
         [( .175,1.648,-.073),(.095,1.524,-.167),(-.10,1.275,-.223),(-.292,1.086,-.117)],
@@ -463,23 +507,26 @@ def build_character(api):
         points=[(.065*math.cos(i*math.tau/32),.968+.066*math.sin(i*math.tau/32),z) for i in range(33)]
         line('Broom binding',points,.012,'BowShade',broom)
 
-    # Jiji's design stays spare: tall ears, an oval head and a narrow chest.
+    # Jiji at the film's scale: about a third of Kiki's head, slim and upright,
+    # with big white eyes, slit pupils, tall ears and a long thin tail.
     jiji=attach(empty('Jiji',(0,1.04,-.76)),broom)
-    tube('Jiji body',[(0,1.032,-.77),(0,1.16,-.79),(0,1.36,-.774)],[(.118,.096),(.095,.091),(.073,.067)],'Ink',jiji)
-    cat_head=attach(empty('JijiHead',(0,1.354,-.754)),jiji)
-    part('Jiji head',(0,1.425,-.754),(.139,.127,.096),'Ink',cat_head)
+    tube('Jiji body',[(0,1.036,-.792),(0,1.085,-.798),(0,1.150,-.786),(0,1.205,-.768)],[(.068,.066),(.060,.058),(.045,.044),(.034,.033)],'Jiji',jiji)
+    part('Jiji haunch',(0,1.060,-.805),(.072,.042,.074),'Jiji',jiji)
+    cat_head=attach(empty('JijiHead',(0,1.205,-.765)),jiji)
+    part('Jiji head',(0,1.248,-.756),(.066,.059,.056),'Jiji',cat_head)
+    part('Jiji muzzle',(0,1.230,-.712),(.030,.022,.018),'Jiji',cat_head)
     for side in (-1,1):
-        ear=attach(empty(('Left' if side<0 else 'Right')+'JijiEar',(side*.083,1.49,-.754)),cat_head)
-        attach(smooth(mesh('Jiji ear',[(side*.032,1.505,-.771),(side*.126,1.687,-.780),(side*.142,1.453,-.710),(side*.083,1.523,-.731)],[(0,1,3),(1,2,3),(2,0,3),(2,1,0)],'Ink')),ear)
-        attach(mesh('Jiji inner ear',[(side*.053,1.52,-.743),(side*.12,1.65,-.758),(side*.126,1.489,-.714)],[(0,1,2),(2,1,0)],'HairShade'),ear)
-        part('Jiji eye',(side*.057,1.442,-.664),(.047,.050,.009),'White',cat_head)
-        part('Jiji pupil',(side*.056,1.442,-.654),(.013,.032,.004),'Ink',cat_head)
-        tube('Jiji front paw',[(side*.055,1.236,-.702),(side*.055,1.09,-.690),(side*.055,1.025,-.680)],[(.022,.02),(.022,.019),(.027,.022)],'Ink',jiji,segments=12,steps=4)
-    part('Jiji nose',(0,1.396,-.654),(.013,.009,.006),'Lip',cat_head)
-    line('Jiji mouth',[(0,1.385,-.656),(-.012,1.380,-.657)],.0025,'Ink',cat_head)
-    tail=attach(empty('JijiTail',(0,1.05,-.85)),jiji)
-    line('Jiji curling tail',[(0,1.05,-.85),(.13,1.08,-1.025),(.22,1.24,-1.06),(.205,1.38,-1.04),(.15,1.415,-1.01)],.020,'Ink',tail)
-    part('Jiji tail tip',(.15,1.415,-1.01),(.020,.020,.020),'Ink',tail)
+        ear=attach(empty(('Left' if side<0 else 'Right')+'JijiEar',(side*.036,1.290,-.758)),cat_head)
+        attach(smooth(mesh('Jiji ear',[(side*.014,1.287,-.770),(side*.056,1.392,-.772),(side*.066,1.268,-.742),(side*.040,1.296,-.745)],[(0,1,3),(1,2,3),(2,0,3),(2,1,0)],'Jiji')),ear)
+        attach(mesh('Jiji inner ear',[(side*.026,1.296,-.747),(side*.053,1.370,-.757),(side*.058,1.279,-.740)],[(0,1,2),(2,1,0)],'JijiInner'),ear)
+        part('Jiji eye',(side*.028,1.254,-.708),(.024,.029,.006),'White',cat_head)
+        part('Jiji pupil',(side*.027,1.254,-.703),(.0065,.021,.003),'Ink',cat_head)
+        tube('Jiji front paw',[(side*.020,1.150,-.748),(side*.021,1.085,-.736),(side*.022,1.040,-.728)],[(.013,.012),(.011,.011),(.015,.013)],'Jiji',jiji,segments=12,steps=4)
+    part('Jiji nose',(0,1.235,-.694),(.0075,.0055,.004),'Lip',cat_head)
+    line('Jiji mouth',[(0,1.226,-.696),(-.008,1.222,-.697)],.0018,'Ink',cat_head)
+    tail=attach(empty('JijiTail',(0,1.045,-.83)),jiji)
+    line('Jiji curling tail',[(0,1.045,-.83),(.07,1.052,-.93),(.125,1.12,-.975),(.13,1.24,-.96),(.095,1.305,-.925),(.06,1.315,-.9)],.011,'Jiji',tail)
+    part('Jiji tail tip',(.06,1.315,-.9),(.011,.011,.011),'Jiji',tail)
 
     # Keep the crown attached while the lower bob and nape follow the wind.
     # These are editable morphs, shared by the native silhouette renderer.
@@ -524,8 +571,8 @@ def build_character(api):
                         v=max(0,min(1,(y-1.50)/.09))
                         mask=1-u*u*(3-2*u)*v*v*(3-2*v)
                     colors.data[vertex.index].color[3]*=mask
-    # Preserve the film's youthful proportions without an oversized doll head.
-    head.scale*=.92
+    # The film's proportions: about five heads tall, not an oversized doll head.
+    head.scale*=.84
     api['export']('KikiAndJiji')
     breath_mouth.hide_render=True
     render_study(api,'kiki-model',(3,2.35,4),(0,1.34,-.04),3.1)

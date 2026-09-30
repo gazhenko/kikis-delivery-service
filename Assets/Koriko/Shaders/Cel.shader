@@ -52,7 +52,10 @@ Shader "Koriko/CharacterCel"
                 n=normalize(lerp(n,normalize(n+view*.65),_Face));
                 float light=dot(n,normalize(_KorikoCelLightDirection));
                 float edge=max(fwidth(light)*.75,_Softness);
-                float lit=smoothstep(.12-edge,.12+edge,light);
+                // Faces are drawn almost entirely in the lit tone; only the far jaw and cheek
+                // edge take a thin shadow shape, as in the film's character cels.
+                float threshold=.12-.30*_Face;
+                float lit=smoothstep(threshold-edge,threshold+edge,light);
                 half3 color=lerp(_ShadowTint.rgb,_Color.rgb,lit);
                 float accent=smoothstep(.87-edge,.87+edge,light)*_Rim;
                 color=lerp(color,_LightTint.rgb,accent);

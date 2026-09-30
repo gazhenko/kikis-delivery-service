@@ -47,10 +47,12 @@ namespace Koriko
         float clock,groundOffset,flightPose,speed,acceleration,previousSpeed;
         float takeoffAge=10,landingAge=10,boostAge=10,brakeAge=10,airTime,idleTime,blinkAge=10,nextBlink=2.3f;
         float smearAge=10,smearTurn,lastTurn,smearCooldown,landingImpact,deliverAge=10;
+        int secondaryDrawing=-1;
         bool wasGrounded=true,wasBoosting,initialized;
         int warpVersion;
         static readonly int WorldToPose=Shader.PropertyToID("_KorikoRiderWorldToPose"),PoseToWorld=Shader.PropertyToID("_KorikoRiderPoseToWorld"),Smear=Shader.PropertyToID("_KorikoRiderSmear");
         static readonly int LeftHip=Shader.PropertyToID("_KorikoRiderLeftHip"),LeftKnee=Shader.PropertyToID("_KorikoRiderLeftKnee"),RightHip=Shader.PropertyToID("_KorikoRiderRightHip"),RightKnee=Shader.PropertyToID("_KorikoRiderRightKnee");
+        static readonly int LeftAnkle=Shader.PropertyToID("_KorikoRiderLeftAnkle"),RightAnkle=Shader.PropertyToID("_KorikoRiderRightAnkle");
         public float GripError {get;private set;}
         public float GroundContactError {get;private set;}=float.PositiveInfinity;
         public float GroundFloorHeight {get;private set;}=float.NegativeInfinity;
@@ -126,7 +128,7 @@ namespace Koriko
             warpVersion=Motor.WarpVersion;wasGrounded=Motor.Grounded;wasBoosting=Motor.Boosting;
             previousVelocity=Motor.Velocity;previousSpeed=speed=0;acceleration=groundOffset=0;
             takeoffAge=landingAge=boostAge=brakeAge=smearAge=10;airTime=idleTime=0;
-            flightPose=Motor.Mounted?1:0;smearCooldown=0;lastTurn=0;
+            flightPose=Motor.Mounted?1:0;smearCooldown=0;lastTurn=0;secondaryDrawing=-1;
             foreach(var s in new[]{pitch,bank,gaze,headPitch,ribbon,ribbonLeft,ribbonRight,hem,legDrag,bagSway,tail,catHead,broomPitch})s.Reset();
             Shader.SetGlobalVector(Smear,Vector4.zero);initialized=true;
             ResetGroundPerformance();
@@ -189,51 +191,62 @@ namespace Koriko
             float lookYaw=gaze.Step(look+glance,6,.9f,dt);
             float lookPitch=headPitch.Step(-bodyPitch*.73f-Motor.LiftIntent*7+brake*5+breath*.65f+bow*9,5,.82f,dt);
             float bodyY=hover+breath*.005f-compress*.065f+reach*.052f-land*.105f+recover*.022f-walkWeight*(.090f+.022f*Mathf.Cos(walkPhase*Mathf.PI*4));
-            Offset("Body",new Vector3(-bodyBank*.0007f+stepSway*.015f,bodyY,-boost*.020f+brake*.025f));
+            // The pelvis carries the weight over the standing leg (left stance while stepSway > 0).
+            Offset("Body",new Vector3(-bodyBank*.0007f-stepSway*.015f,bodyY,-boost*.020f+brake*.025f));
             Pose("Body",new Vector3(bodyPitch,turn*flight*4-stepSway*3.5f,bodyBank));
             Pose("Head",new Vector3(lookPitch,lookYaw,-bodyBank*.36f));
             // The broom noses up into a climb and counters the rider's weight.
             float broomAngle=broomPitch.Step(-Motor.Velocity.y*.75f+brake*5-compress*4+reach*5,3.7f,.7f,dt);
             float drag=legDrag.Step(Mathf.Clamp(acceleration*.25f,-11,10)+Motor.Velocity.y*.55f,2.0f,.60f,dt)*flight;
             float footSwing=idle*flight*Mathf.Sin(clock*2.1f)*5;
-            float tuck=flight*(67+speed*7);
+            // The film's seat: thighs lie forward along the broom, the shins hang and trail
+            // back beneath it and the flats point back, not a knees-up crouch.
+            float tuck=flight*(57+speed*6);
             Pose("LeftLeg",new Vector3(-tuck+drag*.36f+brake*7-compress*12,-bodyBank*.16f,-flight*4-bodyBank*.10f));
             Pose("RightLeg",new Vector3(-tuck+3+drag*.46f+brake*10-compress*16,bodyBank*.08f,flight*4-bodyBank*.14f));
-            Pose("LeftKnee",new Vector3(flight*97-drag+footSwing-brake*9+compress*23+land*21,0,0));
-            Pose("RightKnee",new Vector3(flight*94-drag*.70f-footSwing*.65f-brake*12+compress*28+land*25,0,0));
-            Pose("LeftFoot",new Vector3(-flight*18+drag*.5f-footSwing*.7f-compress*11-land*12,flight*2,-bodyBank*.12f));
-            Pose("RightFoot",new Vector3(-flight*14+drag*.7f+footSwing*.4f-compress*12-land*13,-flight*3,-bodyBank*.12f));
+            Pose("LeftKnee",new Vector3(flight*106-drag+footSwing-brake*9+compress*23+land*21,0,0));
+            Pose("RightKnee",new Vector3(flight*102-drag*.70f-footSwing*.65f-brake*12+compress*28+land*25,0,0));
+            Pose("LeftFoot",new Vector3(-flight*30+drag*.5f-footSwing*.7f-compress*11-land*12,flight*2,-bodyBank*.12f));
+            Pose("RightFoot",new Vector3(-flight*26+drag*.7f+footSwing*.4f-compress*12-land*13,-flight*3,-bodyBank*.12f));
             float flutterTime=Mathf.Floor(clock*24)/24;
             float wind=flight*(.22f+speed*.70f);
             float ribbonTarget=walkWeight*Mathf.Sin(walkPhase*Mathf.PI*4)*4-speed*19-Mathf.Clamp(acceleration*.4f,-12,12)-Motor.Velocity.y*.7f;
             float ribbonPitch=ribbon.Step(ribbonTarget,3.6f,.48f,dt);
             float leftFlutter=ribbonLeft.Step(stepSway*6+turn*22+wind*Mathf.Sin(flutterTime*10.4f)*8,4.2f,.38f,dt);
             float rightFlutter=ribbonRight.Step(-stepSway*4+turn*15+wind*Mathf.Sin(flutterTime*9.1f+1.8f)*7,3.7f,.43f,dt);
-            Pose("Bow",new Vector3(ribbonPitch*.28f,0,-bodyBank*.15f));
-            Pose("LeftBowLoop",new Vector3(ribbonPitch+leftFlutter*.45f,leftFlutter*.25f,leftFlutter*.45f));
-            Pose("RightBowLoop",new Vector3(ribbonPitch+rightFlutter*.5f,-rightFlutter*.2f,rightFlutter*.45f));
             float clothSway=hem.Step(-turn*.65f+Mathf.Sin(flutterTime*6.3f)*wind*.35f,2.6f,.55f,dt);
+            // Cloth and legs share contact, so the seat and step shapes follow every frame.
             Shape("Flight cloth",flight);
-            Shape("Hem left",flight*Mathf.Clamp01(.15f+wind*.22f-clothSway));
-            Shape("Hem right",flight*Mathf.Clamp01(.15f+wind*.22f+clothSway));
             Shape("Walk left",(1-flight)*Mathf.Max(0,-stepSway));Shape("Walk right",(1-flight)*Mathf.Max(0,stepSway));
-            Shape("Hair stream",flight*Mathf.Clamp01(speed*.75f+Mathf.Max(0,acceleration)*.013f));
-            Shape("Hair left",Mathf.Max(0,-clothSway)*flight+Mathf.Max(0,-stepSway)*.18f);Shape("Hair right",Mathf.Max(0,clothSway)*flight+Mathf.Max(0,stepSway)*.18f);
             float bagAngle=bagSway.Step(bodyBank*.44f-acceleration*.10f+stepSway*7,2.2f,.58f,dt);
-            Pose("Satchel",new Vector3(-drag*.45f,bagAngle*.25f,bagAngle*.48f));
             float catLook=catHead.Step(-lookYaw*.65f+idle*Mathf.Sin(clock*.63f)*14,3.0f,.7f,dt);
             float tailAngle=tail.Step(bodyBank*.8f+wind*Mathf.Sin(clock*3.3f)*12+bow*Mathf.Sin(deliverAge*9)*22,2.1f,.55f,dt);
-            Pose("JijiHead",new Vector3(-speed*7-brake*5,catLook,bodyBank*.16f));
-            Pose("JijiTail",new Vector3(-drag*.3f,tailAngle,tailAngle*.35f));
-            Pose("LeftJijiEar",new Vector3(-speed*12,-turn*8,-boost*16+idle*Mathf.Sin(clock*1.7f)*2));
-            Pose("RightJijiEar",new Vector3(-speed*10,-turn*8,boost*13+idle*Mathf.Sin(clock*1.3f+2)*2));
+            // Hair, bow, hem, satchel and Jiji are drawn on twos, as in the film: their springs
+            // integrate every frame, but a new drawing is exposed twelve times a second.
+            int drawing=Mathf.FloorToInt(clock*12);
+            if(drawing!=secondaryDrawing)
+            {
+                secondaryDrawing=drawing;
+                Pose("Bow",new Vector3(ribbonPitch*.28f,0,-bodyBank*.15f));
+                Pose("LeftBowLoop",new Vector3(ribbonPitch+leftFlutter*.45f,leftFlutter*.25f,leftFlutter*.45f));
+                Pose("RightBowLoop",new Vector3(ribbonPitch+rightFlutter*.5f,-rightFlutter*.2f,rightFlutter*.45f));
+                Shape("Hem left",flight*Mathf.Clamp01(.15f+wind*.22f-clothSway));
+                Shape("Hem right",flight*Mathf.Clamp01(.15f+wind*.22f+clothSway));
+                Shape("Hair stream",flight*Mathf.Clamp01(speed*.75f+Mathf.Max(0,acceleration)*.013f));
+                Shape("Hair left",Mathf.Max(0,-clothSway)*flight+Mathf.Max(0,-stepSway)*.18f);Shape("Hair right",Mathf.Max(0,clothSway)*flight+Mathf.Max(0,stepSway)*.18f);
+                Pose("Satchel",new Vector3(-drag*.45f,bagAngle*.25f,bagAngle*.48f));
+                Pose("JijiHead",new Vector3(-speed*7-brake*5,catLook,bodyBank*.16f));
+                Pose("JijiTail",new Vector3(-drag*.3f,tailAngle,tailAngle*.35f));
+                Pose("LeftJijiEar",new Vector3(-speed*12,-turn*8,-boost*16+idle*Mathf.Sin(clock*1.7f)*2));
+                Pose("RightJijiEar",new Vector3(-speed*10,-turn*8,boost*13+idle*Mathf.Sin(clock*1.3f+2)*2));
+            }
             AnimateFace(lookYaw,boost,brake,land);
             if(!PlaceWalkingFeet(dt)){PlaceFeet();feetReady=false;}
             PositionBroom(flight,hover,broomAngle,bodyBank);
             GroundArms(flight);
             PositionJiji(flight,speed*8+Mathf.Clamp(acceleration*.18f,-6,8),-bodyBank*.35f);
-            ClothContact("LeftLeg","LeftKnee",LeftHip,LeftKnee,Mathf.Max(flight,walkWeight));
-            ClothContact("RightLeg","RightKnee",RightHip,RightKnee,Mathf.Max(flight,walkWeight));
+            ClothContact("LeftLeg","LeftKnee","LeftFoot",LeftHip,LeftKnee,LeftAnkle,Mathf.Max(flight,walkWeight));
+            ClothContact("RightLeg","RightKnee","RightFoot",RightHip,RightKnee,RightAnkle,Mathf.Max(flight,walkWeight));
             // Two 1/24-second drawings bridge a fast change of pose. All other
             // frames are undeformed, including the face and its painted details.
             int exposure=Mathf.FloorToInt(smearAge*24);
@@ -243,12 +256,15 @@ namespace Koriko
             Shader.SetGlobalVector(Smear,new Vector4(smearDirection.x,smearDirection.y,smearDirection.z,smearTurn)*SmearWeight);
             Beat=Motor.OnFoot?(Delivering?"Deliver / bow and wave":landingAge<.7f?"Dismount / settle":walkWeight>.15f?"Walk / carry broom":"Rest / broom at side"):takeoffAge<.75f?"Mount / reach":boostAge<.72f?"Boost / tuck":brakeAge<.85f?"Brake / catch balance":Mathf.Abs(bodyBank)>6?"Bank / follow through":speed<.15f?"Hover / breathe":"Cruise / wind";
         }
-        void ClothContact(string hipName,string kneeName,int hipId,int kneeId,float amount)
+        void ClothContact(string hipName,string kneeName,string footName,int hipId,int kneeId,int ankleId,float amount)
         {
-            var hip=Node(hipName);var knee=Node(kneeName);if(!hip||!knee)return;
+            var hip=Node(hipName);var knee=Node(kneeName);var foot=Node(footName);if(!hip||!knee)return;
             var a=hip.position;var b=knee.position;
             Shader.SetGlobalVector(hipId,new Vector4(a.x,a.y,a.z,amount));
             Shader.SetGlobalVector(kneeId,new Vector4(b.x,b.y,b.z,.095f));
+            // Only while walking: the seated flight cloth hangs from the knee on its own.
+            var c=foot?foot.position:b;float shin=walkWeight>.02f&&flightPose<.5f?.085f:0;
+            Shader.SetGlobalVector(ankleId,new Vector4(c.x,c.y,c.z,shin));
         }
         void AnimateFace(float look,float boost,float brake,float land)
         {

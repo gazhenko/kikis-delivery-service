@@ -27,8 +27,10 @@ namespace Koriko
             Shader.SetGlobalVector("_KorikoMoonDirection",MoonDirection);
             if(Camera)
             {
-                // A separate foreground key preserves a drawn face from every flight angle.
-                Vector3 key=(-Camera.transform.forward*.65f+Camera.transform.right*.45f+Vector3.up*.8f).normalized;
+                // A separate foreground key, from high and to the side of the camera, like a cel
+                // painter's light: every form gets a clear shadow shape on its far side, while
+                // the face (flattened toward the viewer) stays readable from every flight angle.
+                Vector3 key=(-Camera.transform.forward*.30f+Camera.transform.right*.78f+Vector3.up*.72f).normalized;
                 Shader.SetGlobalVector("_KorikoCelLightDirection",key);
             }
             // Aerial perspective: the far side of town stays readable while hills and
