@@ -1,0 +1,9 @@
+{
+  "revision": "d88266f6ed0844c99bd6b0c0c422f58ecb85fa76",
+  "release": "20260930-d88266f",
+  "unity": "6000.3.20f1",
+  "platform": "macOS universal arm64 + x86_64",
+  "packaged_at_utc": "2026-09-30T21:17:50.218775+00:00",
+  "zip_sha256": "3cc41ea24a250d0ed77b4a07f9b82150b5349d49f91b6de10ffce3ac6108dc0d",
+  "rollback": "Builds/mac/previous/Kiki-Delivery-20260930-9f5ea8f-Mac.zip"
+}

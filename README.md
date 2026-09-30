@@ -18,6 +18,8 @@ The environment retains joined narrow street façades, varied roofs, the clock t
 
 The [polish pass](Docs/POLISH_PASS.md) adds a synthesized soundscape and an original title waltz, working aerial fog, and lit streets and households at night under stars and a moon. It brings chimney smoke, gulls, bobbing moored boats, headlands, a lighthouse, islands and a distant hill town. Kiki visibly carries each parcel and the fitted lantern on her broom, bows and waves on delivery, and is guided by a destination tag, a ribbon circle at the true delivery radius and Jiji's tips. The title flyover offers Continue or a backed-up New game. [Native verification](Docs/verification/polish-pass/README.md).
 
+A [film character pass](Docs/CHARACTER.md#film-character-pass-september-30-2026) reworks Kiki and Jiji against the film: auburn hair, a purple smock, cel shadow shapes with a lit face, colour-matched outlines, secondary motion on twos and the film's seated flight. [Verification](Docs/verification/character-film-pass/README.md).
+
 Animated townspeople and recipients, a human listening test, release profiling and a physical-controller playtest remain work for the desktop rebuild. Art, sound and flight performance are original project work; no production-film meshes, animation clips, recordings or film music are bundled.
 
 See the [environment art notes and texture prompt](Docs/ENVIRONMENT.md), [motion implementation](Docs/MOTION.md), [motion clips and verification](Docs/verification/motion-pass/README.md), [character references and source](Docs/CHARACTER.md), [earlier rendering research](Docs/CEL_ART_PASS.md), [baseline verification](Docs/VERIFICATION.md), [visual direction](Docs/DIRECTION.md), [asset provenance](Docs/ART.md) and [development VM](Docs/VM.md).
@@ -34,7 +36,7 @@ At home, pick a delivery and choose Go outside. The parcel hangs from Kiki's bro
 
 ## Play on Omarchy
 
-Choose **Kiki’s Delivery Service** in the application launcher, or run `kiki-delivery`. The native Linux installation lives at `~/Games/KikiDelivery/current`, with versioned releases alongside it. It does not require Unity Editor or a Unity sign-in. The Mac desktop shortcut and Linux launcher use the September 30 polish release `20260930-9f5ea8f`, with previous releases kept for rollback. See [installation checks and locations](Docs/INSTALLATIONS.md).
+Choose **Kiki’s Delivery Service** in the application launcher, or run `kiki-delivery`. The native Linux installation lives at `~/Games/KikiDelivery/current`, with versioned releases alongside it. It does not require Unity Editor or a Unity sign-in. The Mac desktop shortcut and Linux launcher use the September 30 film character release `20260930-d88266f`, with previous releases kept for rollback. See [installation checks and locations](Docs/INSTALLATIONS.md).
 
 `KORIKO_MAC_DESTINATION=Builds/mac-candidate bash Tools/build-on-vm.sh` stages a Mac candidate without replacing the installed app. `bash Tools/build-linux-on-vm.sh` exports a fresh Linux development player using the licensed VM, rejects shader compiler errors, and copies it into `Builds/linux/`. It does not deploy that export or change the Mac installation.
 

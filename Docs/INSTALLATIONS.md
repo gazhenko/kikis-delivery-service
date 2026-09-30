@@ -1,6 +1,22 @@
+# Desktop installations: September 30, 2026 (film character pass)
+
+Both machines now run **`20260930-d88266f`** (source `d88266f6ed0844c99bd6b0c0c422f58ecb85fa76`), a dedicated pass on Kiki and Jiji toward the film's cel look and motion ([record](verification/character-film-pass/README.md)).
+
+Checks:
+- **Mac:** 33 tour and 6 character checks through the Desktop shortcut after installation. The staged candidate also passed 46 control, 17 walking and 25 route checks.
+- **Omarchy:** the staged release passed 10 motion, 33 tour, 46 control, 17 walking and 25 route checks. All 275 hashes verified before `current` switched, and the installed launcher passed the tour.
+
+Rollback:
+- **Mac:** `Builds/mac/previous/Kiki-Delivery-20260930-9f5ea8f-Mac.zip` (hash verified).
+- **Omarchy:** `releases/20260930-9f5ea8f` and earlier.
+
+Because the Mac was nearly full, its three older archives and a stale motion-check output were moved to Omarchy's `~/Games/KikiDelivery/archive/` with hash verification. Saves were untouched.
+
+---
+
 # Desktop installations: September 30, 2026 (follow-up)
 
-Both machines now run **`20260930-9f5ea8f`** (source `9f5ea8f568f6e96488c0fbc200824a9f1647a0f6`). It fixes three defects visible in a photo of the Omarchy session:
+Both machines received **`20260930-9f5ea8f`** (source `9f5ea8f568f6e96488c0fbc200824a9f1647a0f6`). It fixes three defects visible in a photo of the Omarchy session:
 - Jiji merged with Kiki's hair from behind; he now has his own blue-black paint and turns slightly outward on her shoulder.
 - Her free arm locked straight behind her while walking.
 - Roof eaves were open to the sky from street level.

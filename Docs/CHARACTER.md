@@ -1,5 +1,43 @@
 # Kiki character study
 
+## Film character pass: September 30, 2026
+
+After play-testing, the user asked for a dedicated pass on Kiki and Jiji. The goal: a character that feels drawn straight from the film, with 2D cel shading in a 3D world, and anatomically correct motion that follows the film. The reference was [the official IMAX trailer](https://www.youtube.com/watch?v=e-ENiLJPwDQ). Its frames were studied privately and are not stored in the project or shipped.
+
+From the trailer:
+- **Palette.** Kiki's hair is auburn, not black. Her smock is a dark purple. Her skin is pale cream with pink blush. The satchel is orange-tan. Jiji is small and black, with big white eyes.
+- **Proportions.** Kiki is about five heads tall. Her bow is roughly as wide as her head. Her smock falls loosely to below the knee, with sleeves to the elbow.
+- **Faces.** They are drawn almost entirely in the lit tone. Hair casts little shadow on the face. The eyes are tall and near-black, with a heavy upper lash line and a highlight.
+- **Line work.** Every shape has a coloured trace line: reddish-brown around skin, dark around hair.
+- **Flight.** Seated astride, the smock lies over her lap and hangs down behind her over the broom, and only her flats show beneath it. Her arms reach forward to hold the handle with both hands.
+- **Secondary motion.** Hair, bow and cloth are animated on twos.
+
+The changes:
+- **Model and paint** (`Tools/character_model.py`, regenerated with Blender 4.5.3; world files untouched):
+  - the film palette;
+  - a head scaled to 0.84 and a bow scaled to 0.8;
+  - a below-the-knee smock, elbow sleeves and a soft flap satchel;
+  - new eyes: tall iris, lash flick, lower lid mark and two highlights, with short high brows;
+  - larger blush and a softer nose;
+  - a shaded neck, cloth-coloured upper arms inside the sleeves, and jagged bob ends at the back;
+  - a few curved smock folds;
+  - Jiji rebuilt at film scale, with his own blue-black paint.
+- **Cel shading** (`Cel.shader`, `SceneBuilder`, `Daylight`):
+  - the character's key light sits high and to the side of the camera, so every form has a clear shadow shape;
+  - faces keep the lit tone apart from a thin far-jaw shadow;
+  - each paint has one chosen shadow colour, and marks such as eyes, blush and folds are flat;
+  - the inside of the smock is painted in its shadow colour.
+- **Ink** (`Ink.shader`, `SceneBuilder`): every body part has a colour-matched outline, sized in 1080p pixels (it scales with the window) and thinning with distance. Painted marks and joint spheres are skipped.
+- **Motion** (`RiderPerformance`):
+  - hair, bow, hem, satchel and Jiji update on twos (12 drawings a second), while body contact stays smooth;
+  - the film's seated flight: thighs forward, shins trailing, feet pointed, and the smock draped over the lap and behind over the broom;
+  - walking gait corrections: the pelvis shifts over the standing leg, and the free arm opposes the legs, back at its own side's heel strike;
+  - the free hand rests on the satchel, and the broom is carried close with a bent elbow;
+  - shin cloth contact keeps the longer smock clear of the walking legs.
+
+[Native verification of this pass](verification/character-film-pass/README.md).
+
+
 The subsequent [walking and controls pass](WALKING_CONTROLS.md) adds on-foot acting, the upright side carry, planted footsteps and transitions between walking and flight. Its [native walking reel and verification](verification/walking-controls/README.md) extend the historical results below.
 
 The September 27 character revision uses the film itself as the design reference. The previous model's long lower face, pointed block fringe, spherical sleeves and rigid standing flight pose were the main likeness problems. This revision rebuilds the model, facial surfaces and articulation together while retaining the cel renderer.

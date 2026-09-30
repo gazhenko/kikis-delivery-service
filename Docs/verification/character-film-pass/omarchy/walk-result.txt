@@ -1,0 +1,20 @@
+PASS Carry anchors, free-hand and walking cloth shapes survive import
+PASS Starting at the bakery puts Kiki on foot
+PASS Resting broom stands at her side with its tip on the ground
+PASS Keyboard walking travels at street level without mounting
+PASS Ground movement is capped at walking speed
+PASS Releasing walking input stops without broom coasting
+PASS Stopped broom returns to the ground
+PASS Space mounts and climbs into a complete riding pose
+PASS Flight can enter the original assisted landing approach
+PASS Landing automatically dismounts into the standing carry pose
+PASS Walking works immediately after a flight and landing
+PASS Controller stick supports a slower analog walk
+PASS Controller A mounts and climbs
+PASS Controller descent returns to walking
+PASS Contacting hands follow the broom through walking and transitions within 3 cm
+PASS Planted shoes meet the street within 4 cm
+PASS Planted walking feet stay fixed within 3.5 cm per drawing
+Maximum hand error: 0.0051 m; sole error: 0.0000 m; planted-foot displacement: 0.0000 m; walking speed: 2.100 m/s
+Renderer: NVIDIA GeForce RTX 3080/PCIe/SSE2 / OpenGLCore; resolution 1280 x 720
+Synthetic keyboard and controller input, fixed 24 Hz animation review; not a performance benchmark or physical controller test.
