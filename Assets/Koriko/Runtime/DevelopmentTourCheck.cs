@@ -54,6 +54,12 @@ namespace Koriko
             yield return Hold(1.6f,Key.W);yield return Hold(.5f);
             Check(sound.Footsteps>steps,$"Walking produces planted footstep sounds ({sound.Footsteps-steps})");
             yield return Capture("03-parcel-on-foot");
+            // The rear view players actually see while walking: arm swing and Jiji on her shoulder.
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.W));yield return Seconds(.7f);
+            yield return Capture("03b-walk-rear-a");yield return Seconds(.1f);yield return Capture("03c-walk-rear-b");
+            InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return Seconds(.5f);
+            yield return Study("03d-shoulder-jiji-rear",new Vector3(-1.5f,1.75f,-3.3f),new Vector3(-.1f,1.7f,0),32);
+            yield return Study("03e-street-eaves",null,null,60,new Vector3(-140,1.6f,3.5f),new Vector3(-138,10.5f,13));
             // Toward the clock tower: the tag should sit on screen over the court.
             var clock=Catalog.FindDestination("clock");
             app.Motor.Warp(new Point(clock.Landing.x-62,24,clock.Landing.z-18));app.Motor.Face(Mathf.Atan2(62,18)*Mathf.Rad2Deg);

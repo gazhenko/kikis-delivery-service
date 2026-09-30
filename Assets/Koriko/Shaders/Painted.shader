@@ -17,6 +17,7 @@ Shader "Koriko/Painted"
         _VertexPaint("Authored paint tones", Range(0,1)) = 1
         _Face("Face", Float) = 0
         _Rim("Accent", Float) = 0
+        [Enum(UnityEngine.Rendering.CullMode)] _Cull("Faces drawn", Float) = 2
     }
     SubShader
     {
@@ -28,7 +29,7 @@ Shader "Koriko/Painted"
         {
             Name "PaintedForward"
             Tags { "LightMode"="UniversalForward" }
-            Cull Back
+            Cull [_Cull]
             HLSLPROGRAM
             #pragma vertex Vert
             #pragma fragment Frag
@@ -51,7 +52,7 @@ Shader "Koriko/Painted"
                 o.paint=float4(lerp(float3(1,1,1),input.color.rgb,_VertexPaint),input.color.a);
                 return o;
             }
-            half4 Frag(Varyings input):SV_Target
+            half4 Frag(Varyings input,FRONT_FACE_TYPE face:FRONT_FACE_SEMANTIC):SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(input);
                 float2 mirrored=1-abs(frac(input.uv*_PaintScale*.5)*2-1);
@@ -59,7 +60,8 @@ Shader "Koriko/Painted"
                 half3 paint=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,uv).rgb;
                 half3 albedo=lerp(_Color.rgb,paint,_TextureWeight)*input.paint.rgb;
                 Light sun=GetMainLight(TransformWorldToShadowCoord(input.positionWS));
-                float3 normal=normalize(lerp(input.normalWS,float3(0,1,0),_NormalFlatten));
+                // Roof planes are drawn from both sides: an eave seen from the street shades as an underside.
+                float3 normal=normalize(lerp(input.normalWS*IS_FRONT_VFACE(face,1,-1),float3(0,1,0),_NormalFlatten));
                 float light=dot(normal,sun.direction);
                 // Broad paint marks modulate a shadow edge, rather than becoming surface noise.
                 float stroke=dot(paint,half3(.2126,.7152,.0722))-.5;
@@ -84,7 +86,7 @@ Shader "Koriko/Painted"
         {
             Name "ShadowCaster"
             Tags { "LightMode"="ShadowCaster" }
-            ZWrite On ZTest LEqual ColorMask 0 Cull Back
+            ZWrite On ZTest LEqual ColorMask 0 Cull [_Cull]
             HLSLPROGRAM
             #pragma vertex ShadowVert
             #pragma fragment ShadowFrag
@@ -108,7 +110,7 @@ Shader "Koriko/Painted"
         {
             Name "DepthOnly"
             Tags { "LightMode"="DepthOnly" }
-            ZWrite On ColorMask R Cull Back
+            ZWrite On ColorMask R Cull [_Cull]
             HLSLPROGRAM
             #pragma vertex DepthVert
             #pragma fragment DepthFrag

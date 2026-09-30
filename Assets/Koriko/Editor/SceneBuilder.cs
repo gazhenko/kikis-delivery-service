@@ -136,6 +136,15 @@ namespace Koriko.Editor
                     throw new InvalidOperationException("Character secondary animation shape did not import: "+shape);
             var characterMaterials=MakeCharacterMaterials();
             ApplyMaterials(rider,characterMaterials);AddCharacterInk(rider);
+            // Seen from behind on Kiki's shoulder, an ink-black Jiji merged with her hair into one mass.
+            // His body, head, ears, paws and tail take his own cool paint; pupils and mouth stay ink.
+            foreach(var r in rider.GetComponentsInChildren<Renderer>())
+            {
+                if(!r.name.StartsWith("Jiji",StringComparison.Ordinal)||r.name.StartsWith("Jiji pupil",StringComparison.Ordinal)||r.name.StartsWith("Jiji mouth",StringComparison.Ordinal))continue;
+                var painted=r.sharedMaterials;
+                for(int i=0;i<painted.Length;i++)if(painted[i]==characterMaterials["Ink"])painted[i]=characterMaterials["Jiji"];
+                r.sharedMaterials=painted;
+            }
             foreach(var t in rider.GetComponentsInChildren<Transform>())t.gameObject.layer=9;
             rider.AddComponent<RiderPerformance>().Motor=motor;
             var props=rider.AddComponent<RiderProps>();
@@ -213,6 +222,8 @@ namespace Koriko.Editor
                 m.SetFloat("_Wind",i==10?.6f:0);m.SetFloat("_PaintScale",1);m.SetFloat("_VertexPaint",1);
                 m.SetFloat("_NormalFlatten",i==10?.65f:0);m.SetFloat("_ShadowStrength",i==10?.35f:.68f);
                 m.SetFloat("_Softness",i==10?.20f:.12f);
+                // Roof planes are single sheets; draw their undersides so street-level eaves are not open to the sky.
+                m.SetFloat("_Cull",i==4||i==5?(float)CullMode.Off:(float)CullMode.Back);
                 m.SetColor("_ShadowTint",new Color(.63f,.73f,.80f));m.SetColor("_LightTint",new Color(1.08f,1.04f,.94f));
                 result.Add(m.name,m);
             }
@@ -270,7 +281,9 @@ namespace Koriko.Editor
                 // Carried freight and the broom lantern.
                 ["Parcel"]=new Color(.80f,.63f,.42f),["ParcelString"]=new Color(.62f,.13f,.13f),["FragilePaper"]=new Color(.95f,.92f,.84f),
                 ["Crate"]=new Color(.62f,.45f,.27f),["CrateStrap"]=new Color(.26f,.20f,.15f),["Canvas"]=new Color(.85f,.79f,.63f),
-                ["Rope"]=new Color(.63f,.53f,.37f),["LanternGlass"]=new Color(1,.90f,.62f)
+                ["Rope"]=new Color(.63f,.53f,.37f),["LanternGlass"]=new Color(1,.90f,.62f),
+                // Jiji is a blue-black cat, not another patch of Kiki's warm near-black hair.
+                ["Jiji"]=new Color(.10f,.105f,.15f)
             };
             foreach(var entry in characterPaint.Concat(Enumerable.Range(0,16).Select(i=>new KeyValuePair<string,Color>("Paint_"+i,palette[i]))))
             {
@@ -281,10 +294,12 @@ namespace Koriko.Editor
                 if(entry.Key=="Dress")shadow=new Color(.115f,.13f,.21f);
                 if(entry.Key=="Bow")shadow=new Color(.56f,.047f,.11f);
                 if(entry.Key=="Eye"||entry.Key=="Blush"||entry.Key=="Lip")shadow=lit;
+                if(entry.Key=="Jiji")shadow=new Color(.045f,.048f,.07f);
                 var m=Material("Cel_"+entry.Key,shader);m.SetColor("_Color",lit);m.SetColor("_ShadowTint",shadow);
                 m.SetColor("_LightTint",Color.Lerp(lit,new Color(.88f,.84f,.77f),.20f));
                 m.SetFloat("_Softness",.005f);m.SetFloat("_Face",entry.Key=="Skin"?.85f:0);
-                m.SetFloat("_Rim",0);
+                m.SetFloat("_Rim",entry.Key=="Jiji"?.6f:0);
+                if(entry.Key=="Jiji")m.SetColor("_LightTint",new Color(.30f,.33f,.46f));
                 m.SetFloat("_Cloth",entry.Key=="Dress"||entry.Key=="DressShade"?1:0);
                 result.Add(entry.Key,m);
             }

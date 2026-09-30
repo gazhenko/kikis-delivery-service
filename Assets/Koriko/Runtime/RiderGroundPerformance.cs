@@ -112,8 +112,12 @@ namespace Koriko
                 float wave=Accent(Mathf.Max(0,deliverAge-.78f),.22f,1.10f)*(1-flight);
                 float waveSwing=Mathf.Sin(Mathf.Max(0,deliverAge-.86f)*11f)*wave;
                 Vector3 reach=new Vector3(.16f*give-.10f*wave+waveSwing*.09f,.40f*give+.86f*wave,.44f*give+.10f*wave);
-                Vector3 free=body.TransformPoint(freeHandPoint)+Motor.Visual.TransformDirection(new Vector3(-.012f*walkWeight,-.015f*Mathf.Abs(stepSway),stepSway*.14f)+reach);
-                Quaternion freeRotation=Motor.Visual.rotation*Quaternion.Euler(stepSway*8-give*35-wave*40,0,-3-waveSwing*20)*leftFreeHandFrame;
+                // Walking swing: more forward than back, with the elbow kept soft. A symmetric
+                // swing at full reach locked the arm straight behind her in the rear view.
+                float swing=stepSway>0?stepSway*.13f:stepSway*.07f;
+                Vector3 walking=new Vector3(.03f*walkWeight,.035f*walkWeight+.03f*Mathf.Max(0,stepSway)-.012f*Mathf.Abs(stepSway),swing);
+                Vector3 free=body.TransformPoint(freeHandPoint)+Motor.Visual.TransformDirection(walking+reach);
+                Quaternion freeRotation=Motor.Visual.rotation*Quaternion.Euler(stepSway*6-give*35-wave*40,0,-3-waveSwing*20)*leftFreeHandFrame;
                 SolveArm(arms[0],Vector3.Lerp(free,arms[0].Grip.position,leftGrab),Quaternion.Slerp(freeRotation,arms[0].Grip.rotation*arms[0].WristFrame,leftGrab),leftGrab>.99f);
             }
             Shape("Left hand relaxed",1-leftGrab);
@@ -124,7 +128,8 @@ namespace Koriko
             var body=Node("Body");float hop=Ease(flight);
             cat.position=Vector3.Lerp(body.TransformPoint(catShoulderPoint),carriedBroom.TransformPoint(catBroomPoint),hop)+Vector3.up*(Mathf.Sin(hop*Mathf.PI)*.23f);
             Quaternion frame=Quaternion.Slerp(body.rotation*catShoulderFrame,carriedBroom.rotation*catBroomFrame,hop);
-            cat.rotation=Motor.Visual.rotation*Quaternion.Euler(lean,0,roll)*Quaternion.Inverse(Motor.Visual.rotation)*frame;
+            // On the shoulder Jiji turns a little outward, so his ears and profile read from behind.
+            cat.rotation=Motor.Visual.rotation*Quaternion.Euler(lean,-22*(1-hop),roll)*Quaternion.Inverse(Motor.Visual.rotation)*frame;
         }
         Vector3 FootSupport(Vector3 point,WalkingLeg leg)
         {

@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shop_2
-  m_Shader: {fileID: 4800000, guid: 56cb511305fd9eb168db752e0d8e60c4, type: 3}
+  m_Name: Cel_Jiji
+  m_Shader: {fileID: 4800000, guid: 3cbb54ed52b01dbffa10a93a8ab78beb, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,26 +24,27 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: e6d77ec180a9a54cb8bb2e94c846ad1f, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Cull: 2
-    - _Emission: 0.08
+    - _Cloth: 0
+    - _Detached: 0
+    - _Emission: 0
     - _Face: 0
     - _NormalFlatten: 0
     - _PaintScale: 1
-    - _Rim: 0
-    - _ShadowStrength: 0.3
-    - _Softness: 0.16
-    - _TextureWeight: 1
-    - _VertexPaint: 1
+    - _Rim: 0.6
+    - _ShadowStrength: 0
+    - _Softness: 0.005
+    - _TextureWeight: 0
+    - _VertexPaint: 0
     - _Wind: 0
     m_Colors:
-    - _AtlasRect: {r: 0.0031897926, g: 0.46570972, b: 0.49362043, a: 0.26634768}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _LightTint: {r: 1.04, g: 1.02, b: 0.98, a: 1}
-    - _ShadowTint: {r: 0.82, g: 0.85, b: 0.88, a: 1}
+    - _AtlasRect: {r: 0, g: 0, b: 1, a: 1}
+    - _Color: {r: 0.1, g: 0.105, b: 0.15, a: 1}
+    - _LightTint: {r: 0.3, g: 0.33, b: 0.46, a: 1}
+    - _ShadowTint: {r: 0.045, g: 0.048, b: 0.07, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
