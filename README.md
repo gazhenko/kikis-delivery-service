@@ -34,7 +34,7 @@ At home, pick a delivery and choose Go outside. The parcel hangs from Kiki's bro
 
 ## Play on Omarchy
 
-Choose **Kiki’s Delivery Service** in the application launcher, or run `kiki-delivery`. The native Linux installation lives at `~/Games/KikiDelivery/current`, with versioned releases alongside it. It does not require Unity Editor or a Unity sign-in. The Mac desktop shortcut and Linux launcher use the September 30 polish release `20260930-9679e3a`, with the previous release kept for rollback. See [installation checks and locations](Docs/INSTALLATIONS.md).
+Choose **Kiki’s Delivery Service** in the application launcher, or run `kiki-delivery`. The native Linux installation lives at `~/Games/KikiDelivery/current`, with versioned releases alongside it. It does not require Unity Editor or a Unity sign-in. The Mac desktop shortcut and Linux launcher use the September 30 polish release `20260930-9f5ea8f`, with previous releases kept for rollback. See [installation checks and locations](Docs/INSTALLATIONS.md).
 
 `KORIKO_MAC_DESTINATION=Builds/mac-candidate bash Tools/build-on-vm.sh` stages a Mac candidate without replacing the installed app. `bash Tools/build-linux-on-vm.sh` exports a fresh Linux development player using the licensed VM, rejects shader compiler errors, and copies it into `Builds/linux/`. It does not deploy that export or change the Mac installation.
 

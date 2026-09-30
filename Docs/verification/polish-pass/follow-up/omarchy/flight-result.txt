@@ -1,0 +1,31 @@
+PASS Collect bakery parcel
+PASS Land slowly at clock
+PASS Shoes meet the visible landing court at clock
+PASS Deliver at clock square through interaction input
+PASS Land slowly at harbor
+PASS Shoes meet the visible landing court at harbor
+PASS Land slowly at madame
+PASS Shoes meet the visible landing court at madame
+PASS Land slowly at tombo
+PASS Shoes meet the visible landing court at tombo
+PASS Land slowly at airship
+PASS Shoes meet the visible landing court at airship
+PASS Land slowly at bakery
+PASS Shoes meet the visible landing court at bakery
+PASS Sleep advances eight hours
+PASS Sleep restores energy
+PASS Buy ingredient using controller UI submit
+PASS Recipe starts through controller UI
+PASS Coffee completes and grants its awake buff
+PASS Time continues while the kitchen is open
+PASS Controller navigation scrolls lower recipe rows into view
+PASS Broom purchase applies through controller UI
+PASS Controller rise input reaches the flight motor
+PASS Unity save serialization roundtrip
+PASS All scene material shaders supported on this renderer
+Renderer: NVIDIA GeForce RTX 3080/PCIe/SSE2 / OpenGLCore
+Resolution: 1280 x 720
+Mean frame time across this automated route: 16.88 ms
+Peak recorded draw calls: 6340
+Peak recorded triangles: 1580152
+Synthetic keyboard and gamepad input; this does not establish physical controller or human playtest quality.

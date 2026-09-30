@@ -1,6 +1,23 @@
-# Desktop installations: September 30, 2026
+# Desktop installations: September 30, 2026 (follow-up)
 
-The Mac and Omarchy installations now run the polish-pass release **`20260930-9679e3a`**. It was built from source commit `9679e3a8c8247e9c81bfca50dbb434537bef162e` with Unity 6000.3.20f1 and adds sound, night light, town life, wayfinding and harbor polish ([design](POLISH_PASS.md), [verification](verification/polish-pass/README.md)). The earlier installation records remain below.
+Both machines now run **`20260930-9f5ea8f`** (source `9f5ea8f568f6e96488c0fbc200824a9f1647a0f6`). It fixes three defects visible in a photo of the Omarchy session:
+- Jiji merged with Kiki's hair from behind; he now has his own blue-black paint and turns slightly outward on her shoulder.
+- Her free arm locked straight behind her while walking.
+- Roof eaves were open to the sky from street level.
+
+The Mac candidate passed 33 tour, 46 control, 17 walking, 25 route and 6 character checks, plus 12 environment views, before the swap. After it, the tour passed again through the Desktop shortcut. The Omarchy staged release passed 33 tour, 46 control, 17 walking, 25 route and 10 motion checks. All 275 hashes verified before `current` switched, and the installed launcher passed the tour. The [follow-up record](verification/polish-pass/follow-up/README.md) has the evidence.
+
+Rollback:
+- **Mac:** `Builds/mac/previous/Kiki-Delivery-20260930-9679e3a-Mac.zip`; its hash was verified before the move. The September 28 and 29 archives are also kept.
+- **Omarchy:** `releases/20260930-9679e3a`, `20260929-49ba433` and `20260928-b093c2f` remain.
+
+Saves were untouched.
+
+---
+
+# Polish release 20260930-9679e3a: September 30, 2026
+
+Earlier the same day, both installations received the polish-pass release **`20260930-9679e3a`**. It was built from source commit `9679e3a8c8247e9c81bfca50dbb434537bef162e` with Unity 6000.3.20f1 and adds sound, night light, town life, wayfinding and harbor polish ([design](POLISH_PASS.md), [verification](verification/polish-pass/README.md)). The earlier installation records remain below.
 
 ## Mac: current release
 

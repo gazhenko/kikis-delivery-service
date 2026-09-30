@@ -42,6 +42,14 @@ September 30, 2026. This pass keeps the approved direction: a third-person deliv
 - The moonlight lantern, once fitted, hangs from the front of the handle and glows after dusk. When she walks, the upright broom carries it like a lamp on a pole.
 - Delivery acting: a quick polite bow, the free hand reaching out to hand the parcel over, then a wave goodbye. Jiji flicks his tail. It lasts under two seconds and never holds up the controls.
 
+### Follow-up after the first play session
+A photo of the Omarchy session showed three problems, fixed in `20260930-9f5ea8f`:
+- Jiji merged with Kiki's hair from behind. He now has his own blue-black cel paint with a cool sheen instead of her ink material, and turns slightly outward on her shoulder.
+- Her free arm locked straight behind her while walking. It now swings more forward than back, with a soft elbow.
+- Street-level eaves were open to the sky. Roof planes now draw shaded undersides.
+
+[Follow-up evidence](verification/polish-pass/follow-up/README.md).
+
 ### Wayfinding, HUD and feedback
 - A paper tag with the parcel icon and distance sits over the destination court. When the court is off screen or behind the camera, the tag clamps to the screen edge with an arrow. With no parcel, the tag leads back to the bakery.
 - A painted ribbon circle on the target court is drawn at the true delivery radius, so landing inside it is exactly what counts. It brightens once Kiki is inside, grounded and slow.
