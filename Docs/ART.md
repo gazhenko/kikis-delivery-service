@@ -13,9 +13,12 @@
 | `Assets/Koriko/Art/KikiAndJiji.fbx` | Original project geometry, authored by `Tools/character_model.py`, exported by `Tools/build_art.py` | Film-referenced Kiki, Jiji, broom and shoulder bag; articulated limbs and flight cloth |
 | `art-source/*.blend` | Editable Blender 4.5.3 exports of the same source | Geometry and material editing |
 | `ItemIcons.png` | Existing browser project's `public/art/film-inventory-atlas.png` | Illustrated inventory and HUD icons |
-| `Portraits.png` | Existing browser project's `public/art/character-portraits.png` | Reserved for dialogue; currently unused |
+| `Portraits.png` | Existing browser project's `public/art/character-portraits.png` | Title-screen portrait of Kiki and Jiji; Jiji's face beside his tips |
 | `GameIcon.png` | Existing browser project's `public/favicon.png` | Desktop application icon |
 | `Art/Fonts/AlegreyaSans-*.ttf` | Google Fonts, Alegreya Sans; accompanying SIL OFL | Interface typography |
+| Sound and music | Synthesized at startup by `Assets/Koriko/Runtime/Soundscape.cs`; no recordings, samples or film music | Wind, sea, crickets, birds, gulls, crows, footsteps, broom, interface, clock bell and an original sixteen-bar waltz |
+| Interface marks, smoke, lamplight, parcels, lantern, gulls | Drawn procedurally at runtime (`GameHud`, `TownLife`, `RiderProps`) with the project's cel and painted shaders | Coin, sun, moon, receipt stamp and tag arrow; chimney smoke and dust; lamp halos and pools; carried freight; gulls |
+| Moored boats, headlands, lighthouse, islands, hill town | Original geometry in `Tools/environment_art.py`, exported with the neighbourhood | Harbour and horizon; see [the polish pass](POLISH_PASS.md) |
 
 The project has permission from the user to use its existing generated assets and to depict Kiki, Jiji and film locations. This is a fan prototype, not evidence of a commercial license from Studio Ghibli. No film frames, film music or extracted commercial game assets are shipped.
 

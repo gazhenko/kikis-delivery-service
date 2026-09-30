@@ -16,25 +16,27 @@ The controls pass adds free mouse look, optional hold-RMB look, cruise, braking,
 
 The environment retains joined narrow street façades, varied roofs, the clock tower, painted materials, connected service yards, cultivated gardens, orchard undergrowth and working-quay detail. The minimap uses the same 87 building/landmark footprints and 32 paths exported with the world. See [the walking/controls implementation and reference study](Docs/WALKING_CONTROLS.md), [native test record and walking reel](Docs/verification/walking-controls/README.md), and [earlier environment verification](Docs/verification/environment-pass/README.md).
 
-More bespoke secondary architecture and boats, animated background town life, ambient sound, release profiling and a physical-controller playtest remain work for the desktop rebuild. Art and flight performance are original project work; no production-film meshes or animation clips are bundled.
+The [polish pass](Docs/POLISH_PASS.md) adds a synthesized soundscape and an original title waltz, working aerial fog, and lit streets and households at night under stars and a moon. It brings chimney smoke, gulls, bobbing moored boats, headlands, a lighthouse, islands and a distant hill town. Kiki visibly carries each parcel and the fitted lantern on her broom, bows and waves on delivery, and is guided by a destination tag, a ribbon circle at the true delivery radius and Jiji's tips. The title flyover offers Continue or a backed-up New game. [Native verification](Docs/verification/polish-pass/README.md).
+
+Animated townspeople and recipients, a human listening test, release profiling and a physical-controller playtest remain work for the desktop rebuild. Art, sound and flight performance are original project work; no production-film meshes, animation clips, recordings or film music are bundled.
 
 See the [environment art notes and texture prompt](Docs/ENVIRONMENT.md), [motion implementation](Docs/MOTION.md), [motion clips and verification](Docs/verification/motion-pass/README.md), [character references and source](Docs/CHARACTER.md), [earlier rendering research](Docs/CEL_ART_PASS.md), [baseline verification](Docs/VERIFICATION.md), [visual direction](Docs/DIRECTION.md), [asset provenance](Docs/ART.md) and [development VM](Docs/VM.md).
 
 ## Play the Mac build
 
-Open `Builds/mac/Kiki’s Delivery Service.app`. On a fresh game, choose Cozy or Challenging; an existing save continues automatically. Unity Editor and a Unity sign-in are not required to play the exported app. A distributable copy is packaged as `Builds/mac/Kiki-Delivery-Mac.zip`; this local development build is not notarized for public distribution.
+Open `Builds/mac/Kiki’s Delivery Service.app`. On a fresh game, choose Cozy or Challenging. With a save, choose *Continue your deliveries*; *Start a new game…* copies the current save to `koriko-desktop-v1.before-new-game.json` before starting again. Unity Editor and a Unity sign-in are not required to play the exported app. A distributable copy is packaged as `Builds/mac/Kiki-Delivery-Mac.zip`; this local development build is not notarized for public distribution.
 
 ```sh
 open 'Builds/mac/Kiki’s Delivery Service.app'
 ```
 
-At home, pick a delivery and choose Go outside. Walk with WASD or the left stick; Space, A/Cross or RB/R1 mounts and rises. Landing automatically returns to walking. Follow the highlighted minimap destination, then use E for an assisted landing and again to deliver. Tab opens the bakery when home and settings while away. Settings includes Save & quit.
+At home, pick a delivery and choose Go outside. The parcel hangs from Kiki's broom. Walk with WASD or the left stick; Space, A/Cross or RB/R1 mounts and rises. Landing automatically returns to walking. Follow the paper tag (or the minimap line) to the ribbon circle, use E for an assisted landing, then press E inside the circle to deliver. Tab opens the bakery when home and settings while away. Settings includes *Controls & camera*, *Sound & display* (volumes, window or full screen, control hints) and Save & quit; Escape or B steps back from a sub-page.
 
 ## Play on Omarchy
 
-Choose **Kiki’s Delivery Service** in the application launcher, or run `kiki-delivery`. The native Linux installation lives at `~/Games/KikiDelivery/current`, with versioned releases alongside it. It does not require Unity Editor or a Unity sign-in. The Mac desktop shortcut and Linux launcher use the current walking/controls release. See [installation checks and locations](Docs/INSTALLATIONS.md).
+Choose **Kiki’s Delivery Service** in the application launcher, or run `kiki-delivery`. The native Linux installation lives at `~/Games/KikiDelivery/current`, with versioned releases alongside it. It does not require Unity Editor or a Unity sign-in. The Mac desktop shortcut and Linux launcher use the September 30 polish release `20260930-9679e3a`, with the previous release kept for rollback. See [installation checks and locations](Docs/INSTALLATIONS.md).
 
-`bash Tools/build-linux-on-vm.sh` exports a fresh Linux development player using the licensed VM, rejects shader compiler errors, and copies it into `Builds/linux/`. It does not deploy that export or change the Mac installation.
+`KORIKO_MAC_DESTINATION=Builds/mac-candidate bash Tools/build-on-vm.sh` stages a Mac candidate without replacing the installed app. `bash Tools/build-linux-on-vm.sh` exports a fresh Linux development player using the licensed VM, rejects shader compiler errors, and copies it into `Builds/linux/`. It does not deploy that export or change the Mac installation.
 
 ## Open and build
 
@@ -83,6 +85,8 @@ The core project does not need Unity. Blender generation rebuilds the two editab
 A development player accepts `--koriko-flight-check`. It creates synthetic keyboard and gamepad events to visit all six courts with the real movement code and camera, checks bakery interactions and visible shoe contact, captures native screenshots, and writes `flight-check/result.txt` under Unity's persistent data directory. It exits nonzero on a failed check and never loads or writes the player's save. This runner has passed on the Mac and the installed Omarchy/Linux player; it complements a human/controller playtest. The latest results are in `Docs/verification/walking-controls/`; earlier results remain in their dated verification folders.
 
 Use `--koriko-walk-check` for on-foot movement, foot and hand contact, broom carry and keyboard/controller mounting and landing. Add `--koriko-record-walk` for every drawing. Use `--koriko-controls-check` for the native keyboard/mouse/Xbox/PlayStation input matrix. These runs isolate player saves and control preferences. Synthetic devices do not replace a physical-controller compatibility or ergonomic playtest.
+
+Use `--koriko-tour-check` for the polish pass. It captures the title flyover, the bakery, parcel carry, the destination tag and ribbon circle, a delivery with its receipt and wave, lamplit streets, the lantern, the moonlit harbor, boats and headlands, the hill town and the settings pages. It exports every synthesized sound as WAV with levels, records twelve seconds of the listener mix and runs 33 assertions, writing to `tour-check/`. It plays at reduced volume and never reads or writes saves or preferences; other checks run muted.
 
 Use `--koriko-environment-check` for twelve native street, rooftop, garden, harbor and day/night viewpoints. It writes `environment-check/` without loading or writing player saves. These captures support visual review and are not a route benchmark.
 

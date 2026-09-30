@@ -1,0 +1,48 @@
+PASS Keyboard W walks without mounting
+PASS Keyboard diagonal walking is normalized
+PASS Keyboard release stops walking
+PASS Free mouse look turns the real camera
+PASS Hold-to-look mode ignores unheld mouse motion
+PASS Holding the right mouse button enables camera look
+PASS Mouse vertical inversion reverses look input
+PASS Keyboard R recenters behind Kiki
+PASS Controller stick drift inside the dead zone does not move Kiki
+PASS Controller analog walking spans slow to full speed
+PASS Controller activity immediately selects controller prompts
+PASS Keyboard input immediately reclaims controls from a connected gamepad
+PASS An idle connected gamepad does not steal prompts after a timeout
+PASS Keyboard Space mounts and climbs
+PASS Holding F toggles cruise once and flies without holding W
+PASS Shift boosts while cruising
+PASS Q brake overrides movement and boost and cancels cruise
+PASS Keyboard C descends
+PASS Controller L3 toggles sustained cruise once
+PASS Controller right trigger boosts cruise
+PASS Controller left trigger brakes and overrides boost
+PASS Right bumper climbs while the right stick remains available to look
+PASS Left bumper descends
+PASS Controller R3 recenters the camera
+PASS Controller disconnection cancels cruise and returns to keyboard control
+PASS Escape opens settings and releases the mouse
+PASS Menus block walking and accidental takeoff while time continues
+PASS Mouse click opens controls through the UI raycaster
+PASS Mouse click changes the camera inversion option
+PASS Detailed facade collision is available to the camera without snagging the rider
+PASS Ground camera clears the bakery awning and facade surfaces
+PASS Controller submit changes the sensitivity option
+PASS Controller D-pad navigates the controls menu
+PASS Controller B steps back from controls to settings
+PASS Controller B closes settings without descending or mounting
+PASS Holding controller submit while closing a menu does not launch Kiki
+PASS A fresh controller A press takes off after the menu button is released
+PASS Holding menu cancel does not bleed into in-flight descent
+PASS A clear street landing surface exists outside delivery courts
+PASS Keyboard E starts landing on a clear ordinary street
+PASS A second E cancels the landing approach
+PASS Controller X starts the same street landing assistance
+PASS Controller brake cancels assisted landing
+PASS Street landing dismounts safely into walking
+PASS Keyboard Enter submits the focused menu button without mounting
+PASS PlayStation layout uses Square and R1 prompts
+Renderer: Apple M1 Pro / Metal; resolution 1280 x 720
+Native synthetic Keyboard, Mouse, Gamepad and DualShockGamepad events. Real motor, camera, menu navigation and raycasting. No physical USB/Bluetooth controller or mouse ergonomics test; fixed capture timing is not a performance benchmark.

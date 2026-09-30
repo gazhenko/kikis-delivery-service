@@ -1,0 +1,2 @@
+mac-save.json: restore=True day=33 money=20 delivered=0 hospital=5 energy=78.0 jobs=9 atHome=False active=none
+omarchy-save.json: restore=True day=1 money=45 delivered=0 hospital=0 energy=25.1 jobs=9 atHome=False active=none

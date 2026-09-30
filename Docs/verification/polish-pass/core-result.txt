@@ -1,0 +1,29 @@
+PASS clock waits for start, then has exact 150-second phases
+PASS sleep advances exactly eight game hours and restores energy
+PASS sleep expires promises, buffs, hunger and passes dawn
+PASS jobs are collected at home and paid exactly once at the correct court
+PASS deliveries require a slow grounded approach at the correct height
+PASS the delivery receipt splits base pay and timely tip exactly as paid
+PASS deadline starts at pickup and equality means too late
+PASS daily refresh keeps an accepted parcel and its deadline
+PASS changing difficulty never alters an accepted promise or restores completed jobs
+PASS shop spending cannot make money or pantry negative
+PASS upgrades enforce prerequisites, capacity, cost and maximum level
+PASS night jobs require both a lantern and sunset
+PASS cooking consumes ingredients once, runs time and applies an expiring buff
+PASS walking conserves energy while delivery time continues
+PASS coffee reduces flight fatigue by forty percent
+PASS mint tea removes extra boost fatigue without altering normal fatigue
+PASS tailwind improves speed only for its duration
+PASS crow cooldown, boosting and bakery safety prevent repeated damage
+PASS fragile parcels lose integrity and stabilizers soften crow damage
+PASS exhaustion charges a hospital fee and returns home once
+PASS safe bakery menus advance time and hunger without causing exhaustion
+PASS large time steps produce the same fatigue as ordinary frames
+PASS non-finite and negative inputs are ignored
+PASS save roundtrip retains inventory, completed jobs and accepted promise
+PASS corrupt or unsupported saves do not replace current progress
+PASS duplicate jobs and forged multiple active parcels are rejected
+PASS delivery courts and recipes are complete and unique
+
+27 passed, 0 failed. Gameplay rules only; this does not validate Unity rendering or input.

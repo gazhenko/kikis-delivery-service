@@ -1,0 +1,36 @@
+PASS Procedural sound bank synthesizes at startup (40 clips synthesized in 564 ms)
+PASS Title screen uses the flyover camera
+PASS Title waltz and ambience reach the listener without clipping (RMS 0.0347, peak 0.122)
+PASS Bakery board opens with its music
+PASS Collect the market loaf
+PASS Collected parcel hangs from the broom
+PASS Ribbon circle marks the clock-square court
+PASS Paper destination tag is shown
+PASS Walking produces planted footstep sounds (5)
+PASS Flight raises the wind bed (0.40)
+PASS Destination tag rides over the court when it is in view
+PASS Destination tag clamps to the edge with an arrow when behind
+PASS Assisted landing settles inside the ribbon circle
+PASS Handing over the parcel starts the bow and wave
+PASS The parcel leaves the broom after delivery
+PASS Street lamps light after dusk (30 lamps)
+PASS Fitted moonlight lantern hangs from the broom
+PASS The sea bed swells near the quay (0.30)
+PASS Gulls circle within sight of the harbour
+PASS Chimney smoke drifts from 16 chimneys (102 puffs)
+PASS Moored boats are separate assemblies that ride the swell (5)
+PASS The eastern headland lighthouse carries a lamp
+PASS Collect fragile freight
+PASS Collect heavy freight
+PASS Collect airship freight
+PASS Twelve seconds of the final mix were recorded at the listener
+PASS Sound & display page offers volume, display and hint options
+PASS Escape returns from a sub-page to settings
+PASS A second Escape closes settings
+PASS Crows are detached from the rider smear deformation
+PASS Aerial fog is enabled for the painted distance
+PASS 40 synthesized clips exported; all finite, audible and below clipping
+PASS New game starts fresh on day one (previous run had 1 deliveries) without touching player saves
+Renderer: NVIDIA GeForce RTX 3080/PCIe/SSE2 / OpenGLCore; resolution 1280 x 720; audio output 48000 Hz
+Mean frame time during the tour, including captures and warps (not a benchmark): 17.51 ms
+Synthetic keyboard input and scripted warps. Sound levels are measured at the listener; no human listening test is implied.
