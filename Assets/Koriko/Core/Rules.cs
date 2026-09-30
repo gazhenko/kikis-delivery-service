@@ -12,6 +12,8 @@ namespace Koriko.Core
         public string Notice { get; private set; } = "Choose a delivery at Osono’s bakery.";
         public int NoticeRevision { get; private set; }
         public int HomeReturns { get; private set; }
+        public int LastPay { get; private set; }
+        public int LastTip { get; private set; }
         public bool Grounded { get; private set; } = true;
         public double CurrentSpeed { get; private set; }
         public int Day => 1 + (int)Math.Floor(State.elapsed / CycleSeconds);
@@ -102,6 +104,7 @@ namespace Koriko.Core
             double integrity = p.kind == DeliveryKind.Fragile ? .6 + p.integrity * .004 : 1;
             int pay = (int)Math.Round(p.reward * integrity * (Has(Advantage.Lucky) ? 1.2 : 1), MidpointRounding.AwayFromZero);
             int tip = (int)Math.Round(pay * .2 * Clamp((p.deadline - State.elapsed) / p.duration, 0, 1), MidpointRounding.AwayFromZero);
+            LastPay = pay; LastTip = tip;
             State.money += pay + tip;
             State.earned += pay + tip;
             State.delivered++;

@@ -16,13 +16,52 @@ FACADE_MATERIAL = 'Paint_0'
 
 
 def install(g):
-    global G, BASE_BUILDING, BASE_ROOF
+    global G, BASE_BUILDING, BASE_ROOF, BASE_TONES, BASE_CONSOLIDATE
     G = g
     BASE_BUILDING = g['building']
     BASE_ROOF = g['roof']
+    BASE_TONES = g['paint_tones']
+    BASE_CONSOLIDATE = g['consolidate']
     g['building'] = frontage
     g['tree'] = tree
     g['roof'] = roof_form
+    g['paint_tones'] = household_tones
+    g['consolidate'] = consolidate_keeping_boats
+
+
+BASE_TONES = None
+BASE_CONSOLIDATE = None
+
+
+def household_tones(obj, character=False):
+    """Painted tones, plus a per-window household value in the alpha channel.
+
+    The painted shader lights windows from this value at dusk: most glow warmly,
+    some are dim, a few stay dark, and each household lights up at its own moment.
+    """
+    BASE_TONES(obj, character)
+    if character or obj.type != 'MESH' or not obj.data.materials or obj.data.materials[0].name != 'Glass':
+        return
+    p = obj.matrix_world.translation
+    rng = random.Random('%s:%.1f:%.1f:%.1f' % (obj.name.split('.')[0], p.x, p.y, p.z))
+    r = rng.random()
+    value = .06 if r < .2 else .42 + rng.random() * .28 if r < .5 else .80 + rng.random() * .20
+    for c in obj.data.color_attributes.get('Paint tones').data:
+        c.color = (c.color[0], c.color[1], c.color[2], value)
+
+
+def consolidate_keeping_boats():
+    # Moored boats stay separate objects so the game can let them ride the swell.
+    kept = [o for o in bpy.context.scene.objects if o.get('separate')]
+    homes = {o: list(o.users_collection) for o in kept}
+    for o in kept:
+        for collection in homes[o]:
+            collection.objects.unlink(o)
+    BASE_CONSOLIDATE()
+    for o in kept:
+        for collection in homes[o]:
+            collection.objects.link(o)
+    print('BOATS_KEPT_SEPARATE:', len(kept), 'boat parts', flush=True)
 
 
 def call(name, *args, **kwargs):
@@ -439,8 +478,207 @@ def finish_world():
         for i in range(10):
             x=side*(158+i*6);z=-77-(i%3)*1.7;chunk(section(x,z))
             oval('Coastal weathered rock',(x,-1.3,z),(3.0+(i%2),1.6,2.6),'Paint_7',segments=8,rings=5)
+    harbor_boats()
+    distant_views()
     # Route-scale source checks catch accidental static detail in a landing circle.
     validate_courts()
+
+
+def hull(name, root, length, beam, depth, freeboard, topside, stripe, bottom):
+    """A lofted clinker-style hull in the boat's own frame: bow toward +z, waterline at y = 0.
+
+    Nine points per section (sheer, stripe, waterline, chine, keel and mirror) keep a painted
+    topside, a boot stripe and a dark bottom as separate material bands.
+    """
+    sections = 14
+    verts = []
+    for i in range(sections + 1):
+        t = i / sections
+        half = beam / 2 * (.80 + .20 * math.sin(math.pi * min(1, t * 1.12))) * (1 - t ** 3.4) + .015
+        sheer = freeboard * (1 + .42 * t ** 2.3 + .16 * (1 - t) ** 3)
+        keel = -depth * (math.sin(math.pi * min(1, .06 + t * .98)) ** .45)
+        z = (t - .5) * length
+        side = [(half, sheer), (half * .99, freeboard * .28), (half * .95, 0), (half * .70, keel * .55), (0, keel)]
+        ring = [(-x, y) for x, y in side] + [(x, y) for x, y in reversed(side[:-1])]
+        verts.extend((x, y, z) for x, y in ring)
+    n = 9
+    faces, bands = [], []
+    band = [0, 1, 2, 2, 2, 2, 1, 0]
+    for i in range(sections):
+        for j in range(n - 1):
+            a = i * n + j
+            faces.append((a, a + n, a + n + 1, a + 1))
+            bands.append(band[j])
+    faces.append(tuple(range(n - 1, -1, -1)))
+    bands.append(0)
+    data = bpy.data.meshes.new(name)
+    data.from_pydata([G['xyz'](v) for v in verts], [], faces)
+    data.update()
+    # Orient every face away from the hull's centreline, without relying on a closed volume.
+    for poly in data.polygons:
+        centre = poly.center
+        away = Vector((centre.x, 0, 0)) if abs(centre.x) > .05 else Vector((0, 0, -1 if centre.z < 0 else 1))
+        if poly.index == len(faces) - 1:
+            away = Vector((0, 1, 0))
+        if poly.normal.dot(away) < 0:
+            poly.flip()
+    data.update()
+    obj = bpy.data.objects.new(name, data)
+    bpy.context.collection.objects.link(obj)
+    for material in (topside, stripe, bottom):
+        obj.data.materials.append(G['MATERIALS'][material])
+    for poly, b in zip(obj.data.polygons, bands):
+        poly.material_index = b
+    obj['chunk'] = 'Harbor_Boats'
+    obj['separate'] = True
+    obj.parent = root
+    return obj
+
+
+def boat_part(obj, root, heading=None):
+    if obj is None:
+        return None
+    if heading is not None:
+        # Boxes and ovals are authored axis-aligned; turn them with the hull.
+        obj.rotation_euler[2] = math.radians(heading)
+        bpy.context.view_layer.update()
+    obj['separate'] = True
+    obj.parent = root
+    # Helper geometry is authored in world space; restate it in the boat's own frame.
+    obj.matrix_parent_inverse = root.matrix_world.inverted()
+    return obj
+
+
+def harbor_boats():
+    """Bespoke moored boats replace the three placeholder hulls: two sloops, a working
+    fishing boat and two rowing boats at the piers. Each is a separate 'Boat_' assembly."""
+    print('Environment detail: moored boats', flush=True)
+    for obj in list(bpy.context.scene.objects):
+        if obj.name.split('.')[0] in ('Boat hull', 'Boat deck', 'Mast', 'Sail'):
+            bpy.data.objects.remove(obj, do_unlink=True)
+    chunk('Harbor_Boats')
+    boats = [
+        ('sloop', -47, -96, 12, 'White', 'Bow', 'Paint_6'),
+        ('sloop', 24, -118, 78, 'Paint_3', 'White', 'Paint_6'),
+        ('fishing', 80, -93, -8, 'Paint_5', 'White', 'Bow'),
+        ('rowing', -54.2, -88, 4, 'Paint_6', 'Paint_3', 'Paint_6'),
+        ('rowing', 17.3, -101, -6, 'Paint_3', 'White', 'Paint_6'),
+    ]
+    for index, (kind, x, z, heading, topside, stripe, bottom) in enumerate(boats):
+        root = G['empty']('Boat_%d' % index, (x, -2.02, z))
+        root.rotation_euler = (0, 0, math.radians(heading))
+        bpy.context.view_layer.update()
+        m = root.matrix_world
+
+        def world(p):
+            # Boat frame (x starboard, y up, z bow) to the Unity-convention helpers' world space.
+            v = m @ Vector(G['xyz'](p))
+            return (v.x, v.z, -v.y)
+
+        if kind == 'rowing':
+            L, B = 4.2, 1.45
+            hull('Rowing boat hull', root, L, B, .45, .38, topside, stripe, bottom)
+            for zz in (-.9, .2, 1.1):
+                boat_part(box('Rowing thwart', world((0, .30, zz)), (B * .82, .06, .26), 'Paint_6'), root, heading)
+            for side in (-1, 1):
+                boat_part(rod('Shipped oar', world((side * .38, .40, -1.6)), world((side * .30, .42, 1.3)), .035, 'Paint_6', vertices=6), root)
+                boat_part(box('Oar blade', world((side * .30, .42, 1.45)), (.16, .03, .5), 'Paint_6'), root, heading)
+            continue
+        L, B = (9.5, 2.7) if kind == 'sloop' else (11.5, 3.4)
+        hull('Moored hull', root, L, B, .95, .78 if kind == 'sloop' else .9, topside, stripe, bottom)
+        deck_y = (.78 if kind == 'sloop' else .9) - .10
+        boat_part(G['mesh']('Boat planked deck', [world((-B * .43, deck_y, -L * .47)), world((B * .43, deck_y, -L * .47)), world((B * .30, deck_y, L * .28)), world((0, deck_y + .1, L * .47)), world((-B * .30, deck_y, L * .28))], [(0, 1, 2, 3, 4), (4, 3, 2, 1, 0)], 'Paint_6'), root)
+        if kind == 'sloop':
+            mast = (0, deck_y, L * .12)
+            top = (0, deck_y + 9.2, L * .12)
+            boat_part(rod('Sloop mast', world(mast), world(top), .10, 'Paint_6', vertices=8, radius2=.07), root)
+            boat_part(rod('Sloop boom', world((0, deck_y + 1.3, L * .12)), world((0, deck_y + 1.15, -L * .36)), .07, 'Paint_6', vertices=6), root)
+            # Mainsail with a gentle belly, and a furled jib along the forestay.
+            rows = 5
+            pts = []
+            for r in range(rows + 1):
+                u = r / rows
+                luff = (0, deck_y + 1.45 + u * 7.4, L * .12 - .08)
+                leech = (0, deck_y + 1.3 + u * 7.5, L * .12 - (1 - u) * (L * .48) - .1)
+                belly = math.sin(math.pi * .5) * .38 * (1 - u)
+                mid = ((luff[0] + leech[0]) / 2 + belly, (luff[1] + leech[1]) / 2, (luff[2] + leech[2]) / 2)
+                pts.append([world(luff), world(mid), world(leech)])
+            verts = [p for row in pts for p in row]
+            faces = []
+            for r in range(rows):
+                for c in range(2):
+                    a = r * 3 + c
+                    faces.append((a, a + 1, a + 4, a + 3))
+                    faces.append((a + 3, a + 4, a + 1, a))
+            boat_part(G['mesh']('Cream mainsail', verts, faces, 'White'), root)
+            boat_part(rod('Forestay', world(top), world((0, deck_y + .5, L * .5)), .018, 'Ink', vertices=5), root)
+            boat_part(rod('Backstay', world(top), world((0, deck_y + .5, -L * .48)), .018, 'Ink', vertices=5), root)
+            boat_part(rod('Furled jib', world((0, deck_y + 7.4, L * .16)), world((0, deck_y + .8, L * .46)), .09, 'White', vertices=7), root)
+        else:
+            # Working boat: wheelhouse aft, a derrick mast and a heap of drying net.
+            house = (0, deck_y + 1.1, -L * .22)
+            boat_part(box('Wheelhouse walls', world(house), (B * .62, 2.2, 2.6), 'White'), root, heading)
+            boat_part(box('Wheelhouse roof', world((0, deck_y + 2.28, -L * .22)), (B * .72, .16, 2.9), 'Paint_5'), root, heading)
+            for side in (-1, 1):
+                boat_part(box('Wheelhouse window', world((side * B * .315, deck_y + 1.55, -L * .22)), (.06, .55, 1.6), 'Glass'), root, heading)
+            boat_part(box('Wheelhouse window', world((0, deck_y + 1.55, -L * .22 + 1.31)), (B * .44, .55, .06), 'Glass'), root, heading)
+            boat_part(rod('Derrick mast', world((0, deck_y, L * .12)), world((0, deck_y + 6.8, L * .12)), .11, 'Paint_6', vertices=8), root)
+            boat_part(rod('Derrick boom', world((0, deck_y + 1.4, L * .12)), world((0, deck_y + 4.6, L * .42)), .07, 'Paint_6', vertices=6), root)
+            boat_part(oval('Drying net heap', world((0, deck_y + .25, L * .22)), (1.1, .38, .9), 'Paint_8', segments=10, rings=6), root, heading)
+            for dz in (-.1, .25):
+                boat_part(oval('Float buoy', world((B * .35, deck_y + .2, L * dz)), (.22, .22, .22), 'Bow', segments=8, rings=6), root)
+        boat_part(G['stroke']('Mooring line', [world((0, .75, L * .5)), world((.4, .1, L * .5 + 1.4)), world((.9, -.15, L * .5 + 2.6))], .03, 'Paint_6'), root)
+
+
+def distant_views():
+    """Headlands close the bay, a lighthouse marks the eastern point, low islands sit in the
+    haze and a hill town continues Koriko beyond the playable district. Fog paints these
+    into the horizon; none of them are reachable or collide."""
+    print('Environment detail: headlands, islands and distant town', flush=True)
+    chunk('Distant_Coast')
+    for side in (-1, 1):
+        cx, cz = side * 455, -150
+        # A main hill with seaward lobes: points and coves instead of one perfect ellipse.
+        lobes = [(0, 0, 170, 26, 120), (-side * 95, -95, 70, 17, 52), (-side * 30, -128, 58, 13, 40), (side * 60, -112, 64, 15, 46)]
+        for dx, dz, rx, h, rz in lobes:
+            oval('Headland meadow', (cx + dx, -6, cz + dz), (rx, h, rz), 'Paint_9', segments=26, rings=12)
+            oval('Headland limestone cliff', (cx + dx + side * 5, -10, cz + dz - 7), (rx * 1.05, h * .9, rz * 1.07), 'Paint_7', segments=26, rings=10)
+        for i in range(5):
+            a = i * 1.3 + (0 if side < 0 else .7)
+            oval('Headland sea stack', (cx - side * 40 + math.cos(a) * 110, -3, cz - 150 + math.sin(a) * 18), (4 + i % 3, 5 + (i % 2) * 3, 4), 'Paint_7', segments=8, rings=6)
+        for i in range(7):
+            a = i * .9 + (0 if side < 0 else 2)
+            oval('Headland pine grove', (cx + math.cos(a) * 70, 16 - (i % 3) * 2, cz + 30 + math.sin(a) * 45), (14, 7, 11), 'Paint_10', segments=10, rings=6)
+    # The lighthouse stands on the eastern headland, looking out over the bay.
+    lx, lz, ly = 402, -228, 10.8
+    rod('Lighthouse tower', (lx, ly, lz), (lx, ly + 15, lz), 2.3, 'White', vertices=18, radius2=1.75)
+    rod('Lighthouse band', (lx, ly + 6.2, lz), (lx, ly + 8.4, lz), 2.08, 'Bow', vertices=18, radius2=2.0)
+    rod('Lighthouse gallery', (lx, ly + 15, lz), (lx, ly + 15.4, lz), 2.6, 'Ink', vertices=18)
+    rod('Lighthouse lantern room', (lx, ly + 15.4, lz), (lx, ly + 17.6, lz), 1.5, 'Glass', vertices=14)
+    rod('Lighthouse cap', (lx, ly + 17.6, lz), (lx, ly + 19.6, lz), 1.8, 'Bow', vertices=14, radius2=.12)
+    box('Keeper cottage', (lx - 8, ly + 1.4, lz + 6), (7, 2.8, 5), 'Paint_0')
+    BASE_ROOF('Keeper cottage roof', lx - 8, ly + 2.8, lz + 6, 7.6, 5.6, 1.6, 'Paint_4')
+    G['empty']('LighthouseGlow', (lx, ly + 16.5, lz))
+    chunk('Distant_Islands')
+    for x, z, rx, rz, h in ((-215, -560, 95, 48, 20), (120, -640, 125, 58, 28), (365, -520, 72, 40, 15)):
+        oval('Distant island', (x, -8, z), (rx, h + 8, rz), 'Distant', segments=22, rings=10)
+    rng = random.Random('Koriko hill town')
+    chunk('Distant_Town')
+    placed = 0
+    for i in range(46):
+        x = 225 + rng.uniform(0, 170)
+        z = 205 + rng.uniform(0, 170) + (x - 225) * .25
+        y = call('height', x, z)
+        w, d, h = rng.uniform(7, 12), rng.uniform(6, 9), rng.uniform(6, 11)
+        box('Hill town house', (x, y + h / 2 - .5, z), (w, h, d), 'Paint_%d' % rng.choice((0, 0, 1, 2)))
+        BASE_ROOF('Hill town roof', x, y + h - .5, z, w + .8, d + .8, h * .3, 'Paint_4' if rng.random() < .7 else 'Paint_5')
+        placed += 1
+    sx, sz = 310, 318
+    sy = call('height', sx, sz)
+    box('Hill town church nave', (sx, sy + 6, sz), (9, 12, 20), 'Paint_0')
+    rod('Hill town church spire', (sx, sy + 12, sz - 8), (sx, sy + 34, sz - 8), 3.2, 'Environment_Copper', vertices=8, radius2=.2)
+    box('Hill town church tower', (sx, sy + 9, sz - 8), (6, 18, 6), 'Paint_0')
+    print('DISTANT_VIEWS: two headlands, a lighthouse, three islands and', placed, 'hill-town houses', flush=True)
 
 
 def validate_courts():

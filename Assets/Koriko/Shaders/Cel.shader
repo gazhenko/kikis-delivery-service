@@ -18,6 +18,7 @@ Shader "Koriko/CharacterCel"
         _ShadowStrength("Cast shadow", Range(0,1))=0
         _NormalFlatten("Normal flatten", Range(0,1))=0
         _VertexPaint("Vertex paint", Range(0,1))=0
+        _Detached("Town prop outside the rider pose", Float)=0
     }
     SubShader
     {
@@ -39,7 +40,7 @@ Shader "Koriko/CharacterCel"
             V Vert(A a)
             {
                 V o;UNITY_SETUP_INSTANCE_ID(a);UNITY_TRANSFER_INSTANCE_ID(a,o);UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                o.world=RiderWorldPosition(a.p.xyz,_Cloth);o.p=TransformWorldToHClip(o.world);
+                o.world=CelWorldPosition(a.p.xyz);o.p=TransformWorldToHClip(o.world);
                 o.n=TransformObjectToWorldNormal(a.n);o.fog=ComputeFogFactor(o.p.z);return o;
             }
             half4 Frag(V i):SV_Target
@@ -80,7 +81,7 @@ Shader "Koriko/CharacterCel"
             float4 ShadowVert(A a):SV_POSITION
             {
                 UNITY_SETUP_INSTANCE_ID(a);
-                float3 world=RiderWorldPosition(a.p.xyz,_Cloth),normal=TransformObjectToWorldNormal(a.n);
+                float3 world=CelWorldPosition(a.p.xyz),normal=TransformObjectToWorldNormal(a.n);
                 #if defined(_CASTING_PUNCTUAL_LIGHT_SHADOW)
                     float3 light=normalize(_LightPosition-world);
                 #else
@@ -109,7 +110,7 @@ Shader "Koriko/CharacterCel"
             #include "FilmCommon.hlsl"
             #include "CharacterDeform.hlsl"
             struct A { float4 p:POSITION;UNITY_VERTEX_INPUT_INSTANCE_ID };
-            float4 DepthVert(A a):SV_POSITION{UNITY_SETUP_INSTANCE_ID(a);return TransformWorldToHClip(RiderWorldPosition(a.p.xyz,_Cloth));}
+            float4 DepthVert(A a):SV_POSITION{UNITY_SETUP_INSTANCE_ID(a);return TransformWorldToHClip(CelWorldPosition(a.p.xyz));}
             half4 DepthFrag():SV_Target{return 0;}
             ENDHLSL
         }

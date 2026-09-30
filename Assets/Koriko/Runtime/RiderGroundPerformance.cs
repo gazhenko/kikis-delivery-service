@@ -27,6 +27,13 @@ namespace Koriko
         public float BroomUpright=>carriedBroom?Mathf.Abs(Vector3.Dot((broomTip.position-carriedBroom.position).normalized,Vector3.up)):0;
         public float PlantedFootSlide {get;private set;}
         public bool HasWalkingRig=>carryGrip&&broomTip&&shapes.ContainsKey("Walk left")&&shapes.ContainsKey("Left hand relaxed");
+        // Planted steps, for footstep sound. Settling shuffles are marked soft.
+        public int Footfalls {get;private set;}
+        public Vector3 LastFootfall {get;private set;}
+        public bool LastFootfallSoft {get;private set;}
+        public Transform BroomNode=>carriedBroom;
+        public Transform BroomTip=>broomTip;
+        void Footfall(Vector3 point,bool soft){Footfalls++;LastFootfall=point;LastFootfallSoft=soft;}
 
         void InitializeGroundPerformance()
         {
@@ -99,8 +106,14 @@ namespace Koriko
             if(arms[0]!=null)
             {
                 var body=Node("Body");
-                Vector3 free=body.TransformPoint(freeHandPoint)+Motor.Visual.TransformDirection(new Vector3(-.012f*walkWeight,-.015f*Mathf.Abs(stepSway),stepSway*.14f));
-                Quaternion freeRotation=Motor.Visual.rotation*Quaternion.Euler(stepSway*8,0,-3)*leftFreeHandFrame;
+                // Two beats after the bow: the free hand reaches out to hand the parcel over,
+                // then rises beside the face and waves goodbye.
+                float give=Accent(Mathf.Max(0,deliverAge-.08f),.18f,.86f)*(1-flight);
+                float wave=Accent(Mathf.Max(0,deliverAge-.78f),.22f,1.10f)*(1-flight);
+                float waveSwing=Mathf.Sin(Mathf.Max(0,deliverAge-.86f)*11f)*wave;
+                Vector3 reach=new Vector3(.16f*give-.10f*wave+waveSwing*.09f,.40f*give+.86f*wave,.44f*give+.10f*wave);
+                Vector3 free=body.TransformPoint(freeHandPoint)+Motor.Visual.TransformDirection(new Vector3(-.012f*walkWeight,-.015f*Mathf.Abs(stepSway),stepSway*.14f)+reach);
+                Quaternion freeRotation=Motor.Visual.rotation*Quaternion.Euler(stepSway*8-give*35-wave*40,0,-3-waveSwing*20)*leftFreeHandFrame;
                 SolveArm(arms[0],Vector3.Lerp(free,arms[0].Grip.position,leftGrab),Quaternion.Slerp(freeRotation,arms[0].Grip.rotation*arms[0].WristFrame,leftGrab),leftGrab>.99f);
             }
             Shape("Left hand relaxed",1-leftGrab);
@@ -151,7 +164,7 @@ namespace Koriko
                     }
                     else
                     {
-                        if(leg.Swing){leg.Plant=FootSupport(leg.Target,leg);leg.PlantRotation=Motor.Visual.rotation;}
+                        if(leg.Swing){leg.Plant=FootSupport(leg.Target,leg);leg.PlantRotation=Motor.Visual.rotation;Footfall(leg.Plant,false);}
                         leg.Target=leg.Plant;
                     }
                 }
@@ -166,7 +179,7 @@ namespace Koriko
                     {
                         leg.SettleAge+=dt;float t=Mathf.Clamp01(leg.SettleAge/.28f);
                         leg.Target=Vector3.Lerp(leg.SwingStart,leg.SettleEnd,Ease(t))+Vector3.up*(Mathf.Sin(t*Mathf.PI)*.075f);
-                        if(t>=1){leg.Plant=leg.Target;leg.PlantRotation=Motor.Visual.rotation;leg.Settling=false;}
+                        if(t>=1){leg.Plant=leg.Target;leg.PlantRotation=Motor.Visual.rotation;leg.Settling=false;Footfall(leg.Plant,true);}
                     }
                     else leg.Target=leg.Plant;
                 }

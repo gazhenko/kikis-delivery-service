@@ -54,10 +54,25 @@ namespace Koriko
             if(layout?.paths!=null)foreach(var path in layout.paths)Path(v,path,path.tile=="Paint_8"?new Color(.76f,.73f,.63f):road);
             Quad(v,P(-10,3),P(42,47),road);
             if(layout?.buildings!=null)foreach(var b in layout.buildings)Quad(v,P(b.x-b.width/2,b.z-b.depth/2),P(b.x+b.width/2,b.z+b.depth/2),new Color(.65f,.40f,.29f));
+            var rules=App?.Rules;
+            Destination target=rules?.Active!=null?Catalog.FindDestination(rules.Active.destination):rules!=null&&App.InGame&&!rules.AtHome?Catalog.Home:null;
+            if(target!=null&&App.Motor)
+            {
+                // A faint pencil line from Kiki to the court she is heading for.
+                Vector3 from=App.Motor.transform.position;var a=P(from.x,from.z);var b=P((float)target.Landing.x,(float)target.Landing.z);
+                var along=b-a;if(along.sqrMagnitude>4)
+                {
+                    var n=new Vector2(-along.y,along.x).normalized*.9f;var line=new Color(.62f,.30f,.16f,.55f);
+                    int i=v.currentVertCount;v.AddVert(a+n,line,Vector2.zero);v.AddVert(a-n,line,Vector2.zero);v.AddVert(b-n,line,Vector2.zero);v.AddVert(b+n,line,Vector2.zero);v.AddTriangle(i,i+1,i+2);v.AddTriangle(i,i+2,i+3);
+                }
+            }
+            float pulse=.5f+.5f*Mathf.Sin(Time.unscaledTime*4);
             foreach(var d in Catalog.Destinations)
             {
-                bool active=App?.Rules?.Active?.destination==d.Id;
-                Dot(v,P((float)d.Landing.x,(float)d.Landing.z),active?5:3,d.Id=="bakery"?new Color(.95f,.85f,.60f):active?new Color(1,.75f,.31f):new Color(.93f,.88f,.76f));
+                bool active=target==d;
+                var point=P((float)d.Landing.x,(float)d.Landing.z);
+                if(active)Dot(v,point,6.5f+pulse*2.5f,new Color(1,.75f,.31f,.35f));
+                Dot(v,point,active?5:3,d.Id=="bakery"?new Color(.95f,.85f,.60f):active?new Color(1,.75f,.31f):new Color(.93f,.88f,.76f));
             }
             if(App?.Motor)
             {

@@ -9,8 +9,11 @@ ssh -o BatchMode=yes -o StrictHostKeyChecking=yes kiki-unity \
 # its pink error fallback. Reject that export before replacing the local player.
 ssh -o BatchMode=yes -o StrictHostKeyChecking=yes kiki-unity \
   'if grep -q "Shader error in" /home/jim/Projects/kikis-delivery-desktop/Logs/mac-build.log; then grep "Shader error in" /home/jim/Projects/kikis-delivery-desktop/Logs/mac-build.log; exit 1; fi'
-mkdir -p "$project_dir/Builds/mac"
-rsync -az kiki-unity:/home/jim/Projects/kikis-delivery-desktop/Builds/mac/ "$project_dir/Builds/mac/"
+# KORIKO_MAC_DESTINATION stages a candidate (for example Builds/mac-candidate) so the
+# installed app in Builds/mac is only replaced after the candidate is verified.
+destination=${KORIKO_MAC_DESTINATION:-"$project_dir/Builds/mac"}
+mkdir -p "$destination"
+rsync -az kiki-unity:/home/jim/Projects/kikis-delivery-desktop/Builds/mac/ "$destination/"
 # Preserve generated GUIDs and scene references without overwriting authored source.
 rsync -az --exclude='/Resources/***' --exclude='/Resources.meta' \
   --include='*/' --include='*.meta' --include='*.asset' \

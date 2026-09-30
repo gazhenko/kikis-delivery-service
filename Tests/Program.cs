@@ -37,6 +37,11 @@ static class Program
             r.Observe(new FlightFrame(target,1,false)); True(!r.Deliver());
             r.Observe(new FlightFrame(target,1,true)); True(r.Deliver());
         });
+        Check("the delivery receipt splits base pay and timely tip exactly as paid", () => {
+            var r=Ready(); var p=r.State.jobs[0]; r.Accept(p.id); r.Advance(10,Home()); int money=r.State.money;
+            Land(r,p.destination); True(r.Deliver()); Equal(r.LastPay,p.reward); Equal(r.LastPay+r.LastTip,r.State.money-money);
+            True(r.LastTip>0&&r.LastTip<=(int)Math.Round(p.reward*.2,MidpointRounding.AwayFromZero));
+        });
         Check("deadline starts at pickup and equality means too late", () => {
             var r=Ready(Difficulty.Challenging); r.Advance(10,Home()); var p=r.State.jobs[0]; r.Accept(p.id);
             Equal(p.deadline,10+p.duration); r.Advance(p.duration,Home()); True(r.Active==null); Equal(r.State.money,40);

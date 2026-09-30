@@ -123,6 +123,8 @@ namespace Koriko
             Check(EventSystem.current.currentSelectedGameObject?.name=="Stick sensitivity","Controller D-pad navigates the controls menu");
             yield return Capture("02-controls-controller");
             yield return Controller(.2f,new GamepadState().WithButton(GamepadButton.East));yield return Controller(.2f,new GamepadState());
+            Check(app.Hud.PanelOpen&&app.Hud.GetComponentsInChildren<Button>().Any(b=>b.name=="Controls & camera")&&app.Motor.OnFoot,"Controller B steps back from controls to settings");
+            yield return Controller(.2f,new GamepadState().WithButton(GamepadButton.East));yield return Controller(.2f,new GamepadState());
             Check(!app.Hud.PanelOpen&&app.Motor.OnFoot,"Controller B closes settings without descending or mounting");
             yield return Controller(.15f,new GamepadState().WithButton(GamepadButton.Start));yield return Controller(.15f,new GamepadState());
             Select("Back outside");yield return Controller(.5f,new GamepadState().WithButton(GamepadButton.South));

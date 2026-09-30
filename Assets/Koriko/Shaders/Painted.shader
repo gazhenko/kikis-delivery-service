@@ -40,14 +40,15 @@ Shader "Koriko/Painted"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
             struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; float4 color:COLOR; UNITY_VERTEX_INPUT_INSTANCE_ID };
-            struct Varyings { float4 positionCS:SV_POSITION; float3 normalWS:TEXCOORD0; float2 uv:TEXCOORD1; float3 positionWS:TEXCOORD2; float fog:TEXCOORD3; float3 paint:TEXCOORD4; UNITY_VERTEX_INPUT_INSTANCE_ID UNITY_VERTEX_OUTPUT_STEREO };
+            struct Varyings { float4 positionCS:SV_POSITION; float3 normalWS:TEXCOORD0; float2 uv:TEXCOORD1; float3 positionWS:TEXCOORD2; float fog:TEXCOORD3; float4 paint:TEXCOORD4; UNITY_VERTEX_INPUT_INSTANCE_ID UNITY_VERTEX_OUTPUT_STEREO };
             Varyings Vert(Attributes input)
             {
                 Varyings o; UNITY_SETUP_INSTANCE_ID(input); UNITY_TRANSFER_INSTANCE_ID(input,o); UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 float3 world=PaintedWorldPosition(input.positionOS.xyz);
                 o.positionWS=world; o.positionCS=TransformWorldToHClip(world);
                 o.normalWS=TransformObjectToWorldNormal(input.normalOS); o.uv=input.uv; o.fog=ComputeFogFactor(o.positionCS.z);
-                o.paint=lerp(float3(1,1,1),input.color.rgb,_VertexPaint);
+                // Alpha carries a per-window household value: when its lamp is lit and how warmly.
+                o.paint=float4(lerp(float3(1,1,1),input.color.rgb,_VertexPaint),input.color.a);
                 return o;
             }
             half4 Frag(Varyings input):SV_Target
@@ -56,7 +57,7 @@ Shader "Koriko/Painted"
                 float2 mirrored=1-abs(frac(input.uv*_PaintScale*.5)*2-1);
                 float2 uv=_AtlasRect.xy+mirrored*_AtlasRect.zw;
                 half3 paint=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,uv).rgb;
-                half3 albedo=lerp(_Color.rgb,paint,_TextureWeight)*input.paint;
+                half3 albedo=lerp(_Color.rgb,paint,_TextureWeight)*input.paint.rgb;
                 Light sun=GetMainLight(TransformWorldToShadowCoord(input.positionWS));
                 float3 normal=normalize(lerp(input.normalWS,float3(0,1,0),_NormalFlatten));
                 float light=dot(normal,sun.direction);
@@ -69,7 +70,12 @@ Shader "Koriko/Painted"
                 half3 lightColor=lerp(half3(.30,.41,.63),half3(1,1,1),_KorikoDaylight);
                 half3 color=albedo*coloredShade*lightColor;
                 float night=1-smoothstep(.15,.70,_KorikoDaylight);
-                color=lerp(color,half3(.86,.56,.25),saturate(_Emission*night));
+                // Households light their lamps at slightly different moments; a few stay dark.
+                float household=input.paint.a;
+                float evening=frac(household*7.13)*.45;
+                float lamp=smoothstep(evening,evening+.12,night)*smoothstep(.12,.3,household);
+                half3 warm=lerp(half3(.64,.37,.19),half3(.88,.58,.26),household);
+                color=lerp(color,warm,saturate(_Emission*lamp));
                 return half4(MixFog(color,input.fog),1);
             }
             ENDHLSL

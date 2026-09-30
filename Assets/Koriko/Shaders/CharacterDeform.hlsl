@@ -35,4 +35,12 @@ float3 RiderWorldPosition(float3 positionOS,float cloth)
     p+=(_KorikoRiderSmear.xyz+sweep)*mask;
     return mul(_KorikoRiderPoseToWorld,float4(p,1)).xyz;
 }
+#ifdef KORIKO_FILM_COMMON
+// Crows, gulls and other cel props share the character paint but not her pose.
+// Without this, a turn smear sweeps distant birds by metres for two drawings.
+float3 CelWorldPosition(float3 positionOS)
+{
+    return _Detached>.5?TransformObjectToWorld(positionOS):RiderWorldPosition(positionOS,_Cloth);
+}
+#endif
 #endif

@@ -46,7 +46,7 @@ namespace Koriko
         Vector3 previousVelocity,smearDirection;
         float clock,groundOffset,flightPose,speed,acceleration,previousSpeed;
         float takeoffAge=10,landingAge=10,boostAge=10,brakeAge=10,airTime,idleTime,blinkAge=10,nextBlink=2.3f;
-        float smearAge=10,smearTurn,lastTurn,smearCooldown,landingImpact;
+        float smearAge=10,smearTurn,lastTurn,smearCooldown,landingImpact,deliverAge=10;
         bool wasGrounded=true,wasBoosting,initialized;
         int warpVersion;
         static readonly int WorldToPose=Shader.PropertyToID("_KorikoRiderWorldToPose"),PoseToWorld=Shader.PropertyToID("_KorikoRiderPoseToWorld"),Smear=Shader.PropertyToID("_KorikoRiderSmear");
@@ -66,6 +66,9 @@ namespace Koriko
         public int Landings {get;private set;}
         public int SmearCount {get;private set;}
         public string Beat {get;private set;}="Rest";
+        /// <summary>Hand the parcel over: a small bow, then a wave with the free hand.</summary>
+        public void Deliver(){deliverAge=0;}
+        public bool Delivering=>deliverAge<1.9f;
 
         void Awake()
         {
@@ -138,7 +141,8 @@ namespace Koriko
             if(!Motor)return;
             if(!initialized||Motor.WarpVersion!=warpVersion)ResetMotion();
             float dt=Mathf.Min(Time.deltaTime,.075f);if(dt<=0)return;
-            clock+=dt;takeoffAge+=dt;landingAge+=dt;boostAge+=dt;brakeAge+=dt;smearAge+=dt;blinkAge+=dt;smearCooldown-=dt;
+            clock+=dt;takeoffAge+=dt;landingAge+=dt;boostAge+=dt;brakeAge+=dt;smearAge+=dt;blinkAge+=dt;smearCooldown-=dt;deliverAge+=dt;
+            if(!Motor.OnFoot)deliverAge=10;
             float actualSpeed=new Vector2(Motor.Velocity.x,Motor.Velocity.z).magnitude;
             AdvanceWalk(dt,actualSpeed);
             speed=Mathf.Lerp(speed,Mathf.Clamp01(actualSpeed/26),1-Mathf.Exp(-dt*10));
@@ -171,8 +175,10 @@ namespace Koriko
             float recover=Accent(Mathf.Max(0,landingAge-.25f),.16f,.62f)*landingImpact;
             float boost=Accent(boostAge,.18f,.72f);
             float brake=Accent(brakeAge,.16f,.85f);
+            // Handing over a parcel: a quick polite bow that springs back up.
+            float bow=Accent(deliverAge,.22f,1.05f);
             float airLean=flight*(5+speed*15+(Motor.Boosting?8:0));
-            float bodyPitch=pitch.Step(airLean+Mathf.Clamp(acceleration*.20f,-10,8)+compress*12-reach*9-land*12+recover*3-brake*9+idle*breath*.65f+walkWeight*3,3.3f,.75f,dt);
+            float bodyPitch=pitch.Step(airLean+Mathf.Clamp(acceleration*.20f,-10,8)+compress*12-reach*9-land*12+recover*3-brake*9+idle*breath*.65f+walkWeight*3+bow*13,3.3f,.75f,dt);
             float bodyBank=bank.Step(-turn*(18+speed*13)*flight+idle*breath*1.2f+stepSway*2.8f,3.0f,.62f,dt);
             // Look into the new heading first. The shoulders follow and the
             // heavy ends (feet, bag, bow) arrive later and overshoot once.
@@ -181,7 +187,7 @@ namespace Koriko
             float glancePhase=Mathf.Repeat(idleTime,9.2f);
             float glance=idleTime>2?Accent(Mathf.Max(0,glancePhase-3.1f),.65f,2.8f)*-25:0;
             float lookYaw=gaze.Step(look+glance,6,.9f,dt);
-            float lookPitch=headPitch.Step(-bodyPitch*.73f-Motor.LiftIntent*7+brake*5+breath*.65f,5,.82f,dt);
+            float lookPitch=headPitch.Step(-bodyPitch*.73f-Motor.LiftIntent*7+brake*5+breath*.65f+bow*9,5,.82f,dt);
             float bodyY=hover+breath*.005f-compress*.065f+reach*.052f-land*.105f+recover*.022f-walkWeight*(.090f+.022f*Mathf.Cos(walkPhase*Mathf.PI*4));
             Offset("Body",new Vector3(-bodyBank*.0007f+stepSway*.015f,bodyY,-boost*.020f+brake*.025f));
             Pose("Body",new Vector3(bodyPitch,turn*flight*4-stepSway*3.5f,bodyBank));
@@ -216,7 +222,7 @@ namespace Koriko
             float bagAngle=bagSway.Step(bodyBank*.44f-acceleration*.10f+stepSway*7,2.2f,.58f,dt);
             Pose("Satchel",new Vector3(-drag*.45f,bagAngle*.25f,bagAngle*.48f));
             float catLook=catHead.Step(-lookYaw*.65f+idle*Mathf.Sin(clock*.63f)*14,3.0f,.7f,dt);
-            float tailAngle=tail.Step(bodyBank*.8f+wind*Mathf.Sin(clock*3.3f)*12,2.1f,.55f,dt);
+            float tailAngle=tail.Step(bodyBank*.8f+wind*Mathf.Sin(clock*3.3f)*12+bow*Mathf.Sin(deliverAge*9)*22,2.1f,.55f,dt);
             Pose("JijiHead",new Vector3(-speed*7-brake*5,catLook,bodyBank*.16f));
             Pose("JijiTail",new Vector3(-drag*.3f,tailAngle,tailAngle*.35f));
             Pose("LeftJijiEar",new Vector3(-speed*12,-turn*8,-boost*16+idle*Mathf.Sin(clock*1.7f)*2));
@@ -235,7 +241,7 @@ namespace Koriko
             Shader.SetGlobalMatrix(WorldToPose,Motor.Visual.worldToLocalMatrix);
             Shader.SetGlobalMatrix(PoseToWorld,Motor.Visual.localToWorldMatrix);
             Shader.SetGlobalVector(Smear,new Vector4(smearDirection.x,smearDirection.y,smearDirection.z,smearTurn)*SmearWeight);
-            Beat=Motor.OnFoot?(landingAge<.7f?"Dismount / settle":walkWeight>.15f?"Walk / carry broom":"Rest / broom at side"):takeoffAge<.75f?"Mount / reach":boostAge<.72f?"Boost / tuck":brakeAge<.85f?"Brake / catch balance":Mathf.Abs(bodyBank)>6?"Bank / follow through":speed<.15f?"Hover / breathe":"Cruise / wind";
+            Beat=Motor.OnFoot?(Delivering?"Deliver / bow and wave":landingAge<.7f?"Dismount / settle":walkWeight>.15f?"Walk / carry broom":"Rest / broom at side"):takeoffAge<.75f?"Mount / reach":boostAge<.72f?"Boost / tuck":brakeAge<.85f?"Brake / catch balance":Mathf.Abs(bodyBank)>6?"Bank / follow through":speed<.15f?"Hover / breathe":"Cruise / wind";
         }
         void ClothContact(string hipName,string kneeName,int hipId,int kneeId,float amount)
         {

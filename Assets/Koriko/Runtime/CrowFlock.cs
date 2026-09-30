@@ -10,14 +10,18 @@ namespace Koriko
         public Material Material;
         readonly Vector3[] nests={new Vector3(42,15,47),new Vector3(70,18,107),new Vector3(84,12,-28),new Vector3(-68,15,73)};
         Transform[] birds,wingsLeft,wingsRight;
+        bool[] chasing;
         void Start()
         {
-            birds=new Transform[nests.Length];wingsLeft=new Transform[nests.Length];wingsRight=new Transform[nests.Length];
+            birds=new Transform[nests.Length];wingsLeft=new Transform[nests.Length];wingsRight=new Transform[nests.Length];chasing=new bool[nests.Length];
             for(int i=0;i<nests.Length;i++)
             {
                 var root=new GameObject("Crow "+i).transform;root.SetParent(transform);root.position=nests[i];birds[i]=root;
                 Shape(root,PrimitiveType.Sphere,new Vector3(0,0,0),new Vector3(.36f,.4f,.68f));
                 Shape(root,PrimitiveType.Sphere,new Vector3(0,.18f,.28f),new Vector3(.3f,.3f,.3f));
+                // A heavy beak and a fanned tail make the silhouette read as a crow at flight distance.
+                Shape(root,PrimitiveType.Sphere,new Vector3(0,.15f,.47f),new Vector3(.08f,.07f,.22f));
+                Shape(root,PrimitiveType.Sphere,new Vector3(0,.03f,-.43f),new Vector3(.26f,.05f,.34f));
                 wingsLeft[i]=Wing(root,-1);wingsRight[i]=Wing(root,1);
             }
         }
@@ -44,6 +48,8 @@ namespace Koriko
             {
                 float range=(rules.State.difficulty==Difficulty.Cozy?18:28)-rules.Level(Upgrade.Bell)*5;
                 bool chase=!safe&&Vector3.Distance(birds[i].position,player+Vector3.up)<range;
+                if(chase&&!chasing[i]&&App.Sound)App.Sound.Caw(birds[i].position);
+                chasing[i]=chase;
                 float angle=(float)rules.State.elapsed*.4f+i*2;
                 var target=chase?player+Vector3.up*1.2f:nests[i]+new Vector3(Mathf.Cos(angle)*8,Mathf.Sin(angle*1.2f),Mathf.Sin(angle)*8);
                 var direction=target-birds[i].position;

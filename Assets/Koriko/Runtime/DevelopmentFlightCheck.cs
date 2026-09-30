@@ -21,7 +21,7 @@ namespace Koriko
         public static bool ArtOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-art-check")>=0;
         public static bool CharacterOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-character-check")>=0;
         public static bool EnvironmentOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-environment-check")>=0;
-        public static bool Requested => Debug.isDebugBuild&&(ArtOnly||CharacterOnly||EnvironmentOnly||DevelopmentControlsCheck.Requested||DevelopmentWalkCheck.Requested||DevelopmentMotionCheck.Requested||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
+        public static bool Requested => Debug.isDebugBuild&&(ArtOnly||CharacterOnly||EnvironmentOnly||DevelopmentControlsCheck.Requested||DevelopmentWalkCheck.Requested||DevelopmentMotionCheck.Requested||DevelopmentTourCheck.Requested||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
         GameApp app;
         Keyboard keyboard;
         Gamepad gamepad;
@@ -36,7 +36,7 @@ namespace Koriko
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Install()
         {
-            if(Requested&&!DevelopmentMotionCheck.Requested&&!DevelopmentWalkCheck.Requested&&!DevelopmentControlsCheck.Requested)new GameObject("Development flight check").AddComponent<DevelopmentFlightCheck>();
+            if(Requested&&!DevelopmentMotionCheck.Requested&&!DevelopmentWalkCheck.Requested&&!DevelopmentControlsCheck.Requested&&!DevelopmentTourCheck.Requested)new GameObject("Development flight check").AddComponent<DevelopmentFlightCheck>();
         }
         IEnumerator Start()
         {
@@ -112,7 +112,9 @@ namespace Koriko
             var rider=app.Motor.Visual.GetComponentInChildren<RiderPerformance>();
             Check(rider&&rider.GripError<.02f,"Standing carry keeps the holding hand on the broom (within 2 cm)");if(failed)yield break;
             Check(rider.HasFlightCloth,"Imported flight cloth shape is available");if(failed)yield break;
-            app.enabled=true;Keys(Key.Space);
+            // Closing the bakery requires a released lift button before takeoff (the menu
+            // guard); give the re-enabled app one neutral frame, as a player would.
+            app.enabled=true;Keys();yield return null;yield return null;Keys(Key.Space);
             float ceiling=app.Motor.transform.position.y+25;
             float timeout=Time.realtimeSinceStartup+8;
             while(app.Motor.transform.position.y<ceiling)

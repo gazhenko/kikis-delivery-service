@@ -30,6 +30,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Cloth: 1
+    - _Detached: 0
     - _Emission: 0
     - _Face: 0
     - _NormalFlatten: 0

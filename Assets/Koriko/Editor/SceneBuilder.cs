@@ -98,7 +98,9 @@ namespace Koriko.Editor
                         cameraShell.transform.SetParent(mesh.transform,false);cameraShell.layer=10;
                         cameraShell.AddComponent<MeshCollider>().sharedMesh=mesh.sharedMesh;
                     }
-                    GameObjectUtility.SetStaticEditorFlags(mesh.gameObject,StaticEditorFlags.BatchingStatic|StaticEditorFlags.OccluderStatic|StaticEditorFlags.OccludeeStatic);
+                    // Moored boats ride the swell at runtime, so they cannot be statically batched.
+                    bool afloat=mesh.GetComponentsInParent<Transform>(true).Any(t=>t.name.StartsWith("Boat_",StringComparison.Ordinal));
+                    if(!afloat)GameObjectUtility.SetStaticEditorFlags(mesh.gameObject,StaticEditorFlags.BatchingStatic|StaticEditorFlags.OccluderStatic|StaticEditorFlags.OccludeeStatic);
                     // Broad painted floors receive building/tree shadows. Casting them back
                     // onto their own near-coplanar triangles exposes a distracting seam grid.
                     if(mesh.name=="Landscape__Paint_9"||mesh.name=="Streets__Paint_8"||mesh.name=="Streets__Paint_7")
@@ -112,7 +114,8 @@ namespace Koriko.Editor
             camera.gameObject.AddComponent<AudioListener>();camera.gameObject.AddComponent<UniversalAdditionalCameraData>();
             var brain=camera.gameObject.AddComponent<CinemachineBrain>();brain.UpdateMethod=CinemachineBrain.UpdateMethods.LateUpdate;
             var orbit=new GameObject("Camera orbit target").transform;orbit.position=new Vector3(-113,1.6f,9);orbit.rotation=Quaternion.Euler(12,85,0);
-            var follow=new GameObject("Kiki follow camera").AddComponent<CinemachineCamera>();follow.Follow=orbit;follow.Lens.FieldOfView=52;follow.Lens.NearClipPlane=.1f;follow.Lens.FarClipPlane=800;
+            var follow=new GameObject("Kiki follow camera").AddComponent<CinemachineCamera>();follow.Follow=orbit;follow.Lens.FieldOfView=52;follow.Lens.NearClipPlane=.1f;follow.Lens.FarClipPlane=800;follow.Priority=10;
+            var title=new GameObject("Title flyover camera").AddComponent<CinemachineCamera>();title.Lens.FieldOfView=46;title.Lens.NearClipPlane=.3f;title.Lens.FarClipPlane=900;title.Priority=20;
             var body=follow.gameObject.AddComponent<CinemachineThirdPersonFollow>();body.CameraDistance=7.5f;body.ShoulderOffset=new Vector3(.55f,.3f,0);body.VerticalArmLength=.45f;body.CameraSide=.65f;body.Damping=new Vector3(.12f,.22f,.15f);
             body.AvoidObstacles=new CinemachineThirdPersonFollow.ObstacleSettings{Enabled=true,CollisionFilter=(1<<8)|(1<<10),IgnoreTag="Player",CameraRadius=.27f,DampingIntoCollision=.08f,DampingFromCollision=.5f};
             var player=new GameObject("Kiki");player.tag="Player";player.layer=9;player.transform.position=new Vector3(-113,.18f,9);
@@ -135,6 +138,7 @@ namespace Koriko.Editor
             ApplyMaterials(rider,characterMaterials);AddCharacterInk(rider);
             foreach(var t in rider.GetComponentsInChildren<Transform>())t.gameObject.layer=9;
             rider.AddComponent<RiderPerformance>().Motor=motor;
+            var props=rider.AddComponent<RiderProps>();
             var sun=new GameObject("Painted afternoon sun").AddComponent<Light>();sun.type=LightType.Directional;sun.shadows=LightShadows.Soft;sun.shadowStrength=.65f;sun.shadowBias=.08f;sun.shadowNormalBias=.3f;
             var lightCycle=new GameObject("Continuous daylight").AddComponent<Daylight>();lightCycle.Sun=sun;lightCycle.Camera=camera;
             var appObject=new GameObject("Delivery service");var input=appObject.AddComponent<FlightInput>();var app=appObject.AddComponent<GameApp>();app.Motor=motor;app.Input=input;app.Lighting=lightCycle;
@@ -144,7 +148,34 @@ namespace Koriko.Editor
             var hud=canvasObject.AddComponent<GameHud>();hud.Font=AssetDatabase.LoadAssetAtPath<Font>(Art+"Fonts/AlegreyaSans-Regular.ttf");hud.Bold=AssetDatabase.LoadAssetAtPath<Font>(Art+"Fonts/AlegreyaSans-Bold.ttf");hud.Icons=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"ItemIcons.png");app.Hud=hud;
             hud.Paper=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"PaintedFilmSurfaces.png");
             var events=new GameObject("Keyboard and controller UI",typeof(EventSystem));events.AddComponent<InputSystemUIInputModule>().AssignDefaultActions();
-            var flock=new GameObject("Town crows").AddComponent<CrowFlock>();flock.App=app;flock.Material=characterMaterials["Ink"];
+            hud.Portraits=AssetDatabase.LoadAssetAtPath<Texture2D>(Art+"Portraits.png");
+            // Birds share the cel paint but stay outside the rider's pose and smear frame.
+            var cel=Shader.Find("Koriko/CharacterCel");
+            Material Detached(string name,Color lit,Color shade)
+            {
+                var m=Material(name,cel);m.SetColor("_Color",lit);m.SetColor("_ShadowTint",shade);m.SetColor("_LightTint",lit);
+                m.SetFloat("_Softness",.005f);m.SetFloat("_Face",0);m.SetFloat("_Rim",0);m.SetFloat("_Cloth",0);m.SetFloat("_Detached",1);return m;
+            }
+            var flock=new GameObject("Town crows").AddComponent<CrowFlock>();flock.App=app;flock.Material=Detached("Cel_Crow",new Color(.075f,.09f,.12f),new Color(.05f,.055f,.08f));
+            var glow=Shader.Find("Koriko/Glow");if(!glow)throw new InvalidOperationException("Lamplight shader did not import.");
+            var lampLight=Material("LampLight",glow);lampLight.SetColor("_Color",new Color(1,.72f,.40f));lampLight.SetFloat("_Intensity",1.15f);
+            var lanternLight=Material("LanternLight",glow);lanternLight.SetColor("_Color",new Color(1,.80f,.48f));lanternLight.SetFloat("_Intensity",1.1f);
+            var puff=Material("PaintedPuff",Shader.Find("Koriko/Puff"));puff.SetColor("_ShadowTint",new Color(.74f,.76f,.84f));
+            var ring=Material("CourtRing",Shader.Find("Koriko/CourtRing"));ring.SetColor("_Color",new Color(.96f,.72f,.30f));
+            var life=appObject.AddComponent<TownLife>();life.App=app;life.Puff=puff;life.Lamps=lampLight;life.Ring=ring;
+            life.GullBody=Detached("Cel_GullBody",new Color(.97f,.96f,.92f),new Color(.70f,.74f,.84f));
+            life.GullWing=Detached("Cel_GullWing",new Color(.74f,.78f,.82f),new Color(.52f,.56f,.66f));
+            life.GullTip=Detached("Cel_GullTip",new Color(.13f,.13f,.16f),new Color(.08f,.08f,.10f));
+            life.GullBeak=Detached("Cel_GullBeak",new Color(.95f,.72f,.25f),new Color(.74f,.50f,.18f));
+            var sound=appObject.AddComponent<Soundscape>();sound.App=app;sound.Life=life;app.Sound=sound;app.Life=life;
+            props.App=app;props.Life=life;props.Paper=characterMaterials["Parcel"];props.String=characterMaterials["ParcelString"];
+            props.FragilePaper=characterMaterials["FragilePaper"];props.FragileRibbon=characterMaterials["Bow"];props.Crate=characterMaterials["Crate"];props.Strap=characterMaterials["CrateStrap"];
+            props.Canvas=characterMaterials["Canvas"];props.Rope=characterMaterials["Rope"];props.Brass=characterMaterials["Gold"];props.LanternGlass=characterMaterials["LanternGlass"];
+            props.Outline=Material("CharacterOutline",Shader.Find("Koriko/Ink"));props.LanternHalo=lanternLight;
+            var director=appObject.AddComponent<CameraDirector>();director.App=app;director.Follow=follow;director.Title=title;director.Body=body;director.Brain=brain;
+            // Save the fog into the scene. With automatic fog stripping, a scene without fog
+            // strips every fog variant from the player and the runtime fog never renders.
+            RenderSettings.fog=true;RenderSettings.fogMode=FogMode.Linear;RenderSettings.fogStartDistance=95;RenderSettings.fogEndDistance=640;RenderSettings.fogColor=new Color(.63f,.76f,.79f);
             Physics.SyncTransforms();
             foreach(var d in Catalog.Destinations)
             {
@@ -235,7 +266,11 @@ namespace Koriko.Editor
                 ["Shoe"]=new Color(.65f,.24f,.17f),["Blush"]=new Color(.965f,.715f,.64f),
                 ["HairShade"]=new Color(.085f,.067f,.088f),["DressShade"]=new Color(.13f,.14f,.23f),
                 ["Lip"]=new Color(.49f,.235f,.245f),["Sole"]=new Color(.19f,.18f,.21f),
-                ["Satchel"]=new Color(.84f,.36f,.29f)
+                ["Satchel"]=new Color(.84f,.36f,.29f),
+                // Carried freight and the broom lantern.
+                ["Parcel"]=new Color(.80f,.63f,.42f),["ParcelString"]=new Color(.62f,.13f,.13f),["FragilePaper"]=new Color(.95f,.92f,.84f),
+                ["Crate"]=new Color(.62f,.45f,.27f),["CrateStrap"]=new Color(.26f,.20f,.15f),["Canvas"]=new Color(.85f,.79f,.63f),
+                ["Rope"]=new Color(.63f,.53f,.37f),["LanternGlass"]=new Color(1,.90f,.62f)
             };
             foreach(var entry in characterPaint.Concat(Enumerable.Range(0,16).Select(i=>new KeyValuePair<string,Color>("Paint_"+i,palette[i]))))
             {

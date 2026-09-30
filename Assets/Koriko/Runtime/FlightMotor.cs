@@ -45,6 +45,13 @@ namespace Koriko
                 CameraOrbit.position+=delta;CinemachineCore.OnTargetObjectWarped(CameraOrbit,delta);
             }
         }
+        /// <summary>Turn Kiki and the camera to a heading, e.g. out of the bakery door after a hospital return.</summary>
+        public void Face(float degrees,float cameraPitch=12)
+        {
+            yaw=degrees;pitch=Mathf.Clamp(cameraPitch,-28,48);lookIdle=0;
+            if(Visual)Visual.rotation=Quaternion.Euler(0,degrees,0);
+            if(CameraOrbit)CameraOrbit.rotation=Quaternion.Euler(pitch,yaw,0);
+        }
         public bool BeginApproach(Destination destination)
         {
             if(destination==null||OnFoot)return false;

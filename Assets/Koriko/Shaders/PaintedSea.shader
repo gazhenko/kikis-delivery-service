@@ -18,6 +18,7 @@ Shader "Koriko/PaintedSea"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             CBUFFER_START(UnityPerMaterial) float4 _Color,_FoamColor; CBUFFER_END
             float _KorikoDaylight;
+            float3 _KorikoMoonDirection,_KorikoSunDirection;
             struct A { float4 p:POSITION; };
             struct V { float4 p:SV_POSITION; float3 world:TEXCOORD0; float fog:TEXCOORD1; };
             V Vert(A a){V v;v.world=TransformObjectToWorld(a.p.xyz);v.p=TransformWorldToHClip(v.world);v.fog=ComputeFogFactor(v.p.z);return v;}
@@ -37,6 +38,19 @@ Shader "Koriko/PaintedSea"
                 half3 paint=_Color.rgb*lerp(.94,1.04,smoothstep(-.2,.25,sin(p.y*.024+p.x*.009)));
                 paint=lerp(paint,_FoamColor.rgb,stroke*.75);
                 paint*=lerp(half3(.30,.43,.64),half3(1,1,1),_KorikoDaylight);
+                // A path of drawn glints toward the moon at night and a low sun at golden hour.
+                // Short dashes on the same 12 Hz drawing clock; no specular gloss or screen noise.
+                float3 view=normalize(i.world-_WorldSpaceCameraPos);
+                float3 bounce=float3(view.x,-view.y,view.z);
+                float night=1-smoothstep(.10,.55,_KorikoDaylight);
+                float3 sun=normalize(_KorikoSunDirection+float3(0,.0001,0));
+                float lowSun=saturate(1-abs(sun.y)*3.2)*step(0,sun.y)*_KorikoDaylight;
+                float moonPath=pow(saturate(dot(bounce,normalize(_KorikoMoonDirection))),70)*night;
+                float sunPath=pow(saturate(dot(bounce,sun)),55)*lowSun;
+                float glintRow=floor(p.y*.62+time*.9);
+                float glint=smoothstep(.55,.9,sin(p.x*.83+glintRow*2.31+time*1.7))*smoothstep(.2,.7,sin(p.y*1.9+glintRow));
+                paint=lerp(paint,half3(.80,.83,.82),saturate(moonPath*(.20+glint*.95)));
+                paint=lerp(paint,half3(1.0,.80,.52),saturate(sunPath*(.15+glint*.85)));
                 return half4(MixFog(paint,i.fog),1);
             }
             ENDHLSL
