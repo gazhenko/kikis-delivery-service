@@ -62,6 +62,10 @@ namespace Koriko.Editor
             pipelineSettings.FindProperty("m_SoftShadowsSupported").boolValue=true;
             pipelineSettings.ApplyModifiedPropertiesWithoutUndo();
             GraphicsSettings.defaultRenderPipeline=pipeline;QualitySettings.renderPipeline=pipeline;QualitySettings.vSyncCount=1;
+            // The painter's line and film grade run once over the finished opaque town.
+            var filmEdges=Material("FilmEdges",Shader.Find("Koriko/FilmEdges"));
+            filmEdges.SetColor("_InkColor",new Color(.33f,.19f,.14f));filmEdges.SetFloat("_EdgeStrength",.65f);filmEdges.SetFloat("_CreaseStrength",.30f);filmEdges.SetFloat("_Warmth",.55f);
+            ConfigureFilmEdges(renderer,filmEdges);
             PlayerSettings.colorSpace=ColorSpace.Linear;PlayerSettings.companyName="Koriko";PlayerSettings.productName="Kiki’s Delivery Service";
             PlayerSettings.defaultScreenWidth=1440;PlayerSettings.defaultScreenHeight=900;PlayerSettings.fullScreenMode=FullScreenMode.Windowed;
             PlayerSettings.runInBackground=false;PlayerSettings.resizableWindow=true;
@@ -188,6 +192,25 @@ namespace Koriko.Editor
             Debug.Log($"KORIKO_SCENE_READY: {colliders} collision meshes; six landing courts; third-person flight; continuous delivery simulation.");
         }
 
+        static void ConfigureFilmEdges(UniversalRendererData renderer,Material material)
+        {
+            var feature=renderer.rendererFeatures.OfType<FullScreenPassRendererFeature>().FirstOrDefault();
+            if(!feature)
+            {
+                feature=ScriptableObject.CreateInstance<FullScreenPassRendererFeature>();feature.name="Painter's line and film grade";
+                AssetDatabase.AddObjectToAsset(feature,renderer);
+                AssetDatabase.TryGetGUIDAndLocalFileIdentifier(feature,out _,out long localId);
+                var data=new SerializedObject(renderer);
+                var list=data.FindProperty("m_RendererFeatures");var map=data.FindProperty("m_RendererFeatureMap");
+                list.arraySize++;list.GetArrayElementAtIndex(list.arraySize-1).objectReferenceValue=feature;
+                map.arraySize++;map.GetArrayElementAtIndex(map.arraySize-1).longValue=localId;
+                data.ApplyModifiedPropertiesWithoutUndo();
+            }
+            feature.passMaterial=material;feature.passIndex=0;feature.fetchColorBuffer=true;feature.bindDepthStencilAttachment=false;
+            feature.injectionPoint=FullScreenPassRendererFeature.InjectionPoint.BeforeRenderingTransparents;
+            feature.requirements=ScriptableRenderPassInput.Depth|ScriptableRenderPassInput.Normal;
+            EditorUtility.SetDirty(feature);EditorUtility.SetDirty(renderer);renderer.SetDirty();
+        }
         static T LoadOrCreate<T>(string path) where T:ScriptableObject
         {var asset=AssetDatabase.LoadAssetAtPath<T>(path);if(!asset){asset=ScriptableObject.CreateInstance<T>();AssetDatabase.CreateAsset(asset,path);}return asset;}
         static void ConfigureInputAndLayers()

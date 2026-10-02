@@ -17,7 +17,7 @@ namespace Koriko
     /// Input System, motor, camera, UI raycaster and controller submit/navigation.</summary>
     public sealed class DevelopmentControlsCheck:MonoBehaviour
     {
-        public static bool Requested=>Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-controls-check")>=0;
+        public static bool Requested=>Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-controls-check")>=0;
         GameApp app;Keyboard keys;Mouse mouse;Gamepad pad;
         string output;bool failed;readonly List<string> checks=new List<string>();
         float Speed=>new Vector2(app.Motor.Velocity.x,app.Motor.Velocity.z).magnitude;

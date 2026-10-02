@@ -16,7 +16,7 @@ namespace Koriko
     [DefaultExecutionOrder(100)]
     public sealed class DevelopmentMotionCheck:MonoBehaviour
     {
-        public static bool Requested=>Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-motion-check")>=0;
+        public static bool Requested=>Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-motion-check")>=0;
         GameApp app;
         RiderPerformance rider;
         Keyboard keyboard;

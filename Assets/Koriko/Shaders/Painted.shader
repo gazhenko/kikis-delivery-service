@@ -63,12 +63,21 @@ Shader "Koriko/Painted"
                 // Roof planes are drawn from both sides: an eave seen from the street shades as an underside.
                 float3 normal=normalize(lerp(input.normalWS*IS_FRONT_VFACE(face,1,-1),float3(0,1,0),_NormalFlatten));
                 float light=dot(normal,sun.direction);
-                // Broad paint marks modulate a shadow edge, rather than becoming surface noise.
+                // Painted bands, as a background painter lays them: sunlit, half-tone and shadow,
+                // each a flat wash. The brush marks of the atlas push the band edge about so the
+                // boundary wobbles like a stroke instead of following the geometry exactly.
                 float stroke=dot(paint,half3(.2126,.7152,.0722))-.5;
-                float shade=smoothstep(-.08-_Softness,.34+_Softness,light+stroke*.16);
-                float cast=smoothstep(.25,.72,sun.shadowAttenuation);
+                float l=light+stroke*.26;
+                float w=max(fwidth(l)*1.5,.02+_Softness*.6);
+                float sunlit=smoothstep(.32-w,.32+w,l);
+                float halfTone=smoothstep(-.14-w,-.14+w,l);
+                float shade=halfTone*.42+sunlit*.58;
+                // Cast shadows are hard-edged painted shapes.
+                float cast=smoothstep(.42,.58,sun.shadowAttenuation);
                 shade*=lerp(1,cast,_ShadowStrength);
-                half3 coloredShade=lerp(_ShadowTint.rgb,_LightTint.rgb,shade);
+                // Shadowed paint takes the sky's blue; ground and roofs in shadow are the coolest.
+                half3 shadowTint=_ShadowTint.rgb*lerp(half3(1,1,1),half3(.95,1.0,1.09),saturate(normal.y))+saturate(normal.y)*.025;
+                half3 coloredShade=lerp(shadowTint,_LightTint.rgb,shade);
                 half3 lightColor=lerp(half3(.30,.41,.63),half3(1,1,1),_KorikoDaylight);
                 half3 color=albedo*coloredShade*lightColor;
                 float night=1-smoothstep(.15,.70,_KorikoDaylight);
@@ -104,6 +113,31 @@ Shader "Koriko/Painted"
                 return ApplyShadowClamping(clip);
             }
             half4 ShadowFrag():SV_Target { return 0; }
+            ENDHLSL
+        }
+        Pass
+        {
+            Name "DepthNormals"
+            Tags { "LightMode"="DepthNormals" }
+            ZWrite On Cull [_Cull]
+            HLSLPROGRAM
+            #pragma vertex NormalsVert
+            #pragma fragment NormalsFrag
+            #pragma multi_compile_instancing
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            struct NormalsAttributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            struct NormalsVaryings { float4 positionCS:SV_POSITION; float3 normalWS:TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            NormalsVaryings NormalsVert(NormalsAttributes input)
+            {
+                NormalsVaryings o; UNITY_SETUP_INSTANCE_ID(input); UNITY_TRANSFER_INSTANCE_ID(input,o);
+                o.positionCS=TransformWorldToHClip(PaintedWorldPosition(input.positionOS.xyz));
+                o.normalWS=TransformObjectToWorldNormal(input.normalOS); return o;
+            }
+            half4 NormalsFrag(NormalsVaryings input,FRONT_FACE_TYPE face:FRONT_FACE_SEMANTIC):SV_Target
+            {
+                UNITY_SETUP_INSTANCE_ID(input);
+                return half4(normalize(input.normalWS)*IS_FRONT_VFACE(face,1,-1),0);
+            }
             ENDHLSL
         }
         Pass

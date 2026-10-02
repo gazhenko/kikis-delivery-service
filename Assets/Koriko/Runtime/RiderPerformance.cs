@@ -13,8 +13,8 @@ namespace Koriko
         {
             public Transform Node;
             public Quaternion Rest;
-            public Vector3 Position;
-            public Part(Transform node){Node=node;if(node){Rest=node.localRotation;Position=node.localPosition;}}
+            public Vector3 Position,Drawn;
+            public Part(Transform node){Node=node;if(node){Rest=node.localRotation;Position=Drawn=node.localPosition;}}
         }
         sealed class Spring
         {
@@ -47,7 +47,12 @@ namespace Koriko
         float clock,groundOffset,flightPose,speed,acceleration,previousSpeed;
         float takeoffAge=10,landingAge=10,boostAge=10,brakeAge=10,airTime,idleTime,blinkAge=10,nextBlink=2.3f;
         float smearAge=10,smearTurn,lastTurn,smearCooldown,landingImpact,deliverAge=10;
-        int secondaryDrawing=-1;
+        int secondaryDrawing=-1,drawingSlot=-1;
+        bool drawing=true;
+        /// <summary>True on frames that expose a new drawing. Poses are held between drawings.</summary>
+        public bool Drawing=>drawing;
+        public bool OnOnes {get;private set;}
+        public int DrawingsExposed {get;private set;}
         bool wasGrounded=true,wasBoosting,initialized;
         int warpVersion;
         static readonly int WorldToPose=Shader.PropertyToID("_KorikoRiderWorldToPose"),PoseToWorld=Shader.PropertyToID("_KorikoRiderPoseToWorld"),Smear=Shader.PropertyToID("_KorikoRiderSmear");
@@ -107,18 +112,23 @@ namespace Koriko
         Transform Node(string name)=>parts.TryGetValue(name,out var p)?p.Node:null;
         void Pose(string name,Vector3 angles)
         {
-            if(!parts.TryGetValue(name,out var part)||!part.Node)return;
+            if(!drawing||!parts.TryGetValue(name,out var part)||!part.Node)return;
             // FBX local axes differ from the game's right/up/forward convention.
             Quaternion basis=Quaternion.Inverse(part.Node.parent.rotation)*Motor.Visual.rotation;
             part.Node.localRotation=basis*Quaternion.Euler(angles)*Quaternion.Inverse(basis)*part.Rest;
         }
         void Offset(string name,Vector3 offset)
         {
-            if(parts.TryGetValue(name,out var part)&&part.Node)
-                part.Node.localPosition=part.Position+part.Node.parent.InverseTransformVector(Motor.Visual.TransformDirection(offset));
+            if(!drawing||!parts.TryGetValue(name,out var part)||!part.Node)return;
+            part.Node.localPosition=part.Position+part.Node.parent.InverseTransformVector(Motor.Visual.TransformDirection(offset));
+            part.Drawn=part.Node.localPosition;
         }
+        // Per-frame fits (pelvis support, broom tip) build on the drawing's position, so a held
+        // drawing starts from the same place every frame instead of accumulating the fit.
+        void Restore(string name){if(parts.TryGetValue(name,out var part)&&part.Node)part.Node.localPosition=part.Drawn;}
         void Shape(string name,float weight)
         {
+            if(!drawing)return;
             if(shapes.TryGetValue(name,out var entries))foreach(var item in entries)item.renderer.SetBlendShapeWeight(item.shape,Mathf.Clamp01(weight)*100);
         }
         static float Ease(float value)=>Mathf.SmoothStep(0,1,Mathf.Clamp01(value));
@@ -128,7 +138,8 @@ namespace Koriko
             warpVersion=Motor.WarpVersion;wasGrounded=Motor.Grounded;wasBoosting=Motor.Boosting;
             previousVelocity=Motor.Velocity;previousSpeed=speed=0;acceleration=groundOffset=0;
             takeoffAge=landingAge=boostAge=brakeAge=smearAge=10;airTime=idleTime=0;
-            flightPose=Motor.Mounted?1:0;smearCooldown=0;lastTurn=0;secondaryDrawing=-1;
+            flightPose=Motor.Mounted?1:0;smearCooldown=0;lastTurn=0;secondaryDrawing=-1;drawingSlot=-1;drawing=true;
+            foreach(var part in parts.Values)part.Drawn=part.Position;
             foreach(var s in new[]{pitch,bank,gaze,headPitch,ribbon,ribbonLeft,ribbonRight,hem,legDrag,bagSway,tail,catHead,broomPitch})s.Reset();
             Shader.SetGlobalVector(Smear,Vector4.zero);initialized=true;
             ResetGroundPerformance();
@@ -162,6 +173,14 @@ namespace Koriko
             if(!Motor.Grounded&&speed>.25f&&Mathf.Abs(turn)>.5f&&(Mathf.Abs(lastTurn)<.5f||Mathf.Sign(turn)!=Mathf.Sign(lastTurn)))
                 StartSmear(new Vector3(-Mathf.Sign(turn)*.25f,0,0),-Mathf.Sign(turn)*.46f);
             lastTurn=turn;wasGrounded=Motor.Grounded;wasBoosting=Motor.Boosting;previousVelocity=Motor.Velocity;
+            // Drawn on twos: a new drawing is exposed twelve times a second while the root and
+            // camera move smoothly. Fast actions go on ones, as the film does for a push-off, a
+            // hard landing, braking, a smear or a sharp bank.
+            int slot=Mathf.FloorToInt(clock*24);
+            bool fast=takeoffAge<.6f||landingAge<.5f||smearAge<.25f||boostAge<.4f||brakeAge<.5f||deliverAge<.35f
+                ||Mathf.Abs(acceleration)>18||(!Motor.Grounded&&Mathf.Abs(turn)>.55f);
+            drawing=slot!=drawingSlot&&(fast||(slot&1)==0);
+            if(drawing){drawingSlot=slot;OnOnes=fast;DrawingsExposed++;}
             float requestedFlight=Motor.Mounted?Ease((takeoffAge-.09f)/.56f):0;
             flightPose=Mathf.MoveTowards(flightPose,requestedFlight,dt*(Motor.Grounded?3.0f:4.0f));
             float flight=flightPose;
@@ -220,13 +239,16 @@ namespace Koriko
             Shape("Walk left",(1-flight)*Mathf.Max(0,-stepSway));Shape("Walk right",(1-flight)*Mathf.Max(0,stepSway));
             float bagAngle=bagSway.Step(bodyBank*.44f-acceleration*.10f+stepSway*7,2.2f,.58f,dt);
             float catLook=catHead.Step(-lookYaw*.65f+idle*Mathf.Sin(clock*.63f)*14,3.0f,.7f,dt);
-            float tailAngle=tail.Step(bodyBank*.8f+wind*Mathf.Sin(clock*3.3f)*12+bow*Mathf.Sin(deliverAge*9)*22,2.1f,.55f,dt);
+            // Jiji's own small life: his tail curls and uncurls at rest, and an ear flicks now and then.
+            float tailAngle=tail.Step(bodyBank*.8f+wind*Mathf.Sin(clock*3.3f)*12+bow*Mathf.Sin(deliverAge*9)*22+idle*(1-flight*.5f)*Mathf.Sin(clock*.85f)*11,2.1f,.55f,dt);
+            float flickPhase=Mathf.Repeat(clock+2.4f,7.3f);
+            float earFlick=flickPhase<.17f?22:0;
             // Hair, bow, hem, satchel and Jiji are drawn on twos, as in the film: their springs
             // integrate every frame, but a new drawing is exposed twelve times a second.
-            int drawing=Mathf.FloorToInt(clock*12);
-            if(drawing!=secondaryDrawing)
+            int secondary=Mathf.FloorToInt(clock*12);
+            if(drawing&&secondary!=secondaryDrawing)
             {
-                secondaryDrawing=drawing;
+                secondaryDrawing=secondary;
                 Pose("Bow",new Vector3(ribbonPitch*.28f,0,-bodyBank*.15f));
                 Pose("LeftBowLoop",new Vector3(ribbonPitch+leftFlutter*.45f,leftFlutter*.25f,leftFlutter*.45f));
                 Pose("RightBowLoop",new Vector3(ribbonPitch+rightFlutter*.5f,-rightFlutter*.2f,rightFlutter*.45f));
@@ -237,7 +259,7 @@ namespace Koriko
                 Pose("Satchel",new Vector3(-drag*.45f,bagAngle*.25f,bagAngle*.48f));
                 Pose("JijiHead",new Vector3(-speed*7-brake*5,catLook,bodyBank*.16f));
                 Pose("JijiTail",new Vector3(-drag*.3f,tailAngle,tailAngle*.35f));
-                Pose("LeftJijiEar",new Vector3(-speed*12,-turn*8,-boost*16+idle*Mathf.Sin(clock*1.7f)*2));
+                Pose("LeftJijiEar",new Vector3(-speed*12,-turn*8,-boost*16+idle*Mathf.Sin(clock*1.7f)*2-earFlick));
                 Pose("RightJijiEar",new Vector3(-speed*10,-turn*8,boost*13+idle*Mathf.Sin(clock*1.3f+2)*2));
             }
             AnimateFace(lookYaw,boost,brake,land);
@@ -277,11 +299,12 @@ namespace Koriko
                 float aperture=cat?catBlink:blink*(1-boost*.14f);
                 Vector3 up=eye.Key.InverseTransformDirection(Motor.Visual.up),scale=eye.Value;
                 int axis=Mathf.Abs(up.x)>Mathf.Abs(up.y)?0:1;if(Mathf.Abs(up.z)>Mathf.Abs(up[axis]))axis=2;
-                scale[axis]*=aperture;eye.Key.localScale=scale;
+                scale[axis]*=aperture;if(drawing)eye.Key.localScale=scale;
             }
             Shape("Gaze left",Mathf.Max(0,-look/32));Shape("Gaze right",Mathf.Max(0,look/32));
             Pose("LeftBrow",new Vector3(0,0,-boost*8+brake*5));Pose("RightBrow",new Vector3(0,0,boost*6-brake*7));
             bool open=takeoffAge>.12f&&takeoffAge<.34f||brake>.65f||land>.7f;
+            if(!drawing)return;
             if(quietMouth)quietMouth.enabled=!open;if(breathMouth)breathMouth.enabled=open;
         }
         void PlaceFeet()

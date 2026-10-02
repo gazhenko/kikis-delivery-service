@@ -1,101 +1,115 @@
-# Kiki's Delivery Service — desktop prototype
+<p align="center"><img src="Docs/media/logo.png" alt="Kiki's Delivery Service" width="820"></p>
 
-A Unity 6.3 LTS / URP first neighborhood for the approved desktop, third-person rebuild. The previous browser game remains in `../kikis-delivery-service`.
+<p align="center"><b>A hand-painted delivery adventure through the seaside town of Koriko.</b><br>
+Painted backgrounds, cel-shaded characters drawn on twos, and a broom that feels like the film's. An unofficial fan game made in Unity 6.</p>
 
-## Playable intent
+<p align="center">
+<a href="../../releases/latest"><b>⬇ Download for macOS · Windows · Linux</b></a> ·
+<a href="#give-this-to-your-agent"><b>Install with your agent</b></a> ·
+<a href="https://github.com/gazhenko/kikis-delivery-service/releases/download/v1.0.0/Kikis-Delivery-Service-trailer.mp4"><b>▶ Watch the trailer</b></a>
+</p>
 
-Depart Osono's bakery, fly along the shopping street to the clock square, reveal the harbor, follow the quay, climb toward Madame's garden and return home. Tombo's workshop and the airship add short and elevated delivery approaches. The first sightseeing circuit is designed for roughly 60–90 seconds; this timing still requires a real playtest.
+<p align="center"><a href="https://github.com/gazhenko/kikis-delivery-service/releases/download/v1.0.0/Kikis-Delivery-Service-trailer.mp4"><img src="Docs/media/teaser.gif" alt="gameplay teaser — click for the full trailer" width="900"></a></p>
 
-Timed jobs, ingredient shopping, recipes, broom upgrades, crows, cozy/challenging modes, hunger, energy, hospital returns and local saves are implemented in source. Days and nights each last 150 simulation seconds; sleeping advances eight game hours. Menus do not end a turn or stop the delivery clock.
+| THE SHOPPING STREET | THE HARBOUR | LAMPLIGHT |
+|---|---|---|
+| <img src="Docs/media/street.png" width="300"> | <img src="Docs/media/harbour.png" width="300"> | <img src="Docs/media/night.png" width="300"> |
 
-## Current status
+---
 
-The Unity VM is licensed, and native development builds run on Mac / Metal and Omarchy / OpenGLCore. Kiki now walks on foot, carrying her broom upright at her side with its bristles down, and mounts naturally on takeoff. Planted footsteps, overlapping dress/bow/hair motion, a relaxed free arm and Jiji’s shoulder-to-broom transition extend the film-referenced cel character.
+## What it is
 
-The controls pass adds free mouse look, optional hold-RMB look, cruise, braking, recentering, bumper altitude controls, analog walking, street landing and configurable camera sensitivity/dead zone/inversion. Xbox and PlayStation prompts follow the active device. Menu confirmation cannot accidentally become takeoff. Detailed façade surfaces also keep the orbit camera out of shop awnings and roofs.
+**Kiki's Delivery Service** is a playable fan game built in Unity 6 (URP). You are Kiki, newly arrived in Koriko with Jiji on your shoulder and a room above Osono's bakery. Collect a parcel, walk out into the courtyard, push off on the broom, follow the paper tag over the rooftops, land inside the ribbon circle and hand it over. Fly home, shop, cook, fit a better broom and sleep. The town keeps its own time: a day and a night each last two and a half minutes.
 
-The environment retains joined narrow street façades, varied roofs, the clock tower, painted materials, connected service yards, cultivated gardens, orchard undergrowth and working-quay detail. The minimap uses the same 87 building/landmark footprints and 32 paths exported with the world. See [the walking/controls implementation and reference study](Docs/WALKING_CONTROLS.md), [native test record and walking reel](Docs/verification/walking-controls/README.md), and [earlier environment verification](Docs/verification/environment-pass/README.md).
+The whole image is made to look like a painted film. Backgrounds are shaded in three flat washes with hard painted shadows and a painter's line; Kiki and Jiji are cels with one shadow shape per paint and coloured trace lines; her pose is drawn twelve times a second while the camera moves smoothly, and goes on ones for fast actions, as hand-drawn animation does. Every sound and the music are synthesized by the game.
 
-The [polish pass](Docs/POLISH_PASS.md) adds a synthesized soundscape and an original title waltz, working aerial fog, and lit streets and households at night under stars and a moon. It brings chimney smoke, gulls, bobbing moored boats, headlands, a lighthouse, islands and a distant hill town. Kiki visibly carries each parcel and the fitted lantern on her broom, bows and waves on delivery, and is guided by a destination tag, a ribbon circle at the true delivery radius and Jiji's tips. The title flyover offers Continue or a backed-up New game. [Native verification](Docs/verification/polish-pass/README.md).
-
-A [film character pass](Docs/CHARACTER.md#film-character-pass-september-30-2026) reworks Kiki and Jiji against the film: auburn hair, a purple smock, cel shadow shapes with a lit face, colour-matched outlines, secondary motion on twos and the film's seated flight. [Verification](Docs/verification/character-film-pass/README.md).
-
-Animated townspeople and recipients, a human listening test, release profiling and a physical-controller playtest remain work for the desktop rebuild. Art, sound and flight performance are original project work; no production-film meshes, animation clips, recordings or film music are bundled.
-
-See the [environment art notes and texture prompt](Docs/ENVIRONMENT.md), [motion implementation](Docs/MOTION.md), [motion clips and verification](Docs/verification/motion-pass/README.md), [character references and source](Docs/CHARACTER.md), [earlier rendering research](Docs/CEL_ART_PASS.md), [baseline verification](Docs/VERIFICATION.md), [visual direction](Docs/DIRECTION.md), [asset provenance](Docs/ART.md) and [development VM](Docs/VM.md).
-
-## Play the Mac build
-
-Open `Builds/mac/Kiki’s Delivery Service.app`. On a fresh game, choose Cozy or Challenging. With a save, choose *Continue your deliveries*; *Start a new game…* copies the current save to `koriko-desktop-v1.before-new-game.json` before starting again. Unity Editor and a Unity sign-in are not required to play the exported app. A distributable copy is packaged as `Builds/mac/Kiki-Delivery-Mac.zip`; this local development build is not notarized for public distribution.
-
-```sh
-open 'Builds/mac/Kiki’s Delivery Service.app'
-```
-
-At home, pick a delivery and choose Go outside. The parcel hangs from Kiki's broom. Walk with WASD or the left stick; Space, A/Cross or RB/R1 mounts and rises. Landing automatically returns to walking. Follow the paper tag (or the minimap line) to the ribbon circle, use E for an assisted landing, then press E inside the circle to deliver. Tab opens the bakery when home and settings while away. Settings includes *Controls & camera*, *Sound & display* (volumes, window or full screen, control hints) and Save & quit; Escape or B steps back from a sub-page.
-
-## Play on Omarchy
-
-Choose **Kiki’s Delivery Service** in the application launcher, or run `kiki-delivery`. The native Linux installation lives at `~/Games/KikiDelivery/current`, with versioned releases alongside it. It does not require Unity Editor or a Unity sign-in. The Mac desktop shortcut and Linux launcher use the September 30 film character release `20260930-d88266f`, with previous releases kept for rollback. See [installation checks and locations](Docs/INSTALLATIONS.md).
-
-`KORIKO_MAC_DESTINATION=Builds/mac-candidate bash Tools/build-on-vm.sh` stages a Mac candidate without replacing the installed app. `bash Tools/build-linux-on-vm.sh` exports a fresh Linux development player using the licensed VM, rejects shader compiler errors, and copies it into `Builds/linux/`. It does not deploy that export or change the Mac installation.
-
-## Open and build
-
-1. Use Unity **6000.3.20f1**, revision `c9ba695d4f07`, with Mac Mono or Windows Mono support as appropriate.
-2. Sign into Unity Hub and activate a suitable Editor license.
-3. Open this folder. Package dependencies resolve from `Packages/manifest.json`.
-4. The editor creates `Assets/Koriko/Scenes/BakeryToHarbor.unity` after its first successful import. `Koriko > Rebuild prototype scene` regenerates it from authored FBX assets.
-5. Press Play. Choose cozy or challenging, select a delivery and fly.
-6. `Koriko > Build Mac prototype` exports a universal development app to `Builds/mac/`. Windows and Linux menu commands are also provided; platform support must be installed.
-
-Batch build example, after activation:
-
-```sh
-~/Unity/6000.3.20f1/Editor/Unity -batchmode -nographics -buildTarget StandaloneOSX \
-  -projectPath "$PWD" -executeMethod Koriko.Editor.DesktopBuild.Mac \
-  -quit -logFile Logs/mac-build.log
-```
+### Features
+- **Six delivery courts** in one connected district: Osono's bakery, the clock-tower square, the harbour post house, Madame's rose garden on the hill, Tombo's workshop and the cargo platform under the airship.
+- **Jobs that need the right broom**: everyday parcels, Madame's porcelain, a rush before the bell, Tombo's heavy invention, a lantern across the water at night and special airship freight. Timely deliveries earn tips; a closed window costs the parcel (and a fee in Challenging).
+- **Osono's bakery**: buy flour, milk, eggs, herring, mint and coffee; cook six recipes with buffs (a tailwind bun, Ursula's mint tea, Madame's herring pie); fit six broom upgrades (birch bristles, a cargo sling, a feather stabilizer, the moonlight lantern, a wind bell, the skyfarer's compass); sleep eight hours.
+- **Walking and flight**: an upright broom carry, planted footsteps, mounting with a push-off, cruise, boost and braking, assisted landings on courts and clear streets, and crows to outrun.
+- **A living town**: chimney smoke, gulls over the harbour, boats on the swell, lamplight and lit windows at dusk, stars and a moon with a glitter path on the sea, a lighthouse on the headland and a hill town in the haze.
+- **Wayfinding**: a paper tag over the destination that clamps to the screen edge, a ribbon circle at the real delivery radius, a minimap and Jiji's tips.
+- **Sound**: wind, sea, crickets, birds, gulls, crows, footsteps that change with the ground, bells from the clock tower and an original music-box waltz, all generated at startup with no recordings.
+- Keyboard and mouse or Xbox and PlayStation controllers, with camera, sensitivity and sound settings. Cozy or Challenging pace. Local saves with a backed-up new game.
 
 ## Controls
 
-| Action | Keyboard / mouse | Controller |
-| --- | --- | --- |
-| Walk / fly | WASD | Left stick |
-| Take off / rise | Space | A / Cross or RB / R1 |
-| Descend | Ctrl or C | LB / L1 |
-| Boost | Hold Shift | Hold RT / R2 |
-| Brake / hover | Hold Q | Hold LT / L2 |
-| Cruise toggle | F | L3 |
-| Recenter | R | R3 |
-| Look | Mouse; optional hold-RMB | Right stick |
-| Land / deliver / bakery | E | X / Square |
-| Bakery or settings | Tab | Y / Triangle |
-| Close / settings | Escape | Start / Options |
+| | Keyboard / mouse | Xbox | PlayStation |
+|---|---|---|---|
+| Walk / fly | WASD | Left stick | Left stick |
+| Take off / rise | Space | A or RB | Cross or R1 |
+| Descend | C or Ctrl | LB | L1 |
+| Boost | Hold Shift | Hold RT | Hold R2 |
+| Brake / hover | Hold Q | Hold LT | Hold L2 |
+| Cruise | F | L3 | L3 |
+| Recenter camera | R | R3 | R3 |
+| Land · deliver · visit | E | X | Square |
+| Bakery / settings | Tab | Y | Triangle |
+| Back / settings | Escape | Start, B | Options, Circle |
+| Look | Mouse (free, or hold right button) | Right stick | Right stick |
 
-Interact near a delivery court or above a clear street starts an assisted landing. Interact again, steer, climb or brake to cancel it. Deliveries require a slow, grounded landing. In menus, use the mouse, keyboard navigation/Enter, or controller D-pad/A/Cross; B/Circle goes back. Open **Controls & camera** in settings for sensitivity, inversion, dead-zone, mouse-look and camera-follow options.
+Near a delivery court or above a clear street, **E** starts an assisted landing; press it again, steer or brake to cancel. Deliveries need a slow, grounded landing inside the ribbon circle. **Settings ▸ Controls & camera** has sensitivity, dead zone, inversion, mouse-look and camera-follow options; **Settings ▸ Sound & display** has volumes, full screen and control hints.
 
-## Source and checks
+## Installation
 
-```sh
-dotnet run --project Tests/Koriko.Core.Checks.csproj
-blender --background --threads 4 --python Tools/build_art.py
+### Give this to your agent
+
+Paste this into Claude Code, Codex, Cursor or any other coding agent that can run commands on your computer:
+
+```text
+Install Kiki's Delivery Service v1.0.0 on this computer from its official GitHub release, then tell me how to start it.
+
+Release: https://github.com/gazhenko/kikis-delivery-service/releases/tag/v1.0.0
+Download each file from https://github.com/gazhenko/kikis-delivery-service/releases/download/v1.0.0/<file>
+  macOS, Apple Silicon or Intel  KikisDeliveryService-v1.0.0-macOS-universal.zip  contains "Kiki's Delivery Service.app"
+  Windows 10/11, x64             KikisDeliveryService-v1.0.0-Windows-x64.zip      files at the zip root; the game is KikiDelivery.exe
+  Linux, x64                     KikisDeliveryService-v1.0.0-Linux-x64.tar.gz     files at the archive root; the game is KikiDelivery.x86_64
+  Checksums                      SHA256SUMS.txt
+
+1. Detect the OS and CPU. If this computer is not one of the three platforms above (for example Windows or Linux on ARM), stop and tell me.
+2. Check there is at least 1 GB free. Download the matching archive (about 150 MB) and SHA256SUMS.txt into a temporary folder with curl -L (curl.exe on Windows).
+3. Compute the archive's SHA-256 and compare it with its line in SHA256SUMS.txt. If it does not match, delete the download and stop.
+4. Install it, replacing any earlier Kiki's Delivery Service install at the same location:
+   - macOS: run ditto -x -k <archive> ~/Applications so the app ends up at "~/Applications/Kiki's Delivery Service.app". The build is ad-hoc signed and not notarized; if the app carries a com.apple.quarantine attribute, remove it with xattr -dr com.apple.quarantine on the app.
+   - Windows: create %LOCALAPPDATA%\Programs\KikisDeliveryService and extract into it (the zip has no top-level folder). Keep KikiDelivery.exe, UnityPlayer.dll, KikiDelivery_Data and MonoBleedingEdge together. Add a Start menu shortcut named "Kiki's Delivery Service" that points at KikiDelivery.exe.
+   - Linux: create ~/Games/KikisDeliveryService and extract into it (the archive has no top-level folder). Run chmod +x KikiDelivery.x86_64 and add ~/.local/share/applications/kikis-delivery-service.desktop that launches it, with GameIcon.png as its icon. The game needs OpenGL 4.5 or Vulkan drivers.
+5. Delete the downloaded archive and SHA256SUMS.txt.
+6. Do not change system-wide security settings (Gatekeeper, SmartScreen, antivirus), and do not run anything else from the archive. Do not launch the game unless I ask. Finish by telling me where it is installed and how to start it.
 ```
 
-The core project does not need Unity. Blender generation rebuilds the two editable sources and FBX exports, then produces seven preview PNGs in `Docs/previews/`. Append `-- --character-only` to rebuild only Kiki/Jiji, or `-- --world-only` to rebuild the environment, its layout data and two previews while preserving the character. Run from this project directory. Do not regenerate source art over an artist's manual `.blend` edits without preserving those edits first.
+### Manual install
 
-A development player accepts `--koriko-flight-check`. It creates synthetic keyboard and gamepad events to visit all six courts with the real movement code and camera, checks bakery interactions and visible shoe contact, captures native screenshots, and writes `flight-check/result.txt` under Unity's persistent data directory. It exits nonzero on a failed check and never loads or writes the player's save. This runner has passed on the Mac and the installed Omarchy/Linux player; it complements a human/controller playtest. The latest results are in `Docs/verification/walking-controls/`; earlier results remain in their dated verification folders.
+Download the archive for your computer from the [latest release](../../releases/latest). Check it against `SHA256SUMS.txt` if you like (`shasum -a 256`, `sha256sum` or PowerShell `Get-FileHash`).
 
-Use `--koriko-walk-check` for on-foot movement, foot and hand contact, broom carry and keyboard/controller mounting and landing. Add `--koriko-record-walk` for every drawing. Use `--koriko-controls-check` for the native keyboard/mouse/Xbox/PlayStation input matrix. These runs isolate player saves and control preferences. Synthetic devices do not replace a physical-controller compatibility or ergonomic playtest.
+- **macOS** (Apple Silicon + Intel): unzip, right-click `Kiki's Delivery Service.app` → Open (the build is ad-hoc signed, not notarized). If macOS says it is damaged: `xattr -dr com.apple.quarantine "Kiki's Delivery Service.app"`.
+- **Windows** (x64): extract the zip into a new folder and run `KikiDelivery.exe`. The Windows player is built from the same source as the others but has not been run on Windows yet; please report problems in an issue.
+- **Linux** (x64): extract into a new folder with `tar -xzf KikisDeliveryService-v1.0.0-Linux-x64.tar.gz`, then `chmod +x KikiDelivery.x86_64 && ./KikiDelivery.x86_64` (OpenGL 4.5 or Vulkan).
 
-Use `--koriko-tour-check` for the polish pass. It captures the title flyover, the bakery, parcel carry, the destination tag and ribbon circle, a delivery with its receipt and wave, lamplit streets, the lantern, the moonlit harbor, boats and headlands, the hill town and the settings pages. It exports every synthesized sound as WAV with levels, records twelve seconds of the listener mix and runs 33 assertions, writing to `tour-check/`. It plays at reduced volume and never reads or writes saves or preferences; other checks run muted.
+The Windows and Linux archives have no top-level folder, so extract them into an empty folder of their own.
 
-Use `--koriko-environment-check` for twelve native street, rooftop, garden, harbor and day/night viewpoints. It writes `environment-check/` without loading or writing player saves. These captures support visual review and are not a route benchmark.
+Saves and `Player.log` live in `~/Library/Application Support/com.Koriko.Kiki---s-Delivery-Service/` and `~/Library/Logs/Koriko/Kiki’s Delivery Service/` on macOS, `%USERPROFILE%\AppData\LocalLow\Koriko\Kiki’s Delivery Service\` on Windows and `~/.config/unity3d/Koriko/Kiki’s Delivery Service/` on Linux. Starting a new game copies the current save to `koriko-desktop-v1.before-new-game.json` first.
 
-Use `--koriko-art-check` for eight repeatable art viewpoints, without gameplay assertions. This writes `art-check/` in the same persistent-data directory and also avoids player saves. `Tools/build-on-vm.sh` now rejects shader compiler errors before copying a player back from the VM.
+## Building from source
 
-Use `--koriko-character-check` for eight native model viewpoints and six rig assertions, including a real takeoff and cruise above 20 m/s. It writes `character-check/` and also avoids player saves. The neutral study backgrounds make face, silhouette, cloth and hand contact easier to review independently of the town.
+Requirements: Unity **6000.3.20f1** (6.3 LTS) with macOS, Windows and Linux Mono build support, Blender 4.5 (only to regenerate the models), .NET 8 (only for the rules checks), Python 3.
 
-Use `--koriko-motion-check` for a deterministic 24 fps native motion reel and ten action/contact/exposure assertions. It writes PNG sequences and CSV telemetry to `motion-check/`, without player saves. `Tools/export-motion-review.py` encodes these into four H.264 clips and a combined reel with ffmpeg. See [capture details](Docs/MOTION.md); this recording mode is not a frame-rate benchmark.
+1. Open the folder in Unity. The scene `Assets/Koriko/Scenes/BakeryToHarbor.unity` is generated on first import from the authored FBX files; **Koriko ▸ Rebuild prototype scene** regenerates it.
+2. **Koriko ▸ Build Mac / Windows / Linux prototype** exports a release player into `Builds/`. Batch builds: `Tools/build-on-vm.sh`, `Tools/build-windows-on-vm.sh` and `Tools/build-linux-on-vm.sh` run the same exports on a licensed build machine over SSH and reject shader errors.
+3. `Tools/release.sh v1.0.0` packages the three players and the trailer with checksums and publishes a GitHub release.
 
-This first district has six delivery courts including home, rather than the previous region's 22 locations. Desktop is the current target; the original browser version remains the mobile/iPad route.
+Everything in the world is generated from code: `Tools/build_art.py` and `Tools/environment_art.py` build the town in Blender, `Tools/character_model.py` builds Kiki, Jiji and the broom, and `Assets/Koriko/Editor/SceneBuilder.cs` assembles the scene, materials and renderer. Run `blender --background --python Tools/build_art.py -- --character-only` or `-- --world-only` to rebuild one half.
+
+### Checks
+```sh
+dotnet run --project Tests/Koriko.Core.Checks.csproj      # 27 rules checks, no Unity needed
+```
+A player accepts opt-in native checks that use the real input system, motor, camera and HUD and never touch saves: `--koriko-flight-check` (the six-court route), `--koriko-walk-check`, `--koriko-controls-check`, `--koriko-motion-check`, `--koriko-character-check`, `--koriko-environment-check`, `--koriko-tour-check` and `--koriko-trailer` (writes the trailer's frames). Results land in the game's data folder. See [Docs/DEVELOPMENT.md](Docs/DEVELOPMENT.md) and the design and verification records in `Docs/`.
+
+## Tech notes
+- URP Forward with 4× MSAA. `Koriko/Painted` shades the town in three flat washes whose boundary wobbles with the brush marks of the painted atlas, with hard-edged shadows that take the sky's blue; `Koriko/CharacterCel` gives each character paint one chosen shadow colour and a lit face; `Koriko/Ink` draws colour-matched inverted-hull trace lines sized in 1080p pixels; `Koriko/FilmEdges` is a full-screen pass (depth + normals) for the painter's line and the film grade; custom sky, sea, lamplight, smoke and court-ring shaders.
+- Kiki's performance is procedural: timed action accents, damped overlapping springs for hair, bow, hem, satchel and Jiji, two-joint IK for hands on the broom and planted feet, analytic cloth contact, 1/24 s smear drawings, and a drawing clock that exposes poses on twos (ones for fast action) while planted feet stay exact.
+- The town, characters and all surface atlases are original work; the atlases were generated from written prompts. No film assets are used. See [CREDITS.md](CREDITS.md).
+- The trailer is captured in-engine at a fixed 24 fps by `--koriko-trailer` and cut with `Tools/make-trailer.sh`.
+
+Kiki's Delivery Service is an unofficial fan project and is not affiliated with or endorsed by Studio Ghibli. Source code is MIT licensed; see [LICENSE](LICENSE) and [CREDITS.md](CREDITS.md).

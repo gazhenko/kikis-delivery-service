@@ -9,6 +9,10 @@ namespace Koriko.Editor
 {
     public static class DesktopBuild
     {
+        // Release players by default: no "Development Build" watermark and no player connection.
+        // The opt-in --koriko-* checks still work in release players. KORIKO_DEV_BUILD=1 keeps
+        // a development player for profiling.
+        static BuildOptions Options=>Environment.GetEnvironmentVariable("KORIKO_DEV_BUILD")=="1"?BuildOptions.Development:BuildOptions.None;
         [MenuItem("Koriko/Build Mac prototype")]
         public static void Mac()
         {
@@ -32,9 +36,9 @@ namespace Koriko.Editor
         {
             // This prototype scene is generated from authored source; include the latest art/camera setup.
             SceneBuilder.Build();Directory.CreateDirectory(Path.GetDirectoryName(path));
-            var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{SceneBuilder.ScenePath},locationPathName=path,target=target,options=BuildOptions.Development});
+            var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{SceneBuilder.ScenePath},locationPathName=path,target=target,options=Options});
             if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Desktop build failed: "+report.summary.result);
-            Debug.Log("KORIKO_BUILD_READY "+Path.GetFullPath(path));
+            Debug.Log("KORIKO_BUILD_READY "+Path.GetFullPath(path)+(Options==BuildOptions.Development?" (development)":" (release)"));
         }
     }
 }

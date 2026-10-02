@@ -9,7 +9,7 @@ Created 2026-09-27 on the existing Proxmox host through its configured SSH conne
 | CPU | 8 vCPU, host model, CPU cap 6 |
 | Memory | 16 GiB maximum, 8 GiB balloon minimum |
 | Disk | 100 GiB thin provisioned on `local-lvm` |
-| Network | DHCP on existing `vmbr0`; initially `192.168.1.186` |
+| Network | DHCP on the existing `vmbr0` bridge |
 | Login | `jim`, existing SSH public key; password login locked |
 | Editor | `~/Unity/6000.3.20f1/Editor/Unity` |
 | Project | `~/Projects/kikis-delivery-desktop` |

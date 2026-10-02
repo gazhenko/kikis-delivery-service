@@ -18,10 +18,10 @@ namespace Koriko
     /// It never loads or writes the player's save. Results are evidence only after it runs.</summary>
     public sealed class DevelopmentFlightCheck : MonoBehaviour
     {
-        public static bool ArtOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-art-check")>=0;
-        public static bool CharacterOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-character-check")>=0;
-        public static bool EnvironmentOnly => Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-environment-check")>=0;
-        public static bool Requested => Debug.isDebugBuild&&(ArtOnly||CharacterOnly||EnvironmentOnly||DevelopmentControlsCheck.Requested||DevelopmentWalkCheck.Requested||DevelopmentMotionCheck.Requested||DevelopmentTourCheck.Requested||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
+        public static bool ArtOnly => Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-art-check")>=0;
+        public static bool CharacterOnly => Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-character-check")>=0;
+        public static bool EnvironmentOnly => Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-environment-check")>=0;
+        public static bool Requested => (ArtOnly||CharacterOnly||EnvironmentOnly||DevelopmentControlsCheck.Requested||DevelopmentWalkCheck.Requested||DevelopmentMotionCheck.Requested||DevelopmentTourCheck.Requested||DevelopmentTrailerCapture.Requested||Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-flight-check")>=0);
         GameApp app;
         Keyboard keyboard;
         Gamepad gamepad;
@@ -36,7 +36,7 @@ namespace Koriko
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Install()
         {
-            if(Requested&&!DevelopmentMotionCheck.Requested&&!DevelopmentWalkCheck.Requested&&!DevelopmentControlsCheck.Requested&&!DevelopmentTourCheck.Requested)new GameObject("Development flight check").AddComponent<DevelopmentFlightCheck>();
+            if(Requested&&!DevelopmentMotionCheck.Requested&&!DevelopmentWalkCheck.Requested&&!DevelopmentControlsCheck.Requested&&!DevelopmentTourCheck.Requested&&!DevelopmentTrailerCapture.Requested)new GameObject("Development flight check").AddComponent<DevelopmentFlightCheck>();
         }
         IEnumerator Start()
         {

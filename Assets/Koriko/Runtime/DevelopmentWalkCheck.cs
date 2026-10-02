@@ -16,7 +16,7 @@ namespace Koriko
     [DefaultExecutionOrder(100)]
     public sealed class DevelopmentWalkCheck:MonoBehaviour
     {
-        public static bool Requested=>Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-walk-check")>=0;
+        public static bool Requested=>Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-walk-check")>=0;
         bool Record=>Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-record-walk")>=0;
         GameApp app;RiderPerformance rider;Keyboard keyboard;Gamepad pad;Camera camera;
         string output,clip,action;int frame;bool failed,recording,addedKeyboard;

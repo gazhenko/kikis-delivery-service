@@ -20,7 +20,8 @@ namespace Koriko
         Vector3 catBroomPoint,catShoulderPoint,freeHandPoint,lastGroundPosition;
         Quaternion catBroomFrame,catShoulderFrame,leftFreeHandFrame;
         float walkPhase=.35f,walkWeight,stepSway;
-        bool feetReady,wasWalking;
+        bool feetReady,wasWalking,freeHandReady;
+        Vector3 freeHandLocal;Quaternion freeHandLocalRotation;
         public float WalkingWeight=>walkWeight;
         public float WalkingPhase=>walkPhase;
         public float BroomTipClearance {get;private set;}
@@ -64,7 +65,7 @@ namespace Koriko
         }
         void ResetGroundPerformance()
         {
-            feetReady=wasWalking=false;walkWeight=0;walkPhase=.35f;lastGroundPosition=Motor.transform.position;
+            feetReady=wasWalking=freeHandReady=false;walkWeight=0;walkPhase=.35f;lastGroundPosition=Motor.transform.position;
             PlantedFootSlide=0;BroomTipClearance=0;
         }
         void AdvanceWalk(float dt,float actualSpeed)
@@ -86,6 +87,7 @@ namespace Koriko
             // Held close at her side, so the carrying elbow stays bent rather than locked out.
             float side=.46f*(1-Ease((flight-.34f)/.66f));
             Offset("Broom",new Vector3(side,carry*.72f+hover*.6f,carry*.23f+Mathf.Sin(mount*Mathf.PI)*.15f));
+            Restore("Broom");
             BroomTipClearance=float.PositiveInfinity;
             if(Motor.Grounded&&flight<.025f&&Physics.Raycast(broomTip.position+Vector3.up*.7f,Vector3.down,out var floor,1.8f,1<<8,QueryTriggerInteraction.Ignore))
             {
@@ -120,9 +122,14 @@ namespace Koriko
                 float opposed=-Mathf.Cos(walkPhase*Mathf.PI*2)*walkWeight;
                 float swing=opposed>0?opposed*.13f:opposed*.07f;
                 Vector3 walking=new Vector3(.03f*walkWeight,.035f*walkWeight+.03f*Mathf.Max(0,opposed)-.012f*Mathf.Abs(opposed),swing);
-                Vector3 free=body.TransformPoint(freeHandPoint)+Motor.Visual.TransformDirection(walking+reach);
-                Quaternion freeRotation=Motor.Visual.rotation*Quaternion.Euler(opposed*6-give*35-wave*40,0,-3-waveSwing*20)*leftFreeHandFrame;
-                SolveArm(arms[0],Vector3.Lerp(free,arms[0].Grip.position,leftGrab),Quaternion.Slerp(freeRotation,arms[0].Grip.rotation*arms[0].WristFrame,leftGrab),leftGrab>.99f);
+                if(drawing||!freeHandReady)
+                {
+                    Vector3 free=body.TransformPoint(freeHandPoint)+Motor.Visual.TransformDirection(walking+reach);
+                    Quaternion freeRotation=Motor.Visual.rotation*Quaternion.Euler(opposed*6-give*35-wave*40,0,-3-waveSwing*20)*leftFreeHandFrame;
+                    freeHandLocal=body.InverseTransformPoint(free);freeHandLocalRotation=Quaternion.Inverse(body.rotation)*freeRotation;freeHandReady=true;
+                }
+                Vector3 drawnFree=body.TransformPoint(freeHandLocal);Quaternion drawnRotation=body.rotation*freeHandLocalRotation;
+                SolveArm(arms[0],Vector3.Lerp(drawnFree,arms[0].Grip.position,leftGrab),Quaternion.Slerp(drawnRotation,arms[0].Grip.rotation*arms[0].WristFrame,leftGrab),leftGrab>.99f);
             }
             Shape("Left hand relaxed",1-leftGrab);
         }
@@ -169,11 +176,14 @@ namespace Koriko
                     {
                         if(!leg.Swing)leg.SwingStart=leg.Target;
                         float t=(phase-.55f)/.45f;
-                        leg.Target=Vector3.Lerp(leg.SwingStart,RestFoot(leg,Mathf.Lerp(.24f,.44f,walkWeight)),Ease(t))+Vector3.up*(Mathf.Sin(t*Mathf.PI)*.145f);
+                        // The swing foot is drawn on the drawing clock; the planted foot stays exact every frame.
+                        if(drawing||!leg.Swing)leg.Target=Vector3.Lerp(leg.SwingStart,RestFoot(leg,Mathf.Lerp(.24f,.44f,walkWeight)),Ease(t))+Vector3.up*(Mathf.Sin(t*Mathf.PI)*.145f);
                     }
                     else
                     {
-                        if(leg.Swing){leg.Plant=FootSupport(leg.Target,leg);leg.PlantRotation=Motor.Visual.rotation;Footfall(leg.Plant,false);}
+                        // The foot always lands at the full step, whatever drawing the swing was holding;
+                        // a short plant left the stance leg overreached as the body walked on.
+                        if(leg.Swing){leg.Plant=FootSupport(RestFoot(leg,Mathf.Lerp(.24f,.44f,walkWeight)),leg);leg.PlantRotation=Motor.Visual.rotation;Footfall(leg.Plant,false);}
                         leg.Target=leg.Plant;
                     }
                 }
@@ -187,7 +197,7 @@ namespace Koriko
                     if(leg.Settling)
                     {
                         leg.SettleAge+=dt;float t=Mathf.Clamp01(leg.SettleAge/.28f);
-                        leg.Target=Vector3.Lerp(leg.SwingStart,leg.SettleEnd,Ease(t))+Vector3.up*(Mathf.Sin(t*Mathf.PI)*.075f);
+                        if(drawing||t>=1)leg.Target=Vector3.Lerp(leg.SwingStart,leg.SettleEnd,Ease(t))+Vector3.up*(Mathf.Sin(t*Mathf.PI)*.075f);
                         if(t>=1){leg.Plant=leg.Target;leg.PlantRotation=Motor.Visual.rotation;leg.Settling=false;Footfall(leg.Plant,true);}
                     }
                     else leg.Target=leg.Plant;
@@ -205,7 +215,7 @@ namespace Koriko
                 float height=Mathf.Sqrt(Mathf.Max(.04f,reach*reach-delta.x*delta.x-delta.z*delta.z));
                 lower=Mathf.Max(lower,delta.y-height);
             }
-            Node("Body").position-=Vector3.up*Mathf.Clamp(lower,0,.32f);
+            Restore("Body");Node("Body").position-=Vector3.up*Mathf.Clamp(lower,0,.32f);
             foreach(var leg in walkingLegs)
             {
                 if(leg==null)continue;

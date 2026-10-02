@@ -17,7 +17,7 @@ namespace Koriko
     /// motor, camera and HUD. Never reads or writes the player's save or preferences.</summary>
     public sealed class DevelopmentTourCheck : MonoBehaviour
     {
-        public static bool Requested=>Debug.isDebugBuild&&Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-tour-check")>=0;
+        public static bool Requested=>Array.IndexOf(Environment.GetCommandLineArgs(),"--koriko-tour-check")>=0;
         GameApp app;Keyboard keyboard;AudioProbe probe;Camera view;CinemachineBrain brain;
         string output;bool failed;readonly List<string> checks=new List<string>();
         float frameTotal;int frames;bool timing;

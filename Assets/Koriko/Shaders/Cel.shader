@@ -103,6 +103,23 @@ Shader "Koriko/CharacterCel"
         }
         Pass
         {
+            Name "DepthNormals"
+            Tags { "LightMode"="DepthNormals" }
+            ZWrite On Cull Back
+            HLSLPROGRAM
+            #pragma vertex NormalsVert
+            #pragma fragment NormalsFrag
+            #pragma multi_compile_instancing
+            #include "FilmCommon.hlsl"
+            #include "CharacterDeform.hlsl"
+            struct NA { float4 p:POSITION; float3 n:NORMAL; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            struct NV { float4 p:SV_POSITION; float3 n:TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            NV NormalsVert(NA a){NV o;UNITY_SETUP_INSTANCE_ID(a);UNITY_TRANSFER_INSTANCE_ID(a,o);o.p=TransformWorldToHClip(CelWorldPosition(a.p.xyz));o.n=TransformObjectToWorldNormal(a.n);return o;}
+            half4 NormalsFrag(NV i):SV_Target{UNITY_SETUP_INSTANCE_ID(i);return half4(normalize(i.n),0);}
+            ENDHLSL
+        }
+        Pass
+        {
             Name "DepthOnly"
             Tags { "LightMode"="DepthOnly" }
             ZWrite On ColorMask R Cull Back
