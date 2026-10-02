@@ -1,0 +1,7 @@
+PASS Twelve native environment views captured; all scene shaders supported
+Renderer: Apple M1 Pro / Metal
+Resolution: 1280 x 720
+Mean frame time during viewpoint captures (not a benchmark): 16.73 ms
+Peak recorded draw calls: 3176
+Peak recorded triangles: 4301336
+Fixed camera captures for visual inspection; not a traversal or input test.

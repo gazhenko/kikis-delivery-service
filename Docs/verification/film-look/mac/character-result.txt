@@ -1,0 +1,12 @@
+PASS Standing carry keeps the holding hand on the broom (within 2 cm)
+PASS Imported flight cloth shape is available
+PASS Character cruising pose uses the real flight motor above 20 m/s
+PASS Leaning flight pose keeps both hands on the broom (within 2 cm)
+PASS Flight cloth, drawn folds and contour follow the bent-knee pose
+PASS Character materials supported on this renderer
+Renderer: Apple M1 Pro / Metal
+Resolution: 1280 x 720
+Mean frame time during viewpoint captures (not a benchmark): 16.90 ms
+Peak recorded draw calls: 1052
+Peak recorded triangles: 730326
+Native character study on a neutral background with synthetic takeoff input; not a route or performance benchmark.

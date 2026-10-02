@@ -1,6 +1,16 @@
+# Desktop installations: October 2, 2026 (the film look, v1.0.0)
+
+Both machines now run **`20261002-2175792`** (source `2175792`), the first release player: no development watermark, painted washes and the painter's line in the town, and Kiki drawn on twos ([design](FILM_LOOK.md), [record](verification/film-look/README.md)). The same source is published on GitHub as v1.0.0 with macOS, Linux and Windows archives.
+
+- **Mac:** the candidate passed 17 walking, 46 control, 6 character, 25 route, 10 motion and 33 tour checks (at 720p and 1080p) before the swap; the Desktop shortcut passed the tour afterwards. Rollback: `Builds/mac/previous/Kiki-Delivery-20260930-d88266f-Mac.zip` (hash verified).
+- **Omarchy:** the staged release passed 10 motion, 33 tour, 46 control, 17 walking and 25 route checks; all 275 hashes verified before `current` switched; the installed launcher passed the tour. Rollback: `releases/20260930-d88266f` and earlier.
+- Saves were untouched.
+
+---
+
 # Desktop installations: September 30, 2026 (film character pass)
 
-Both machines now run **`20260930-d88266f`** (source `d88266f6ed0844c99bd6b0c0c422f58ecb85fa76`), a dedicated pass on Kiki and Jiji toward the film's cel look and motion ([record](verification/character-film-pass/README.md)).
+Both machines received **`20260930-d88266f`** (source `d88266f6ed0844c99bd6b0c0c422f58ecb85fa76`), a dedicated pass on Kiki and Jiji toward the film's cel look and motion ([record](verification/character-film-pass/README.md)).
 
 Checks:
 - **Mac:** 33 tour and 6 character checks through the Desktop shortcut after installation. The staged candidate also passed 46 control, 17 walking and 25 route checks.
