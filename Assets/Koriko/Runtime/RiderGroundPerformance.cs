@@ -207,6 +207,9 @@ namespace Koriko
             }
             // Pelvis support is solved before either leg. Clamping an
             // unreachable ankle alone makes a planted shoe skate above the road.
+            // Measure from the drawing's pelvis, not from last frame's lowered one; otherwise a
+            // held drawing under-estimates the support a fresh plant needs and the foot floats.
+            Restore("Body");
             float lower=0;
             foreach(var leg in walkingLegs)if(leg!=null)
             {
@@ -215,7 +218,7 @@ namespace Koriko
                 float height=Mathf.Sqrt(Mathf.Max(.04f,reach*reach-delta.x*delta.x-delta.z*delta.z));
                 lower=Mathf.Max(lower,delta.y-height);
             }
-            Restore("Body");Node("Body").position-=Vector3.up*Mathf.Clamp(lower,0,.32f);
+            Node("Body").position-=Vector3.up*Mathf.Clamp(lower,0,.32f);
             foreach(var leg in walkingLegs)
             {
                 if(leg==null)continue;
